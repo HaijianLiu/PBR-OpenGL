@@ -8,22 +8,21 @@
 // Include header file
 #include "objloader.hpp"
 
-bool LoadOBJ(const char * path,std::vector<glm::vec3> & out_vertices,std::vector<glm::vec2> & out_uvs,std::vector<glm::vec3> & out_normals){
-
+bool loadObj(const char * path,std::vector<glm::vec3> & outVertices,std::vector<glm::vec2> & outUVs,std::vector<glm::vec3> & outNormals){
 	// Set path
-	std::string CurrentDir = __FILE__;
-	std::string TargetDir = CurrentDir.substr(0,CurrentDir.rfind("/"));
-	TargetDir = TargetDir.substr(0,TargetDir.rfind("/")) + "/Model/";
-	path = TargetDir.append(path).c_str();
+	std::string currentDir = __FILE__;
+	std::string targetDir = currentDir.substr(0,currentDir.rfind("/"));
+	targetDir = targetDir.substr(0,targetDir.rfind("/")) + "/Model/";
+	path = targetDir.append(path).c_str();
 
 	printf("LoadOBJ: Loading OBJ file %s...\n",path);
 
 	std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
-	std::vector<glm::vec3> temp_vertices;
-	std::vector<glm::vec2> temp_uvs;
-	std::vector<glm::vec3> temp_normals;
+	std::vector<glm::vec3> tempVertices;
+	std::vector<glm::vec2> tempUVs;
+	std::vector<glm::vec3> tempNormals;
 
-	// Read the OBJ file
+	// Open the OBJ file
 	FILE * file = fopen(path,"r");
 	if(file == NULL){
 		printf("LoadOBJ: Impossible to open %s.\n",path);
@@ -31,72 +30,83 @@ bool LoadOBJ(const char * path,std::vector<glm::vec3> & out_vertices,std::vector
 		return false;
 	}
 
-	while(true){
-
+	// Read the OBJ file
+	while (true){
 		char lineHeader[128];
-
 		// read the first word of the line
-		int res = fscanf(file, "%s", lineHeader);
-		if (res == EOF)
+		int res = fscanf(file,"%s",lineHeader);
+		if (res == EOF){
 			break; // EOF = End Of File. Quit the loop.
+		}
 
 		// parse lineHeader
-		if ( strcmp( lineHeader, "v" ) == 0 ){
+		if (strcmp(lineHeader,"v") == 0) {
 			glm::vec3 vertex;
-			fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z );
-			temp_vertices.push_back(vertex);
-		}else if ( strcmp( lineHeader, "vt" ) == 0 ){
-			glm::vec2 uv;
-			fscanf(file, "%f %f\n", &uv.x, &uv.y );
-			uv.y = -uv.y; // Invert V coordinate since we will only use DDS texture, which are inverted. Remove if you want to use TGA or BMP loaders.
-			temp_uvs.push_back(uv);
-		}else if ( strcmp( lineHeader, "vn" ) == 0 ){
+			fscanf(file,"%f %f %f\n",&vertex.x,&vertex.y,&vertex.z);
+			tempVertices.push_back(vertex);
+		} else
+		if (strcmp(lineHeader,"vn") == 0) {
 			glm::vec3 normal;
-			fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z );
-			temp_normals.push_back(normal);
-		}else if ( strcmp( lineHeader, "f" ) == 0 ){
-			std::string vertex1, vertex2, vertex3;
-			unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
-			int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2] );
-			if (matches != 9){
-				printf("LoadOBJ: File can't be read by our simple parser.\n");
-				fclose(file);
-				return false;
-			}
+			fscanf(file,"%f %f %f\n",&normal.x,&normal.y,&normal.z);
+			tempNormals.push_back(normal);
+		} else
+		if (strcmp(lineHeader,"vt") == 0) {
+			glm::vec2 uv;
+			float uvZ;
+			fscanf(file,"%f %f %f\n",&uv.x,&uv.y,&uvZ);
+			tempUVs.push_back(uv);
+		} else
+		if (strcmp(lineHeader,"f") == 0) {
+
+			unsigned int vertexIndex[4], normalIndex[4], uvIndex[4];
+
+			int check34 = fscanf(file,"%d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d\n",&vertexIndex[0],&normalIndex[0],&uvIndex[0],&vertexIndex[1],&normalIndex[1],&uvIndex[1],&vertexIndex[2],&normalIndex[2],&uvIndex[2],&vertexIndex[3],&normalIndex[3],&uvIndex[3]);
 			vertexIndices.push_back(vertexIndex[0]);
 			vertexIndices.push_back(vertexIndex[1]);
 			vertexIndices.push_back(vertexIndex[2]);
-			uvIndices    .push_back(uvIndex[0]);
-			uvIndices    .push_back(uvIndex[1]);
-			uvIndices    .push_back(uvIndex[2]);
 			normalIndices.push_back(normalIndex[0]);
 			normalIndices.push_back(normalIndex[1]);
 			normalIndices.push_back(normalIndex[2]);
-		}else{
+			uvIndices.push_back(uvIndex[0]);
+			uvIndices.push_back(uvIndex[1]);
+			uvIndices.push_back(uvIndex[2]);
+
+			if (check34 == 12) {
+				vertexIndices.push_back(vertexIndex[0]);
+				vertexIndices.push_back(vertexIndex[2]);
+				vertexIndices.push_back(vertexIndex[3]);
+				normalIndices.push_back(normalIndex[0]);
+				normalIndices.push_back(normalIndex[2]);
+				normalIndices.push_back(normalIndex[3]);
+				uvIndices.push_back(uvIndex[0]);
+				uvIndices.push_back(uvIndex[2]);
+				uvIndices.push_back(uvIndex[3]);
+			}
+		} else {
 			// Probably a comment, eat up the rest of the line
 			char stupidBuffer[1000];
 			fgets(stupidBuffer, 1000, file);
 		}
 	}
 
-	// Output OBJ Data for each vertex of each triangle
-	for( unsigned int i=0; i<vertexIndices.size(); i++ ){
+	printf("vertexIndices = %ld\n",vertexIndices.size());
 
+	// Output OBJ Data for each vertex of each triangle
+	for (unsigned int i = 0; i < vertexIndices.size(); i++) {
 		// Get the indices of its attributes
 		unsigned int vertexIndex = vertexIndices[i];
 		unsigned int uvIndex = uvIndices[i];
 		unsigned int normalIndex = normalIndices[i];
-
 		// Get the attributes thanks to the index
-		glm::vec3 vertex = temp_vertices[vertexIndex-1];
-		glm::vec2 uv = temp_uvs[uvIndex-1];
-		glm::vec3 normal = temp_normals[normalIndex-1];
-
+		glm::vec3 vertex = tempVertices[vertexIndex-1];
+		glm::vec2 uv = tempUVs[uvIndex-1];
+		glm::vec3 normal = tempNormals[normalIndex-1];
 		// Put the attributes in buffers
-		out_vertices.push_back(vertex);
-		out_uvs     .push_back(uv);
-		out_normals .push_back(normal);
+		outVertices.push_back(vertex);
+		outUVs.push_back(uv);
+		outNormals.push_back(normal);
 	}
+
 
 	fclose(file);
 	return true;

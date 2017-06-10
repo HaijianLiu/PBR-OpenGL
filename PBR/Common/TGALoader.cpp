@@ -47,6 +47,7 @@ namespace NS_TGALOADER
 		targetDir = targetDir.substr(0,targetDir.rfind("/")) + "/Texture/";
 		szFile = targetDir.append(szFile).c_str();
 
+		printf("LoadTGA: %s\n", szFile);
 
 		FILE* pFile = fopen (szFile, "rb");
 
@@ -93,6 +94,7 @@ namespace NS_TGALOADER
 		}
 		else
 		{
+			printf("else");
 			fclose (pFile);
 			return (false);
 		}

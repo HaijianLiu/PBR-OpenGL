@@ -17,6 +17,8 @@ GLFWwindow* window;
 // Include header file
 #include "shader.hpp"
 #include "objloader.hpp"
+#include "TGALoader.hpp"
+#include "texture.hpp"
 
 
 // Define Macros
@@ -29,6 +31,10 @@ GLFWwindow* window;
 #ifndef OBJ_FILE
 #define OBJ_FILE "WPN_MK2Grenade.obj"
 #endif
+#ifndef BASECOLOR_TGA_FILE
+#define BASECOLOR_TGA_FILE "WPNT_MK2Grenade_Base_Color.tga"
+#endif
+
 
 // Time Function
 struct timeval startTime;
@@ -70,7 +76,13 @@ int main(void) {
   // Set input mode GLFW_STICKY_KEYS
   glfwSetInputMode(window,GLFW_STICKY_KEYS,GL_TRUE);
   // Dark blue background
-  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+	// Enable depth test
+	glEnable(GL_DEPTH_TEST);
+	// Accept fragment if it closer to the camera than the former one
+	glDepthFunc(GL_LESS);
+	// Cull triangles which normal is not towards the camera
+	glEnable(GL_CULL_FACE);
   // Create Vertex Array Object
   GLuint VertexArrayID;
   glGenVertexArrays(1, &VertexArrayID);
@@ -84,14 +96,37 @@ int main(void) {
   std::vector<glm::vec3> objnormals;
   bool res = loadObj(OBJ_FILE,objvertices,objuvs,objnormals);
 
-  // Get a handle for our "MVP" uniform
-  GLuint MatrixID = glGetUniformLocation(ProgramID,"MVP");
+	NS_TGALOADER::IMAGE* tgaImage = new NS_TGALOADER::IMAGE();
+	if(tgaImage->LoadTGA(BASECOLOR_TGA_FILE) == false){
+		return -1;
+	}
+	// Create one OpenGL texture
+	GLuint texture = loadDDS("uvtemplate.DDS");
+	// GLuint textureID;
+	// glGenTextures(1, &textureID);
+	// glBindTexture(GL_TEXTURE_2D, textureID);
+	// glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, tgaImage->getWidth(), tgaImage->getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, tgaImage->getDataForOpenGL());
+	// std::cout << tgaImage->getWidth() << '\n';
+	// std::cout << tgaImage->getHeight() << '\n';
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	// Get a handle for our "myTextureSampler" uniform
+	GLuint TextureID  = glGetUniformLocation(ProgramID, "myTextureSampler");
+
+	GLuint MatrixID  = glGetUniformLocation(ProgramID, "MVP");
 
   // Load into VBO
   GLuint vertexbuffer;
   glGenBuffers(1, &vertexbuffer);
   glBindBuffer(GL_ARRAY_BUFFER,vertexbuffer);
   glBufferData(GL_ARRAY_BUFFER,objvertices.size()*sizeof(glm::vec3),&objvertices[0],GL_STATIC_DRAW);
+	// Load into VBO
+	GLuint uvbuffer;
+	glGenBuffers(1, &uvbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER,uvbuffer);
+	glBufferData(GL_ARRAY_BUFFER,objuvs.size()*sizeof(glm::vec2),&objuvs[0],GL_STATIC_DRAW);
+
 
 
   do {
@@ -113,6 +148,12 @@ int main(void) {
     // in the "MVP" uniform
     glUniformMatrix4fv(MatrixID,1,GL_FALSE,&MVP[0][0]);
 
+		// Bind our texture in Texture Unit 0
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		// Set our "myTextureSampler" sampler to user Texture Unit 0
+		glUniform1i(TextureID, 0);
+
     // 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER,vertexbuffer);
@@ -124,9 +165,21 @@ int main(void) {
 			0,                  // stride
 			(void*)0            // array buffer offset
 		);
+		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ARRAY_BUFFER,uvbuffer);
+		glVertexAttribPointer(
+			1,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+			2,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
 		// Draw the triangle !
 		glDrawArrays(GL_TRIANGLES,0,objvertices.size()); // 3 indices starting at 0 -> 1 triangle
 		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+
 
     // Swap buffers
     glfwSwapBuffers(window);
@@ -136,6 +189,7 @@ int main(void) {
 
   // Cleanup VBO
   glDeleteBuffers(1, &vertexbuffer);
+	glDeleteBuffers(1, &uvbuffer);
   glDeleteVertexArrays(1, &VertexArrayID);
   glDeleteProgram(ProgramID);
   // Close OpenGL window and terminate GLFW

@@ -1,65 +1,35 @@
-// <<< Information >>>
-// Author:	Jan Krassnigg (Jan@Krassnigg.de)
-// >>> Information <<<
+#ifndef tagloader_hpp
+#define tagloader_hpp
 
-#ifndef TGALOADER_H
-#define TGALOADER_H
+// typedef struct{
+// 	GLubyte* imageData;         // Hold All The Color Values For The Image.
+// 	GLuint width;               // The Width Of The Entire Image.
+// 	GLuint height;              // The Height Of The Entire Image.
+// 	GLuint bpp;                 // Hold The Number Of Bits Per Pixel.
+// 	GLuint type;                // Data Stored In * ImageData (GL_RGB Or GL_RGBA)
+// 	GLuint texID;               // Texture ID For Use With glBindTexture.
+// }Texture;
+//
+// typedef struct{
+// 	GLubyte header[6];          // Holds The First 6 Useful Bytes Of The File
+// 	GLuint bytesPerPixel;       // Number Of BYTES Per Pixel (3 Or 4)
+// 	GLuint imageSize;           // Amount Of Memory Needed To Hold The Image
+// 	GLuint bpp;                 // Number Of BITS Per Pixel (24 Or 32)
+// 	GLuint width;               // Width Of Image
+// 	GLuint height;              // Height Of Image
+// 	GLuint type;                // The Type Of Image, GL_RGB Or GL_RGBA
+// }TGA;
 
-#include <stdio.h>
-#include <vector>
-#include <string.h>
-
-namespace NS_TGALOADER
-{
-	using namespace std;
-
-	//! Small class to load a TGA-file into a memory buffer.
-	class IMAGE
-	{
-	public:
-		IMAGE ();
-
-		//! Loads a TGA. Can be 8, 24 or 32 Bits per pixel, uncompressed or (RLE) compressed. Returns false, if the TGA could not be loaded.
-		bool LoadTGA (const char* szFile);
-
-		//! Returns the width of the image in pixels
-		int getWidth (void) const {return (m_iImageWidth);}
-		//! Returns the height of the image in pixels
-		int getHeight (void) const {return (m_iImageHeight);}
-
-		//! Returns the pixel at location (x,y). 
-		/*! ATTENTION:
-			"getPixel (x,y)[0]" is BLUE
-			"getPixel (x,y)[1]" is GREEN
-			"getPixel (x,y)[2]" is RED
-			"getPixel (x,y)[3]" is ALPHA
-			This allows faster load-times (TGAs are stored this way natively) and faster upload-times to OpenGL.
-			Use GL_BGRA as "format", when uploading the data to OpenGL.
-		*/
-		const unsigned char* getPixel (int x, int y) const {return (&m_Pixels[(y * m_iImageWidth + x) *4]);}
-
-		//! Returns the raw array, as needed when uploading the image to OpenGL.
-		/*! Upload the image to OpenGL like this:
-			IMAGE Image;
-			gluBuild2DMipmaps (GL_TEXTURE_2D, 4, Image.getWidth (), Image.getHeight (), GL_BGRA, GL_UNSIGNED_BYTE, Image.getDataForOpenGL  ());
-		*/
-		const unsigned char* getDataForOpenGL (void) const {return (&m_Pixels[0]);}
-
-	private:
-		void LoadCompressedTGA (FILE* pFile);
-		void LoadUncompressedTGA (FILE* pFile);
-
-		vector<unsigned char> m_Pixels;
-
-		int m_iImageWidth;
-		int m_iImageHeight;
-		int m_iBytesPerPixel;
-	};
+// 	GLubyte* data; // Hold All The Color Values For The Image.
+// 	GLuint width;  // The Width Of The Entire Image.
+// 	GLuint height; // The Height Of The Entire Image.
 
 
-
-}
-
-#pragma once
+// Load A TGA File!
+GLuint loadTGA(const char* path);
+// Load An Uncompressed File
+GLuint loadUncompressedTGA(const char* path, FILE* file);
+// Load A Compressed File
+GLuint loadCompressedTGA(const char* path, FILE* file);
 
 #endif

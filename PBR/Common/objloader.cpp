@@ -54,13 +54,14 @@ bool loadObj(const char * path,std::vector<glm::vec3> & outVertices,std::vector<
 			glm::vec2 uv;
 			float uvZ;
 			fscanf(file,"%f %f %f\n",&uv.x,&uv.y,&uvZ);
+			// uv.y = -uv.y;
 			tempUVs.push_back(uv);
 		} else
 		if (strcmp(lineHeader,"f") == 0) {
 
 			unsigned int vertexIndex[4], normalIndex[4], uvIndex[4];
 
-			int check34 = fscanf(file,"%d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d\n",&vertexIndex[0],&normalIndex[0],&uvIndex[0],&vertexIndex[1],&normalIndex[1],&uvIndex[1],&vertexIndex[2],&normalIndex[2],&uvIndex[2],&vertexIndex[3],&normalIndex[3],&uvIndex[3]);
+			int check34 = fscanf(file,"%d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d\n",&vertexIndex[0],&uvIndex[0],&normalIndex[0],&vertexIndex[1],&uvIndex[1],&normalIndex[1],&vertexIndex[2],&uvIndex[2],&normalIndex[2],&vertexIndex[3],&uvIndex[3],&normalIndex[3]);
 			vertexIndices.push_back(vertexIndex[0]);
 			vertexIndices.push_back(vertexIndex[1]);
 			vertexIndices.push_back(vertexIndex[2]);

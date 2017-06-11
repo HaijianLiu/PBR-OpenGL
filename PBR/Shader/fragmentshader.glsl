@@ -1,6 +1,7 @@
 #version 330 core
 
 in vec2 UV;
+in vec3 normal;
 
 // Ouput data
 out vec3 color;
@@ -12,5 +13,6 @@ void main(){
   // Output color = color of the texture at the specified UV
   // color = vec3(UV,1.0);
   color = texture(myTextureSampler,UV).rgb;
+  // color = normal;
 
 }

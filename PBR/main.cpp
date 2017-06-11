@@ -75,7 +75,7 @@ int main(void) {
 	// Set input mode GLFW_STICKY_KEYS
 	glfwSetInputMode(window,GLFW_STICKY_KEYS,GL_TRUE);
 	// Dark blue background
-	glClearColor(0.9f, 0.9f, 0.9f, 0.9f);
+	glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 	// Enable depth test
 	glEnable(GL_DEPTH_TEST);
 	// Accept fragment if it closer to the camera than the former one
@@ -214,6 +214,8 @@ int main(void) {
 	// Cleanup VBO
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &uvbuffer);
+	glDeleteBuffers(1, &normalbuffer);
+	glDeleteTextures(1, &TextureID);
 	glDeleteVertexArrays(1, &VertexArrayID);
 	glDeleteProgram(ProgramID);
 	// Close OpenGL window and terminate GLFW

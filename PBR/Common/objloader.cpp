@@ -2,35 +2,40 @@
 #include <iostream>
 #include <vector>
 
+// Include GLEW (include before gl.h and glfw.h)
+#include <GL/glew.h>
 // Include GLM
 #include <glm/glm.hpp>
 
 // Include header file
 #include "objloader.hpp"
 
-bool loadObj(const char * path,std::vector<glm::vec3> & outVertices,std::vector<glm::vec2> & outUVs,std::vector<glm::vec3> & outNormals) {
+
+bool loadObj(const char* path, GLuint& vertexBuffer, GLuint& uvBuffer, GLuint& normalBuffer, unsigned long& count) {
 	// Set path
 	std::string currentDir = __FILE__;
 	std::string targetDir = currentDir.substr(0,currentDir.rfind("/"));
 	targetDir = targetDir.substr(0,targetDir.rfind("/")) + "/Model/";
 	path = targetDir.append(path).c_str();
 
-	printf("[loadObj] Loading OBJ file...\n<%s>\n",path); // Debug information
+	// Prepare to open the file
+	printf("[loadObj] Loading OBJ file...<%s>\n",path); // Debug information
 
+	// Open the OBJ file
+	FILE* file = fopen(path,"rb");
+	if (file == NULL) {
+		printf("[loadObj] Impossible to open:<%s>\n",path); // Debug information
+		getchar();
+		return false;
+	}
+
+
+	// Read the OBJ file
 	std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
 	std::vector<glm::vec3> tempVertices;
 	std::vector<glm::vec2> tempUVs;
 	std::vector<glm::vec3> tempNormals;
 
-	// Open the OBJ file
-	FILE* file = fopen(path,"rb");
-	if (file == NULL) {
-		printf("[loadObj] Impossible to open:\n<%s>\n",path); // Debug information
-		getchar();
-		return false;
-	}
-
-	// Read the OBJ file
 	while (true) {
 		// Check header
 		char lineHeader[128];
@@ -97,22 +102,41 @@ bool loadObj(const char * path,std::vector<glm::vec3> & outVertices,std::vector<
 		}
 	}
 
+	// close OBJ file
+	fclose(file);
+
+
 	// The number of triangles
+	count = vertexIndices.size();
 	printf("[loadObj] The number of triangles = %ld\n",vertexIndices.size());  // Debug information
 
+
 	// Output OBJ Data for each vertex of each triangle
+	std::vector<glm::vec3> vertexData;
+	std::vector<glm::vec2> uvData;
+	std::vector<glm::vec3> normalData;
+
 	for (unsigned int i = 0; i < vertexIndices.size(); i++) {
 		// Get the indices of its attributes
 		unsigned int vertexIndex = vertexIndices[i];
 		unsigned int uvIndex = uvIndices[i];
 		unsigned int normalIndex = normalIndices[i];
 		// Get the attributes thanks to the index and Put the attributes in buffers
-		outVertices.push_back(tempVertices[vertexIndex-1]);
-		outUVs.push_back(tempUVs[uvIndex-1]);
-		outNormals.push_back(tempNormals[normalIndex-1]);
+		vertexData.push_back(tempVertices[vertexIndex-1]);
+		uvData.push_back(tempUVs[uvIndex-1]);
+		normalData.push_back(tempNormals[normalIndex-1]);
 	}
 
-	fclose(file);
-	
+	// Load into VBO
+	glGenBuffers(1, &vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER,vertexData.size()*sizeof(glm::vec3),&vertexData[0],GL_STATIC_DRAW);
+	glGenBuffers(1, &uvBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER,uvBuffer);
+	glBufferData(GL_ARRAY_BUFFER,uvData.size()*sizeof(glm::vec2),&uvData[0],GL_STATIC_DRAW);
+	glGenBuffers(1, &normalBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER,normalBuffer);
+	glBufferData(GL_ARRAY_BUFFER,normalData.size()*sizeof(glm::vec3),&normalData[0],GL_STATIC_DRAW);
+
 	return true;
 }

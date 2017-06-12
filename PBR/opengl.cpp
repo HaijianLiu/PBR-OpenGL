@@ -1,3 +1,6 @@
+// Include standard headers
+#include <iostream>
+
 #include "opengl.hpp"
 
 GLFWwindow* createWindow(const char* name, int screenWidth, int screenHeight) {

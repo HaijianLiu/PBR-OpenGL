@@ -1,9 +1,26 @@
 #ifndef objloader_hpp
 #define objloader_hpp
 
-bool loadObj(const char * path,
-	std::vector<glm::vec3> & outVertices,
-	std::vector<glm::vec2> & outUVs,
-	std::vector<glm::vec3> & outNormals);
+/*------------------------------------------------------------------------------
+< Load OBJ file >
+
+1. load data from the obj file
+2. Give the data to OpenGL for generating buffers
+................................................................................
+Return:
+
+3 buffers: vertexBuffer, uvBuffer, normalBuffer (for attributes)
+1 count (for draw triangles)
+................................................................................
+Example:
+
+GLuint vertexBuffer;
+GLuint uvBuffer;
+GLuint normalBuffer;
+unsigned long count;
+loadObj("FileName.obj",vertexBuffer,uvBuffer,normalBuffer,count);
+------------------------------------------------------------------------------*/
+bool loadObj(const char* path, GLuint& vertexBuffer, GLuint& uvBuffer, GLuint& normalBuffer, unsigned long& count);
+
 
 #endif /* objloader_hpp */

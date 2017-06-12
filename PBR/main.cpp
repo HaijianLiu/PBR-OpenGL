@@ -47,26 +47,11 @@ int main(void) {
 	GLuint programID = loadShader("vertexshader.glsl","fragmentshader.glsl");
 
 	// Read OBJ file
-	std::vector<glm::vec3> objvertices;
-	std::vector<glm::vec2> objuvs;
-	std::vector<glm::vec3> objnormals;
-	loadObj(OBJ_FILE,objvertices,objuvs,objnormals);
-
-	// Load into VBO
-	GLuint vertexbuffer;
-	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER,vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER,objvertices.size()*sizeof(glm::vec3),&objvertices[0],GL_STATIC_DRAW);
-	// Load into VBO
-	GLuint uvbuffer;
-	glGenBuffers(1, &uvbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER,uvbuffer);
-	glBufferData(GL_ARRAY_BUFFER,objuvs.size()*sizeof(glm::vec2),&objuvs[0],GL_STATIC_DRAW);
-	// Load into VBO
-	GLuint normalbuffer;
-	glGenBuffers(1, &normalbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER,normalbuffer);
-	glBufferData(GL_ARRAY_BUFFER,objnormals.size()*sizeof(glm::vec3),&objnormals[0],GL_STATIC_DRAW);
+	GLuint vertexBuffer;
+	GLuint uvBuffer;
+	GLuint normalBuffer;
+	unsigned long count;
+	loadObj(OBJ_FILE,vertexBuffer,uvBuffer,normalBuffer,count);
 
 	// Load the texture
 	GLuint textureID = loadTGA(BASECOLOR_TGA_FILE);
@@ -108,7 +93,7 @@ int main(void) {
 
 		// 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER,vertexbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
 		glVertexAttribPointer(
 			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
 			3,                  // size
@@ -118,7 +103,7 @@ int main(void) {
 			(void*)0            // array buffer offset
 		);
 		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER,uvbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER,uvBuffer);
 		glVertexAttribPointer(
 			1,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
 			2,                  // size
@@ -128,7 +113,7 @@ int main(void) {
 			(void*)0            // array buffer offset
 		);
 		glEnableVertexAttribArray(2);
-		glBindBuffer(GL_ARRAY_BUFFER,normalbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER,normalBuffer);
 		glVertexAttribPointer(
 			2,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
 			3,                  // size
@@ -138,7 +123,7 @@ int main(void) {
 			(void*)0            // array buffer offset
 		);
 		// Draw the triangle !
-		glDrawArrays(GL_TRIANGLES,0,objvertices.size()); // 3 indices starting at 0 -> 1 triangle
+		glDrawArrays(GL_TRIANGLES,0,count); // 3 indices starting at 0 -> 1 triangle
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
@@ -151,9 +136,9 @@ int main(void) {
 	} while(glfwGetKey(window,GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
 
 	// Cleanup VBO
-	glDeleteBuffers(1, &vertexbuffer);
-	glDeleteBuffers(1, &uvbuffer);
-	glDeleteBuffers(1, &normalbuffer);
+	glDeleteBuffers(1, &vertexBuffer);
+	glDeleteBuffers(1, &uvBuffer);
+	glDeleteBuffers(1, &normalBuffer);
 	glDeleteTextures(1, &textureID);
 	glDeleteVertexArrays(1, &vertexArrayID);
 	glDeleteProgram(programID);

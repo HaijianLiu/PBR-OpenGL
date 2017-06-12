@@ -1,9 +1,6 @@
 #ifndef opengl_hpp
 #define opengl_hpp
 
-// Include standard headers
-#include <iostream>
-
 // Include GLEW (include before gl.h and glfw.h)
 #include <GL/glew.h>
 // Include GLFW
@@ -13,9 +10,17 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+/*------------------------------------------------------------------------------
+< Created a OpenGL Window >
+................................................................................
+Return:
 
-// Created a OpenGL Window: (Default settings)
-// GLFWwindow* window = createWindow("window name",screenWidth,screenHeight);
+GLFWwindow* window
+................................................................................
+Example:
+
+GLFWwindow* window = createWindow("WindowName",screenWidth,screenHeight);
+------------------------------------------------------------------------------*/
 GLFWwindow* createWindow(const char* name, int screenWidth, int screenHeight);
 
 

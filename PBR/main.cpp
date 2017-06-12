@@ -4,17 +4,8 @@
 #include <sys/time.h>
 #include <math.h>
 
-// Include GLEW (include before gl.h and glfw.h)
-#include <GL/glew.h>
-// Include GLFW
-#include <GLFW/glfw3.h>
-GLFWwindow* window;
-// Include GLM
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 // Include header file
+#include "opengl.hpp"
 #include "shader.hpp"
 #include "objloader.hpp"
 #include "tgaloader.hpp"
@@ -41,81 +32,25 @@ float CurrentTime();
 
 int main(void) {
 
-	// Initialise GLFW
-	if(!glfwInit())
-	{
-		fprintf(stderr,"Failed to initialize GLFW\n");
-		getchar();
-		return -1;
-	}
-	glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // OpenGL 3.3
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // don't want the old OpenGL
-	// Open a window and create its OpenGL context
-	window = glfwCreateWindow(SCREEN_WIDTH,SCREEN_HEIGHT,"PBR",NULL,NULL);
-	if(window == NULL){
-		fprintf(stderr,"Failed to open GLFW window.\n");
-		getchar();
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-	// Initialize GLEW
-	glewExperimental = true; // Needed for core profile
-	if(glewInit() != GLEW_OK) {
-		fprintf(stderr,"Failed to initialize GLEW\n");
-		getchar();
-		glfwTerminate();
-		return -1;
-	}
 	// initialize start time
-	gettimeofday(&startTime, NULL);
-	// Set input mode GLFW_STICKY_KEYS
-	glfwSetInputMode(window,GLFW_STICKY_KEYS,GL_TRUE);
-	// Dark blue background
-	glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
-	// Enable depth test
-	glEnable(GL_DEPTH_TEST);
-	// Accept fragment if it closer to the camera than the former one
-	glDepthFunc(GL_LESS);
-	// Cull triangles which normal is not towards the camera
-	glEnable(GL_CULL_FACE);
+	gettimeofday(&startTime,NULL);
+
+	// Created a OpenGL Window: (Default settings)
+	GLFWwindow* window = createWindow("PBR",SCREEN_WIDTH,SCREEN_HEIGHT);
+
 	// Create Vertex Array Object
-	GLuint VertexArrayID;
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
+	GLuint vertexArrayID;
+	glGenVertexArrays(1, &vertexArrayID);
+	glBindVertexArray(vertexArrayID);
 
 	// Create and compile our GLSL program from the shaders
-	GLuint ProgramID = LoadShaders("vertexshader.glsl","fragmentshader.glsl");
+	GLuint programID = loadShader("vertexshader.glsl","fragmentshader.glsl");
 
 	// Read OBJ file
 	std::vector<glm::vec3> objvertices;
 	std::vector<glm::vec2> objuvs;
 	std::vector<glm::vec3> objnormals;
 	loadObj(OBJ_FILE,objvertices,objuvs,objnormals);
-
-	// GLubyte* data; // Hold All The Color Values For The Image.
-	// GLuint width;  // The Width Of The Entire Image.
-	// GLuint height; // The Height Of The Entire Image.
-	// // Load A TGA File!
-	// loadTGA(BASECOLOR_TGA_FILE,*data,width,height);
-
-	// // Create one OpenGL texture
-	// GLuint TextureID;
-	// glGenTextures(1, &TextureID);
-	// // "Bind" the newly created texture : all future texture functions will modify this texture
-	// glBindTexture(GL_TEXTURE_2D, TextureID);
-	// // Give the image to OpenGL
-	// glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
-
-	// Load the texture
-	GLuint TextureID = loadTGA(BASECOLOR_TGA_FILE);
-
-	// Get a handle for our "myTextureSampler" uniform
-	GLuint TextureUniform  = glGetUniformLocation(ProgramID, "myTextureSampler");
-	GLuint MatrixUniform  = glGetUniformLocation(ProgramID, "MVP");
 
 	// Load into VBO
 	GLuint vertexbuffer;
@@ -127,14 +62,18 @@ int main(void) {
 	glGenBuffers(1, &uvbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER,uvbuffer);
 	glBufferData(GL_ARRAY_BUFFER,objuvs.size()*sizeof(glm::vec2),&objuvs[0],GL_STATIC_DRAW);
-
 	// Load into VBO
 	GLuint normalbuffer;
 	glGenBuffers(1, &normalbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER,normalbuffer);
 	glBufferData(GL_ARRAY_BUFFER,objnormals.size()*sizeof(glm::vec3),&objnormals[0],GL_STATIC_DRAW);
 
+	// Load the texture
+	GLuint textureID = loadTGA(BASECOLOR_TGA_FILE);
+	// Get a handle for our "myTextureSampler" uniform
+	GLuint textureUniform = glGetUniformLocation(programID,"myTextureSampler");
 
+	GLuint matrixUniform = glGetUniformLocation(programID, "MVP");
 
 
 	do {
@@ -142,7 +81,7 @@ int main(void) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Use shaders
-		glUseProgram(ProgramID);
+		glUseProgram(programID);
 
 		// Projection matrix: 45° Field of View. 4:3 ratio. display range : 0.1 unit <-> 100 units.
 		glm::mat4 ProjectionMatrix = glm::perspective(glm::radians(45.0f),(float)SCREEN_WIDTH/(float)SCREEN_HEIGHT,0.1f,100.0f);
@@ -154,12 +93,12 @@ int main(void) {
 		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix; // Remember, matrix multiplication is the other way around
 		// Send transformation to the currently bound shader,
 		// in the "MVP" uniform
-		glUniformMatrix4fv(MatrixUniform,1,GL_FALSE,&MVP[0][0]);
+		glUniformMatrix4fv(matrixUniform,1,GL_FALSE,&MVP[0][0]);
 		// Bind our diffuse texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, TextureID);
+		glBindTexture(GL_TEXTURE_2D, textureID);
 		// Set our "DiffuseTextureSampler" sampler to user Texture Unit 0
-		glUniform1i(TextureUniform,0);
+		glUniform1i(textureUniform,0);
 
 		// // Bind our diffuse texture in Texture Unit 0
 		// glActiveTexture(GL_TEXTURE0);
@@ -215,9 +154,9 @@ int main(void) {
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &uvbuffer);
 	glDeleteBuffers(1, &normalbuffer);
-	glDeleteTextures(1, &TextureID);
-	glDeleteVertexArrays(1, &VertexArrayID);
-	glDeleteProgram(ProgramID);
+	glDeleteTextures(1, &textureID);
+	glDeleteVertexArrays(1, &vertexArrayID);
+	glDeleteProgram(programID);
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
 

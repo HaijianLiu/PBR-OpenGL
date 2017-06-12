@@ -14,7 +14,7 @@
 #include "shader.hpp"
 
 
-GLuint LoadShaders(std::string VertexPath,std::string FragmentPath){
+GLuint loadShader(std::string VertexPath,std::string FragmentPath){
 
 	// Set path
 	std::string CurrentDir = __FILE__;

@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		602202FB1EED55E0002A55D6 /* tgaloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 602202F91EED55E0002A55D6 /* tgaloader.cpp */; };
 		60924C2C1EEAEB1700B1D430 /* libGLEW.2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 60924C2B1EEAEB1700B1D430 /* libGLEW.2.0.0.dylib */; };
 		60924C2E1EEAEB2500B1D430 /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 60924C2D1EEAEB2500B1D430 /* libglfw.3.2.dylib */; };
 		60924C321EEAF6EB00B1D430 /* shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60924C301EEAF6EB00B1D430 /* shader.cpp */; };
 		60924C351EEAFEB300B1D430 /* objloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60924C331EEAFEB300B1D430 /* objloader.cpp */; };
-		60924C3B1EEC09DC00B1D430 /* texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60924C391EEC09DC00B1D430 /* texture.cpp */; };
+		60B066811EEE9E9D00D8B7CB /* opengl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60B0667F1EEE9E9D00D8B7CB /* opengl.cpp */; };
+		60B066841EEEA16F00D8B7CB /* tgaloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60B066821EEEA16F00D8B7CB /* tgaloader.cpp */; };
 		60C438F01EEAE50C00549AE9 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60C438EF1EEAE50C00549AE9 /* main.cpp */; };
 		60C438F81EEAE51B00549AE9 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60C438F71EEAE51B00549AE9 /* OpenGL.framework */; };
 /* End PBXBuildFile section */
@@ -30,16 +30,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		602202F91EED55E0002A55D6 /* tgaloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tgaloader.cpp; path = Common/tgaloader.cpp; sourceTree = "<group>"; };
-		602202FA1EED55E0002A55D6 /* tgaloader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = tgaloader.hpp; path = Common/tgaloader.hpp; sourceTree = "<group>"; };
 		60924C2B1EEAEB1700B1D430 /* libGLEW.2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLEW.2.0.0.dylib; path = ../../../../../usr/local/Cellar/glew/2.0.0/lib/libGLEW.2.0.0.dylib; sourceTree = "<group>"; };
 		60924C2D1EEAEB2500B1D430 /* libglfw.3.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.2.dylib; path = ../../../../../usr/local/Cellar/glfw/3.2.1/lib/libglfw.3.2.dylib; sourceTree = "<group>"; };
 		60924C301EEAF6EB00B1D430 /* shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shader.cpp; path = Common/shader.cpp; sourceTree = "<group>"; };
 		60924C311EEAF6EB00B1D430 /* shader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = shader.hpp; path = Common/shader.hpp; sourceTree = "<group>"; };
 		60924C331EEAFEB300B1D430 /* objloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = objloader.cpp; path = Common/objloader.cpp; sourceTree = "<group>"; };
 		60924C341EEAFEB300B1D430 /* objloader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = objloader.hpp; path = Common/objloader.hpp; sourceTree = "<group>"; };
-		60924C391EEC09DC00B1D430 /* texture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = texture.cpp; path = Common/texture.cpp; sourceTree = "<group>"; };
-		60924C3A1EEC09DC00B1D430 /* texture.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = texture.hpp; path = Common/texture.hpp; sourceTree = "<group>"; };
+		60B0667F1EEE9E9D00D8B7CB /* opengl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = opengl.cpp; sourceTree = "<group>"; };
+		60B066801EEE9E9D00D8B7CB /* opengl.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = opengl.hpp; sourceTree = "<group>"; };
+		60B066821EEEA16F00D8B7CB /* tgaloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tgaloader.cpp; path = Common/tgaloader.cpp; sourceTree = "<group>"; };
+		60B066831EEEA16F00D8B7CB /* tgaloader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = tgaloader.hpp; path = Common/tgaloader.hpp; sourceTree = "<group>"; };
 		60C438EC1EEAE50C00549AE9 /* PBR */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PBR; sourceTree = BUILT_PRODUCTS_DIR; };
 		60C438EF1EEAE50C00549AE9 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		60C438F71EEAE51B00549AE9 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -89,6 +89,8 @@
 				60924C2F1EEAF61400B1D430 /* Shader */,
 				60C438F91EEAE55F00549AE9 /* Common */,
 				60C438EF1EEAE50C00549AE9 /* main.cpp */,
+				60B0667F1EEE9E9D00D8B7CB /* opengl.cpp */,
+				60B066801EEE9E9D00D8B7CB /* opengl.hpp */,
 			);
 			path = PBR;
 			sourceTree = "<group>";
@@ -106,10 +108,8 @@
 		60C438F91EEAE55F00549AE9 /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				602202F91EED55E0002A55D6 /* tgaloader.cpp */,
-				602202FA1EED55E0002A55D6 /* tgaloader.hpp */,
-				60924C391EEC09DC00B1D430 /* texture.cpp */,
-				60924C3A1EEC09DC00B1D430 /* texture.hpp */,
+				60B066821EEEA16F00D8B7CB /* tgaloader.cpp */,
+				60B066831EEEA16F00D8B7CB /* tgaloader.hpp */,
 				60924C331EEAFEB300B1D430 /* objloader.cpp */,
 				60924C341EEAFEB300B1D430 /* objloader.hpp */,
 				60924C301EEAF6EB00B1D430 /* shader.cpp */,
@@ -176,11 +176,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				602202FB1EED55E0002A55D6 /* tgaloader.cpp in Sources */,
+				60B066841EEEA16F00D8B7CB /* tgaloader.cpp in Sources */,
+				60B066811EEE9E9D00D8B7CB /* opengl.cpp in Sources */,
 				60924C321EEAF6EB00B1D430 /* shader.cpp in Sources */,
 				60924C351EEAFEB300B1D430 /* objloader.cpp in Sources */,
 				60C438F01EEAE50C00549AE9 /* main.cpp in Sources */,
-				60924C3B1EEC09DC00B1D430 /* texture.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

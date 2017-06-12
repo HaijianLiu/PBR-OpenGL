@@ -6,16 +6,19 @@
 
 // Include header file
 #include "opengl.hpp"
-#include "shader.hpp"
+#include "shaderloader.hpp"
 #include "objloader.hpp"
 #include "tgaloader.hpp"
 
 
 // Define settings
+#define WINDOW_NAME "PBR"
 #define SCREEN_WIDTH (800)
 #define SCREEN_HEIGHT (600)
-#define OBJ_FILE "WPN_MK2Grenade.obj"
-#define BASECOLOR_TGA_FILE "WPNT_MK2Grenade_Base_Color.tga"
+#define VERTEXSHADER_GLSL "vertexshader.glsl"
+#define FRAGMENTSHADER_GLSL "fragmentshader.glsl"
+#define FILE_OBJ "WPN_MK2Grenade.obj"
+#define FILE_BASECOLOR_TGA "WPNT_MK2Grenade_Base_Color.tga"
 
 
 // Time Function
@@ -28,21 +31,21 @@ int main(void) {
 	gettimeofday(&startTime,NULL);
 
 	// Created a OpenGL Window: (Default settings)
-	GLFWwindow* window = createWindow("PBR",SCREEN_WIDTH,SCREEN_HEIGHT);
+	GLFWwindow* window = createWindow(WINDOW_NAME,SCREEN_WIDTH,SCREEN_HEIGHT);
 
 	// Create Vertex Array Object
 	GLuint vertexArrayID = getVertexArray();
 
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = loadShader("vertexshader.glsl","fragmentshader.glsl");
+	GLuint programID = loadShader(VERTEXSHADER_GLSL,FRAGMENTSHADER_GLSL);
 
 	// Read OBJ file
 	GLuint vertexBuffer, uvBuffer, normalBuffer;
 	unsigned long count;
-	loadObj(OBJ_FILE,vertexBuffer,uvBuffer,normalBuffer,count);
+	loadObj(FILE_OBJ,vertexBuffer,uvBuffer,normalBuffer,count);
 
 	// Load the texture
-	GLuint textureID = loadTGA(BASECOLOR_TGA_FILE);
+	GLuint textureID = loadTGA(FILE_BASECOLOR_TGA);
 	// Get a handle for our "myTextureSampler" uniform
 	GLuint textureUniform = glGetUniformLocation(programID,"myTextureSampler");
 

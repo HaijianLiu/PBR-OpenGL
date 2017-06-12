@@ -24,7 +24,7 @@ bool loadObj(const char* path, GLuint& vertexBuffer, GLuint& uvBuffer, GLuint& n
 	// Open the OBJ file
 	FILE* file = fopen(path,"rb");
 	if (file == NULL) {
-		printf("[loadObj] Impossible to open:<%s>\n",path); // Debug information
+		printf("[loadObj] Impossible to open: <%s>\n",path); // Debug information
 		getchar();
 		return false;
 	}

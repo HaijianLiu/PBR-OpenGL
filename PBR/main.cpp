@@ -11,19 +11,11 @@
 #include "tgaloader.hpp"
 
 
-// Define Macros
-#ifndef SCREEN_WIDTH
+// Define settings
 #define SCREEN_WIDTH (800)
-#endif
-#ifndef SCREEN_HEIGHT
 #define SCREEN_HEIGHT (600)
-#endif
-#ifndef OBJ_FILE
 #define OBJ_FILE "WPN_MK2Grenade.obj"
-#endif
-#ifndef BASECOLOR_TGA_FILE
 #define BASECOLOR_TGA_FILE "WPNT_MK2Grenade_Base_Color.tga"
-#endif
 
 
 // Time Function
@@ -39,17 +31,13 @@ int main(void) {
 	GLFWwindow* window = createWindow("PBR",SCREEN_WIDTH,SCREEN_HEIGHT);
 
 	// Create Vertex Array Object
-	GLuint vertexArrayID;
-	glGenVertexArrays(1, &vertexArrayID);
-	glBindVertexArray(vertexArrayID);
+	GLuint vertexArrayID = getVertexArray();
 
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = loadShader("vertexshader.glsl","fragmentshader.glsl");
 
 	// Read OBJ file
-	GLuint vertexBuffer;
-	GLuint uvBuffer;
-	GLuint normalBuffer;
+	GLuint vertexBuffer, uvBuffer, normalBuffer;
 	unsigned long count;
 	loadObj(OBJ_FILE,vertexBuffer,uvBuffer,normalBuffer,count);
 

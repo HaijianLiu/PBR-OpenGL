@@ -14,11 +14,9 @@ Return:
 ................................................................................
 Example:
 
-GLuint vertexBuffer;
-GLuint uvBuffer;
-GLuint normalBuffer;
+GLuint vertexBuffer, uvBuffer, normalBuffer;
 unsigned long count;
-loadObj("FileName.obj",vertexBuffer,uvBuffer,normalBuffer,count);
+loadObj(OBJ_FILE,vertexBuffer,uvBuffer,normalBuffer,count);
 ------------------------------------------------------------------------------*/
 bool loadObj(const char* path, GLuint& vertexBuffer, GLuint& uvBuffer, GLuint& normalBuffer, unsigned long& count);
 

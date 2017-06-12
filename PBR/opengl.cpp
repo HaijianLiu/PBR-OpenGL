@@ -55,3 +55,11 @@ GLFWwindow* createWindow(const char* name, int screenWidth, int screenHeight) {
 
 	return window;
 }
+
+// Create Vertex Array Object
+GLuint getVertexArray() {
+	GLuint vertexArrayID;
+	glGenVertexArrays(1, &vertexArrayID);
+	glBindVertexArray(vertexArrayID);
+	return vertexArrayID;
+}

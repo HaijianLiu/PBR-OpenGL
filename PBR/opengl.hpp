@@ -11,7 +11,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 /*------------------------------------------------------------------------------
-< Created a OpenGL Window >
+< Created OpenGL Window >
 ................................................................................
 Return:
 
@@ -22,6 +22,20 @@ Example:
 GLFWwindow* window = createWindow("WindowName",screenWidth,screenHeight);
 ------------------------------------------------------------------------------*/
 GLFWwindow* createWindow(const char* name, int screenWidth, int screenHeight);
+
+
+/*------------------------------------------------------------------------------
+< Create Vertex Array Object >
+................................................................................
+Return:
+
+GLuint vertexArrayID
+................................................................................
+Example:
+
+GLuint vertexArrayID = getVertexArray();
+------------------------------------------------------------------------------*/
+GLuint getVertexArray();
 
 
 #endif /* opengl_hpp */

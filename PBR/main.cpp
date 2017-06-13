@@ -15,10 +15,11 @@
 #define WINDOW_NAME "PBR"
 #define SCREEN_WIDTH (800)
 #define SCREEN_HEIGHT (600)
-#define VERTEXSHADER_GLSL "vertexshader.glsl"
+#define VERTEXSHADER_GLSL   "vertexshader.glsl"
 #define FRAGMENTSHADER_GLSL "fragmentshader.glsl"
-#define FILE_OBJ "WPN_MK2Grenade.obj"
-#define FILE_BASECOLOR_TGA "WPNT_MK2Grenade_Base_Color.tga"
+#define FILE_OBJ            "WPN_MK2Grenade.obj"
+#define FILE_DIFFUSE_TGA  	"WPNT_MK2Grenade_Base_Color.tga"
+#define FILE_AO_TGA         "WPNT_MK2Grenade_Ambient_occlusion.tga"
 
 
 // Time Function
@@ -36,6 +37,7 @@ int main(void) {
 	// Create Vertex Array Object
 	GLuint vertexArrayID = getVertexArray();
 
+
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = loadShader(VERTEXSHADER_GLSL,FRAGMENTSHADER_GLSL);
 
@@ -45,12 +47,14 @@ int main(void) {
 	loadObj(FILE_OBJ,vertexBuffer,uvBuffer,normalBuffer,count);
 
 	// Load the texture
-	GLuint textureID = loadTGA(FILE_BASECOLOR_TGA);
-	// Get a handle for our "myTextureSampler" uniform
-	GLuint textureUniform = glGetUniformLocation(programID,"myTextureSampler");
+	GLuint texDiffuseID = loadTGA(FILE_DIFFUSE_TGA);
+	GLuint texDiffuseUniform = glGetUniformLocation(programID,"texDiffuse"); // Get uniform ID
+	GLuint texAOID = loadTGA(FILE_AO_TGA);
+	GLuint texAOUniform = glGetUniformLocation(programID,"texAO"); // Get uniform ID
 
-	GLuint matrixUniform = glGetUniformLocation(programID, "MVP");
 
+
+	GLuint matrixUniform = glGetUniformLocation(programID, "matrixMVP"); // Get uniform ID
 
 	do {
 		// Clear the screen
@@ -58,6 +62,7 @@ int main(void) {
 
 		// Use shaders
 		glUseProgram(programID);
+
 
 		// Projection matrix: 45° Field of View. 4:3 ratio. display range : 0.1 unit <-> 100 units.
 		glm::mat4 ProjectionMatrix = glm::perspective(glm::radians(45.0f),(float)SCREEN_WIDTH/(float)SCREEN_HEIGHT,0.1f,100.0f);
@@ -70,17 +75,20 @@ int main(void) {
 		// Send transformation to the currently bound shader,
 		// in the "MVP" uniform
 		glUniformMatrix4fv(matrixUniform,1,GL_FALSE,&MVP[0][0]);
+
+
 		// Bind our diffuse texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureID);
+		glBindTexture(GL_TEXTURE_2D, texDiffuseID);
 		// Set our "DiffuseTextureSampler" sampler to user Texture Unit 0
-		glUniform1i(textureUniform,0);
+		glUniform1i(texDiffuseUniform,0);
 
-		// // Bind our diffuse texture in Texture Unit 0
-		// glActiveTexture(GL_TEXTURE0);
-		// glBindTexture(GL_TEXTURE_2D, Texture);
-		// // Set our "DiffuseTextureSampler" sampler to user Texture Unit 0
-		// glUniform1i(TextureID, 0);
+		// Bind our diffuse texture in Texture Unit 0
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texAOID);
+		// Set our "DiffuseTextureSampler" sampler to user Texture Unit 0
+		glUniform1i(texAOUniform,1);
+
 
 		// 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
@@ -130,7 +138,8 @@ int main(void) {
 	glDeleteBuffers(1, &vertexBuffer);
 	glDeleteBuffers(1, &uvBuffer);
 	glDeleteBuffers(1, &normalBuffer);
-	glDeleteTextures(1, &textureID);
+	glDeleteTextures(1, &texDiffuseID);
+	glDeleteTextures(1, &texAOID);
 	glDeleteVertexArrays(1, &vertexArrayID);
 	glDeleteProgram(programID);
 	// Close OpenGL window and terminate GLFW

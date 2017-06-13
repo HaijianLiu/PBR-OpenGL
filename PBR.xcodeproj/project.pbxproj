@@ -40,6 +40,8 @@
 		60B066831EEEA16F00D8B7CB /* tgaloader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = tgaloader.hpp; path = Common/tgaloader.hpp; sourceTree = "<group>"; };
 		60B066851EEEE21100D8B7CB /* shaderloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shaderloader.cpp; path = Common/shaderloader.cpp; sourceTree = "<group>"; };
 		60B066871EEEE21C00D8B7CB /* shaderloader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = shaderloader.hpp; path = Common/shaderloader.hpp; sourceTree = "<group>"; };
+		60B066881EEEF39000D8B7CB /* fragmentshader.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = fragmentshader.glsl; path = Shader/fragmentshader.glsl; sourceTree = "<group>"; };
+		60B066891EEEF39000D8B7CB /* vertexshader.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = vertexshader.glsl; path = Shader/vertexshader.glsl; sourceTree = "<group>"; };
 		60C438EC1EEAE50C00549AE9 /* PBR */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PBR; sourceTree = BUILT_PRODUCTS_DIR; };
 		60C438EF1EEAE50C00549AE9 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		60C438F71EEAE51B00549AE9 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -62,6 +64,8 @@
 		60924C2F1EEAF61400B1D430 /* Shader */ = {
 			isa = PBXGroup;
 			children = (
+				60B066881EEEF39000D8B7CB /* fragmentshader.glsl */,
+				60B066891EEEF39000D8B7CB /* vertexshader.glsl */,
 			);
 			name = Shader;
 			sourceTree = "<group>";

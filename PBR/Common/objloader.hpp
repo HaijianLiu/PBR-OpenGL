@@ -1,6 +1,8 @@
 #ifndef objloader_hpp
 #define objloader_hpp
 
+/*----------------------------------------------------------------------------*/
+bool loadObj(const char* path, GLuint& vertexBuffer, GLuint& uvBuffer, GLuint& normalBuffer, unsigned long& count);
 /*------------------------------------------------------------------------------
 < Load OBJ file >
 
@@ -12,13 +14,17 @@ Return:
 3 buffers: vertexBuffer, uvBuffer, normalBuffer (for attributes)
 1 count (for draw triangles)
 ................................................................................
+Parameters:
+
+vertexBuffer, uvBuffer, normalBuffer: for attributes
+count: for draw triangles
+................................................................................
 Example:
 
 GLuint vertexBuffer, uvBuffer, normalBuffer;
 unsigned long count;
-loadObj(OBJ_FILE,vertexBuffer,uvBuffer,normalBuffer,count);
+loadObj("filename.obj",vertexBuffer,uvBuffer,normalBuffer,count);
 ------------------------------------------------------------------------------*/
-bool loadObj(const char* path, GLuint& vertexBuffer, GLuint& uvBuffer, GLuint& normalBuffer, unsigned long& count);
 
 
 #endif /* objloader_hpp */

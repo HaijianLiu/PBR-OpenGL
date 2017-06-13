@@ -6,8 +6,8 @@ GLuint loadTGA(const char* path);
 /*------------------------------------------------------------------------------
 < Load TGA file >
 
-1. load data from the tga file
-2. Give the data to OpenGL for generating texture
+Load data from the tga file
+Give the data to OpenGL for generating texture
 ................................................................................
 Return:
 

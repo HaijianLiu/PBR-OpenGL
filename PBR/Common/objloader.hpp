@@ -6,8 +6,8 @@ bool loadObj(const char* path, GLuint& vertexBuffer, GLuint& uvBuffer, GLuint& n
 /*------------------------------------------------------------------------------
 < Load OBJ file >
 
-1. load data from the obj file
-2. Give the data to OpenGL for generating buffers
+Load data from the obj file
+Give the data to OpenGL for generating buffers
 ................................................................................
 Return:
 

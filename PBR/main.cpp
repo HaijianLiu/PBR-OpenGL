@@ -18,7 +18,7 @@
 #define VERTEXSHADER_GLSL   "vertexshader.glsl"
 #define FRAGMENTSHADER_GLSL "fragmentshader.glsl"
 #define FILE_OBJ            "WPN_MK2Grenade.obj"
-#define FILE_DIFFUSE_TGA  	"WPNT_MK2Grenade_Base_Color.tga"
+#define FILE_DIFFUSE_TGA  	"UV_Grid.tga"
 #define FILE_AO_TGA         "WPNT_MK2Grenade_Ambient_occlusion.tga"
 
 

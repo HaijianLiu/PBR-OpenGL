@@ -49,7 +49,12 @@ int main(void) {
 	// Get uniform
 	GLuint texDiffuseUniform = glGetUniformLocation(programID,"texDiffuse"); // Get uniform ID
 	GLuint texAOUniform = glGetUniformLocation(programID,"texAO"); // Get uniform ID
-	GLuint matrixUniform = glGetUniformLocation(programID, "matrixMVP"); // Get uniform ID
+	GLuint matrixUniform = glGetUniformLocation(programID,"matrixMVP"); // Get uniform ID
+
+	// GLuint matrixViewUniform = glGetUniformLocation(programID,"matrixView");
+	// GLuint matrixModelUniform = glGetUniformLocation(programID,"matrixModel");
+	//
+	// GLuint lightUniform = glGetUniformLocation(programID,"lightPositionWorldSpace");
 
 	do {
 		// Clear the screen
@@ -80,12 +85,11 @@ int main(void) {
 		// Draw model
 		updateModel(vertexBuffer,uvBuffer,normalBuffer,count);
 
-
 		// Swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
-	} while(glfwGetKey(window,GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
+	} while (glfwGetKey(window,GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
 
 	// Cleanup VBO
 	glDeleteBuffers(1, &vertexBuffer);

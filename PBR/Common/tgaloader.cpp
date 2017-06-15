@@ -53,7 +53,7 @@ GLuint loadTGA(const char* path){
 	if (header[2] >= 9 && header[2] <= 11) {
 		// Load A Compressed TGA
 		printf("Compressed "); // Debug Information
-		return loadCompressedTGA(path,file,header);
+		return loadRLEcompressedTGA(path,file,header);
 	} else {
 		// If It Doesn't Match Either One
 		printf("[ERROR] Not a right TGA file.\n"); // Debug Information
@@ -145,7 +145,7 @@ GLuint loadUncompressedTGA(const char* path, FILE* file, unsigned char* header) 
 	return textureID;
 }
 
-GLuint loadCompressedTGA(const char* path, FILE* file, unsigned char* header){
+GLuint loadRLEcompressedTGA(const char* path, FILE* file, unsigned char* header){
 	// imageSize: Amount Of Memory Needed To Hold The Image
 	unsigned int width, height, bpp, type = 0, imageSize;
 	// Actual image data
@@ -187,7 +187,7 @@ GLuint loadCompressedTGA(const char* path, FILE* file, unsigned char* header){
 
 	// Allocate Memory : Create a buffer
 	data = new unsigned char [imageSize];
-	if (data == NULL) {           // Make Sure It Was Allocated Ok
+	if (data == NULL) {       // Make Sure It Was Allocated Ok
 		printf("[ERROR] Can't Allocate Memory.\n"); // Debug Information
 		return 0;               // If Not, Return False
 	}
@@ -199,13 +199,14 @@ GLuint loadCompressedTGA(const char* path, FILE* file, unsigned char* header){
 	// Storage For 1 Pixel
 	unsigned char* colorBuffer = new unsigned char [bytePerPixel] ;
 
+	// Read TGA file
 	do {
 		unsigned int chunkHeader = 0; // Variable To Store The Value Of The Id Chunk
 		if (fread(&chunkHeader,1,1,file) == 0) { // Attempt To Read The Chunk's Header
 			printf("[ERROR] Can't Read The Chunk's Header.\n"); // Debug Information
 			return 0; // If It Fails, Return False
 		}
-		std::cout << chunkHeader << "[" << currentPixel << "]" << pixelCount << '\n';
+		// Debug Information for chunkHeader and currentPixel// std::cout << chunkHeader << "[" << currentPixel << "]" << pixelCount << '\n';
 		if (chunkHeader < 128) { // If The Chunk Is A RAW Chunk
 			chunkHeader++; // Add 1 To The Value To Get Total Number Of Raw Pixels
 			// Repetition Count specifies how many pixel values are actually contained in the next field
@@ -213,12 +214,10 @@ GLuint loadCompressedTGA(const char* path, FILE* file, unsigned char* header){
 			for (int i = 0; i < chunkHeader; i++) {
 				// Try To Read 1 Pixel
 				if (fread(colorBuffer,1,bytePerPixel,file) == 0) {
-					printf("[ERROR] Can't Read The Pixels (chunkHeader < 128).\n"); // Debug Information
+					printf("[ERROR] Can't Read The Pixels (RAW Chunk).\n"); // Debug Information
 					return 0;
 				}
-				printf("%d\n",colorBuffer[0]);
-				printf("%d\n",colorBuffer[1]);
-				printf("%d\n",colorBuffer[2]);
+				// Dubug Information : the value of colorBuffer // printf("%d\n",colorBuffer[0]); // printf("%d\n",colorBuffer[1]); // printf("%d\n",colorBuffer[2]);
 				// Take the color values stored in colorbuffer and writing them to the imageData variable to be used later
 				data[currentByte] = colorBuffer[0];   // Write The 'B' Byte
 				data[currentByte+1] = colorBuffer[1]; // Write The 'G' Byte
@@ -235,13 +234,10 @@ GLuint loadCompressedTGA(const char* path, FILE* file, unsigned char* header){
 			chunkHeader -= 127; // Subtract 127 To Get Rid Of The ID Bit
 			// Try To Read 1 Pixel
 			if (fread(colorBuffer,1,bytePerPixel,file) == 0) {
-				printf("[ERROR] Can't Read The Pixels (chunkHeader >= 128).\n"); // Debug Information
+				printf("[ERROR] Can't Read The Pixels (RLE Chunk).\n"); // Debug Information
 				return 0;
 			}
-			printf("%d\n",colorBuffer[0]);
-			printf("%d\n",colorBuffer[1]);
-			printf("%d\n",colorBuffer[2]);
-			// std::cout << colorBuffer[0] << colorBuffer[1] << colorBuffer[2] << colorBuffer[3] << '\n';
+			// Dubug Information : the value of colorBuffer // printf("%d\n",colorBuffer[0]); // printf("%d\n",colorBuffer[1]); // printf("%d\n",colorBuffer[2]);
 			// Start Pixel Reading Loop
 			for (int i = 0; i < chunkHeader; i++) {
 				// Take the color values stored in colorbuffer and writing them to the imageData variable to be used later

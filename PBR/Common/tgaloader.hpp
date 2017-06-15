@@ -32,7 +32,7 @@ Unsurpported:
 // Load An Uncompressed File
 GLuint loadUncompressedTGA(const char* path, FILE* file, unsigned char* header);
 // Load A Compressed File
-GLuint loadCompressedTGA(const char* path, FILE* file, unsigned char* header);
+GLuint loadRLEcompressedTGA(const char* path, FILE* file, unsigned char* header);
 
 
 #endif

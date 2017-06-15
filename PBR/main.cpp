@@ -6,9 +6,6 @@
 
 // Include header file
 #include "opengl.hpp"
-#include "shaderloader.hpp"
-#include "objloader.hpp"
-#include "tgaloader.hpp"
 
 
 // Define settings
@@ -37,7 +34,6 @@ int main(void) {
 	// Create Vertex Array Object
 	GLuint vertexArrayID = getVertexArray();
 
-
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = loadShader(VERTEXSHADER_GLSL,FRAGMENTSHADER_GLSL);
 
@@ -48,12 +44,11 @@ int main(void) {
 
 	// Load the texture
 	GLuint texDiffuseID = loadTGA(FILE_DIFFUSE_TGA);
-	GLuint texDiffuseUniform = glGetUniformLocation(programID,"texDiffuse"); // Get uniform ID
 	GLuint texAOID = loadTGA(FILE_AO_TGA);
+
+	// Get uniform
+	GLuint texDiffuseUniform = glGetUniformLocation(programID,"texDiffuse"); // Get uniform ID
 	GLuint texAOUniform = glGetUniformLocation(programID,"texAO"); // Get uniform ID
-
-
-
 	GLuint matrixUniform = glGetUniformLocation(programID, "matrixMVP"); // Get uniform ID
 
 	do {
@@ -78,54 +73,12 @@ int main(void) {
 
 
 		// Bind our diffuse texture in Texture Unit 0
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texDiffuseID);
-		// Set our "DiffuseTextureSampler" sampler to user Texture Unit 0
-		glUniform1i(texDiffuseUniform,0);
+		updateTexture(texDiffuseID,texDiffuseUniform,0);
+		// Bind our AO texture in Texture Unit 1
+		updateTexture(texAOID,texAOUniform,1);
 
-		// Bind our diffuse texture in Texture Unit 0
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texAOID);
-		// Set our "DiffuseTextureSampler" sampler to user Texture Unit 0
-		glUniform1i(texAOUniform,1);
-
-
-		// 1rst attribute buffer : vertices
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
-		glVertexAttribPointer(
-			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-			3,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER,uvBuffer);
-		glVertexAttribPointer(
-			1,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-			2,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
-		glEnableVertexAttribArray(2);
-		glBindBuffer(GL_ARRAY_BUFFER,normalBuffer);
-		glVertexAttribPointer(
-			2,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-			3,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
-		// Draw the triangle !
-		glDrawArrays(GL_TRIANGLES,0,count); // 3 indices starting at 0 -> 1 triangle
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-		glDisableVertexAttribArray(2);
+		// Draw model
+		updateModel(vertexBuffer,uvBuffer,normalBuffer,count);
 
 
 		// Swap buffers

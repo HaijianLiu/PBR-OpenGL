@@ -63,3 +63,51 @@ GLuint getVertexArray() {
 	glBindVertexArray(vertexArrayID);
 	return vertexArrayID;
 }
+
+// Draw model
+void updateModel(GLuint vertexBuffer, GLuint uvBuffer, GLuint normalBuffer, unsigned long count) {
+	// 1rst attribute buffer : vertices
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
+	glVertexAttribPointer(
+		0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+		3,                  // size
+		GL_FLOAT,           // type
+		GL_FALSE,           // normalized?
+		0,                  // stride
+		(void*)0            // array buffer offset
+	);
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER,uvBuffer);
+	glVertexAttribPointer(
+		1,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+		2,                  // size
+		GL_FLOAT,           // type
+		GL_FALSE,           // normalized?
+		0,                  // stride
+		(void*)0            // array buffer offset
+	);
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER,normalBuffer);
+	glVertexAttribPointer(
+		2,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+		3,                  // size
+		GL_FLOAT,           // type
+		GL_FALSE,           // normalized?
+		0,                  // stride
+		(void*)0            // array buffer offset
+	);
+	// Draw the triangle !
+	glDrawArrays(GL_TRIANGLES,0,count); // 3 indices starting at 0 -> 1 triangle
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+}
+
+void updateTexture(GLuint textureID, GLint uniformID, int unit) {
+	// Bind our diffuse texture in Texture Unit 0
+	glActiveTexture(GL_TEXTURE0 + unit); // GL_TEXTURE0
+	glBindTexture(GL_TEXTURE_2D,textureID);
+	// Set our "DiffuseTextureSampler" sampler to user Texture Unit 0
+	glUniform1i(uniformID,unit);
+}

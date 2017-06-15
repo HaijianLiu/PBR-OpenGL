@@ -16,8 +16,8 @@ Return:
 ................................................................................
 Parameters:
 
-vertexBuffer, uvBuffer, normalBuffer: for attributes
-count: for draw triangles
+vertexBuffer, uvBuffer, normalBuffer: GLint buffers for attributes
+count: number of triangles
 ................................................................................
 Example:
 

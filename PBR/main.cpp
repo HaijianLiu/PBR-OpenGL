@@ -17,6 +17,7 @@
 #define FILE_OBJ            "WPN_MK2Grenade.obj"
 #define FILE_DIFFUSE_TGA  	"WPNT_MK2Grenade_Base_Color.tga"
 #define FILE_AO_TGA         "WPNT_MK2Grenade_Ambient_occlusion.tga"
+#define FILE_NORMAL_TGA     "WPNT_MK2Grenade_Normal_DirectX.tga"
 
 
 // Time Function
@@ -45,11 +46,15 @@ int main(void) {
 	// Load the texture
 	GLuint texDiffuseID = loadTGA(FILE_DIFFUSE_TGA);
 	GLuint texAOID = loadTGA(FILE_AO_TGA);
+	GLuint texNormalID = loadTGA(FILE_NORMAL_TGA);
 
 	// Get uniform
 	GLuint texDiffuseUniform = glGetUniformLocation(programID,"texDiffuse"); // Get uniform ID
 	GLuint texAOUniform = glGetUniformLocation(programID,"texAO"); // Get uniform ID
+	GLuint texNormalUniform = glGetUniformLocation(programID,"texNormal"); // Get uniform ID
 	GLuint matrixUniform = glGetUniformLocation(programID,"matrixMVP"); // Get uniform ID
+	GLuint matrixModelUniform = glGetUniformLocation(programID,"matrixModel"); // Get uniform ID
+	GLuint matrixViewUniform = glGetUniformLocation(programID,"matrixView"); // Get uniform ID
 
 	// GLuint matrixViewUniform = glGetUniformLocation(programID,"matrixView");
 	// GLuint matrixModelUniform = glGetUniformLocation(programID,"matrixModel");
@@ -75,12 +80,16 @@ int main(void) {
 		// Send transformation to the currently bound shader,
 		// in the "MVP" uniform
 		glUniformMatrix4fv(matrixUniform,1,GL_FALSE,&MVP[0][0]);
+		glUniformMatrix4fv(matrixModelUniform,1,GL_FALSE,&ModelMatrix[0][0]);
+		glUniformMatrix4fv(matrixViewUniform,1,GL_FALSE,&ViewMatrix[0][0]);
 
 
 		// Bind our diffuse texture in Texture Unit 0
 		updateTexture(texDiffuseID,texDiffuseUniform,0);
 		// Bind our AO texture in Texture Unit 1
 		updateTexture(texAOID,texAOUniform,1);
+		// Bind our AO texture in Texture Unit 1
+		updateTexture(texNormalID,texNormalUniform,2);
 
 		// Draw model
 		updateModel(vertexBuffer,uvBuffer,normalBuffer,count);
@@ -97,6 +106,7 @@ int main(void) {
 	glDeleteBuffers(1, &normalBuffer);
 	glDeleteTextures(1, &texDiffuseID);
 	glDeleteTextures(1, &texAOID);
+	glDeleteTextures(1, &texNormalID);
 	glDeleteVertexArrays(1, &vertexArrayID);
 	glDeleteProgram(programID);
 	// Close OpenGL window and terminate GLFW

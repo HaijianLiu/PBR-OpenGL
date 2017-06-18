@@ -18,6 +18,7 @@
 #define FILE_DIFFUSE_TGA  	"WPNT_MK2Grenade_Base_Color.tga"
 #define FILE_AO_TGA         "WPNT_MK2Grenade_Ambient_occlusion.tga"
 #define FILE_NORMAL_TGA     "WPNT_MK2Grenade_Normal_DirectX.tga"
+#define FILE_SPEC_TGA       "WPNT_MK2Grenade_Metallic.tga"
 
 
 // Time Function
@@ -47,14 +48,18 @@ int main(void) {
 	GLuint texDiffuseID = loadTGA(FILE_DIFFUSE_TGA);
 	GLuint texAOID = loadTGA(FILE_AO_TGA);
 	GLuint texNormalID = loadTGA(FILE_NORMAL_TGA);
+	GLuint texSpecID = loadTGA(FILE_SPEC_TGA);
 
 	// Get uniform
 	GLuint texDiffuseUniform = glGetUniformLocation(programID,"texDiffuse"); // Get uniform ID
 	GLuint texAOUniform = glGetUniformLocation(programID,"texAO"); // Get uniform ID
 	GLuint texNormalUniform = glGetUniformLocation(programID,"texNormal"); // Get uniform ID
+	GLuint texSpecUniform = glGetUniformLocation(programID,"texSpec"); // Get uniform ID
+
 	GLuint matrixUniform = glGetUniformLocation(programID,"matrixMVP"); // Get uniform ID
 	GLuint matrixModelUniform = glGetUniformLocation(programID,"matrixModel"); // Get uniform ID
 	GLuint matrixViewUniform = glGetUniformLocation(programID,"matrixView"); // Get uniform ID
+	GLuint matrixModelViewUniform = glGetUniformLocation(programID,"matrixModelView3x3"); // Get uniform ID
 
 	// Get a handle for our "LightPosition" uniform
 	glUseProgram(programID);
@@ -72,9 +77,12 @@ int main(void) {
 		// Projection matrix: 45° Field of View. 4:3 ratio. display range : 0.1 unit <-> 100 units.
 		glm::mat4 ProjectionMatrix = glm::perspective(glm::radians(45.0f),(float)SCREEN_WIDTH/(float)SCREEN_HEIGHT,0.1f,100.0f);
 		// Camera matrix: Camera is at (4,3,3), in World Space. looks at the origin. Head is up (set to 0,-1,0 to look upside-down).
-		glm::mat4 ViewMatrix = glm::lookAt(glm::vec3(0,3,5),glm::vec3(0,1.5,0),glm::vec3(0,1,0));
+		glm::mat4 ViewMatrix = glm::lookAt(glm::vec3(0,4,5),glm::vec3(0,1.5,0),glm::vec3(0,1,0));
 		// Model matrix : glm::rotate( angle_in_degrees, myRotationAxis )
 		glm::mat4 ModelMatrix = glm::rotate(0.5f*CurrentTime(),glm::vec3(0,1,0)) * glm::scale(glm::vec3(0.25)) * glm::mat4(1.0f);
+		// glm::mat4 lightModelMatrix = glm::rotate(-0.5f*CurrentTime(),glm::vec3(0,1,0)) * glm::scale(glm::vec3(0.25)) * glm::mat4(1.0f);
+		glm::mat4 ModelViewMatrix = ViewMatrix * ModelMatrix;
+		glm::mat3 ModelView3x3Matrix = glm::mat3(ModelViewMatrix);
 		// Our ModelViewProjection : multiplication of our 3 matrices
 		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix; // Remember, matrix multiplication is the other way around
 		// Send transformation to the currently bound shader,
@@ -82,17 +90,17 @@ int main(void) {
 		glUniformMatrix4fv(matrixUniform,1,GL_FALSE,&MVP[0][0]);
 		glUniformMatrix4fv(matrixModelUniform,1,GL_FALSE,&ModelMatrix[0][0]);
 		glUniformMatrix4fv(matrixViewUniform,1,GL_FALSE,&ViewMatrix[0][0]);
+		glUniformMatrix3fv(matrixModelViewUniform, 1, GL_FALSE, &ModelView3x3Matrix[0][0]);
 
-		glm::vec3 lightPos = glm::vec3(4,4,3);
+		glm::vec3 lightPos = glm::vec3(0,4,5);
 		glUniform3f(lightID, lightPos.x, lightPos.y, lightPos.z);
 
 
 		// Bind our diffuse texture in Texture Unit 0
 		updateTexture(texDiffuseID,texDiffuseUniform,0);
-		// Bind our AO texture in Texture Unit 1
 		updateTexture(texAOID,texAOUniform,1);
-		// Bind our AO texture in Texture Unit 1
 		updateTexture(texNormalID,texNormalUniform,2);
+		updateTexture(texSpecID,texSpecUniform,3);
 
 		// Draw model
 		updateModel(vertexBuffer,uvBuffer,normalBuffer,tangentBuffer,bitangentBuffer,count);
@@ -112,6 +120,7 @@ int main(void) {
 	glDeleteTextures(1, &texDiffuseID);
 	glDeleteTextures(1, &texAOID);
 	glDeleteTextures(1, &texNormalID);
+	glDeleteTextures(1, &texSpecID);
 	glDeleteVertexArrays(1, &vertexArrayID);
 	glDeleteProgram(programID);
 	// Close OpenGL window and terminate GLFW

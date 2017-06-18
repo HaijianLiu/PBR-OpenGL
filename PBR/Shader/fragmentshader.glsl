@@ -1,50 +1,43 @@
 #version 330 core
 
+// Interpolated values from the vertex shaders
 in vec2 uv;
-in vec3 lightDirectionCameraspace;
-// in vec3 texNormalCameraspace;
+in vec3 vertex;
+in vec3 normal;
+in float cosLight;
+in float cosReflect;
+in float lightDistance;
 
 // Ouput data
 out vec3 color;
 
+// Values that stay constant for the whole mesh.
 uniform sampler2D texDiffuse;
-uniform sampler2D texAO;
-uniform sampler2D texNormal;
-
-// uniform mat4 matrixMVP;
-// uniform mat4 matrixModel;
-// uniform mat4 matrixView;
+// uniform sampler2D texNormal;
 
 
 
 void main(){
 
-	// vec3 normal = normalize(texNormalCameraspace);
-	vec3 light = normalize(lightDirectionCameraspace);
-  // Output color = color of the texture at the specified UV
-  // color = vec3(UV,1.0);
-// texture(texBaseColor,uv).rgb
-
-	vec3 colorDiffuse = texture(texDiffuse,uv).rgb;
-	vec3 colorAO = vec3(1 - texture(texAO,uv).r);
-	vec3 colorNormal = texture(texNormal,uv).rgb;
+	// Light emission properties
+	// You probably want to put them as uniforms
 	vec3 lightColor = vec3(1);
-	float cosLightAngle = clamp(dot(colorNormal,light),0,1);
+	float lightPower = 50.0f;
 
-  // color = texture(texBaseColor,uv).rgb - 0.1*(vec3(1.0) - texture(texAO,uv).rgb);
-	// color = texture(texDiffuse,uv).rgb;
-  // color = normal;
-	// color = colorNormal;
-	// color = texture(texNormal,uv).rgb;
-	// Normal of the computed fragment, in camera space
 
-	// color = colorDiffuse * cosLightAngle * lightColor * lightPower / (lightDistance * lightDistance);
-	// color = colorDiffuse - 0.5*colorAO;
-	// color = colorAO;
-	// color = normal;
-	color = (colorDiffuse - 0.5*colorAO) * cosLightAngle * lightColor;
-	// color = cosLightAngle * vec3(1);
-	// color = light;
+	// Material properties
+	vec3 materialDiffuseColor = texture(texDiffuse,uv).rgb;
+	vec3 materialAmbientColor = vec3(0.5) * materialDiffuseColor;
+	vec3 materialSpecularColor = vec3(0.3);
 
+
+
+	color =
+		// Ambient : simulates indirect lighting
+		materialAmbientColor +
+		// Diffuse : "color" of the object
+		materialDiffuseColor * lightColor * lightPower * cosLight / (lightDistance * lightDistance) +
+		// Specular : reflective highlight, like a mirror
+		materialSpecularColor * lightColor * lightPower * pow(cosReflect,5) / (lightDistance * lightDistance);
 
 }

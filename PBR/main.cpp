@@ -56,10 +56,10 @@ int main(void) {
 	GLuint matrixModelUniform = glGetUniformLocation(programID,"matrixModel"); // Get uniform ID
 	GLuint matrixViewUniform = glGetUniformLocation(programID,"matrixView"); // Get uniform ID
 
-	// GLuint matrixViewUniform = glGetUniformLocation(programID,"matrixView");
-	// GLuint matrixModelUniform = glGetUniformLocation(programID,"matrixModel");
-	//
-	// GLuint lightUniform = glGetUniformLocation(programID,"lightPositionWorldSpace");
+	// Get a handle for our "LightPosition" uniform
+	glUseProgram(programID);
+	GLuint lightID = glGetUniformLocation(programID,"lightPositionWorldspace");
+
 
 	do {
 		// Clear the screen
@@ -72,7 +72,7 @@ int main(void) {
 		// Projection matrix: 45° Field of View. 4:3 ratio. display range : 0.1 unit <-> 100 units.
 		glm::mat4 ProjectionMatrix = glm::perspective(glm::radians(45.0f),(float)SCREEN_WIDTH/(float)SCREEN_HEIGHT,0.1f,100.0f);
 		// Camera matrix: Camera is at (4,3,3), in World Space. looks at the origin. Head is up (set to 0,-1,0 to look upside-down).
-		glm::mat4 ViewMatrix = glm::lookAt(glm::vec3(4,3,3),glm::vec3(0,1.5,0),glm::vec3(0,1,0));
+		glm::mat4 ViewMatrix = glm::lookAt(glm::vec3(0,3,5),glm::vec3(0,1.5,0),glm::vec3(0,1,0));
 		// Model matrix : glm::rotate( angle_in_degrees, myRotationAxis )
 		glm::mat4 ModelMatrix = glm::rotate(0.5f*CurrentTime(),glm::vec3(0,1,0)) * glm::scale(glm::vec3(0.25)) * glm::mat4(1.0f);
 		// Our ModelViewProjection : multiplication of our 3 matrices
@@ -82,6 +82,9 @@ int main(void) {
 		glUniformMatrix4fv(matrixUniform,1,GL_FALSE,&MVP[0][0]);
 		glUniformMatrix4fv(matrixModelUniform,1,GL_FALSE,&ModelMatrix[0][0]);
 		glUniformMatrix4fv(matrixViewUniform,1,GL_FALSE,&ViewMatrix[0][0]);
+
+		glm::vec3 lightPos = glm::vec3(4,4,3);
+		glUniform3f(lightID, lightPos.x, lightPos.y, lightPos.z);
 
 
 		// Bind our diffuse texture in Texture Unit 0

@@ -39,9 +39,9 @@ int main(void) {
 	GLuint programID = loadShader(VERTEXSHADER_GLSL,FRAGMENTSHADER_GLSL);
 
 	// Read OBJ file
-	GLuint vertexBuffer, uvBuffer, normalBuffer;
+	GLuint vertexBuffer, uvBuffer, normalBuffer, tangentBuffer, bitangentBuffer;
 	unsigned long count;
-	loadObj(FILE_OBJ,vertexBuffer,uvBuffer,normalBuffer,count);
+	loadObj(FILE_OBJ,vertexBuffer,uvBuffer,normalBuffer,tangentBuffer,bitangentBuffer,count);
 
 	// Load the texture
 	GLuint texDiffuseID = loadTGA(FILE_DIFFUSE_TGA);
@@ -95,7 +95,7 @@ int main(void) {
 		updateTexture(texNormalID,texNormalUniform,2);
 
 		// Draw model
-		updateModel(vertexBuffer,uvBuffer,normalBuffer,count);
+		updateModel(vertexBuffer,uvBuffer,normalBuffer,tangentBuffer,bitangentBuffer,count);
 
 		// Swap buffers
 		glfwSwapBuffers(window);
@@ -107,6 +107,8 @@ int main(void) {
 	glDeleteBuffers(1, &vertexBuffer);
 	glDeleteBuffers(1, &uvBuffer);
 	glDeleteBuffers(1, &normalBuffer);
+	glDeleteBuffers(1, &tangentBuffer);
+	glDeleteBuffers(1, &bitangentBuffer);
 	glDeleteTextures(1, &texDiffuseID);
 	glDeleteTextures(1, &texAOID);
 	glDeleteTextures(1, &texNormalID);

@@ -81,6 +81,26 @@ updateModel(vertexBuffer,uvBuffer,normalBuffer,count);
 
 
 /*----------------------------------------------------------------------------*/
+void updateModel(GLuint vertexBuffer, GLuint uvBuffer, GLuint normalBuffer, GLuint tangentBuffer, GLuint bitangentBuffer, unsigned long count);
+/*------------------------------------------------------------------------------
+< Draw Model >
+
+Enable attributes buffer for vertex, uv, normal.
+Draw the triangles by count.
+Disable attributes
+................................................................................
+Parameters:
+
+vertexBuffer, uvBuffer, normalBuffer: GLint buffers for attributes
+count: number of triangles
+................................................................................
+Example:
+
+updateModel(vertexBuffer,uvBuffer,normalBuffer,count);
+------------------------------------------------------------------------------*/
+
+
+/*----------------------------------------------------------------------------*/
 void updateTexture(GLuint textureID, GLint uniformID, int unit);
 /*------------------------------------------------------------------------------
 < Update Texture >

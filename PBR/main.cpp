@@ -59,6 +59,7 @@ int main(void) {
 	GLuint matrixUniform = glGetUniformLocation(programID,"matrixMVP"); // Get uniform ID
 	GLuint matrixModelUniform = glGetUniformLocation(programID,"matrixModel"); // Get uniform ID
 	GLuint matrixViewUniform = glGetUniformLocation(programID,"matrixView"); // Get uniform ID
+	GLuint matrixProjectUniform = glGetUniformLocation(programID,"matrixProject"); // Get uniform ID
 	GLuint matrixModelViewUniform = glGetUniformLocation(programID,"matrixModelView3x3"); // Get uniform ID
 
 	// Get a handle for our "LightPosition" uniform
@@ -77,9 +78,9 @@ int main(void) {
 		// Projection matrix: 45° Field of View. 4:3 ratio. display range : 0.1 unit <-> 100 units.
 		glm::mat4 ProjectionMatrix = glm::perspective(glm::radians(45.0f),(float)SCREEN_WIDTH/(float)SCREEN_HEIGHT,0.1f,100.0f);
 		// Camera matrix: Camera is at (4,3,3), in World Space. looks at the origin. Head is up (set to 0,-1,0 to look upside-down).
-		glm::mat4 ViewMatrix = glm::lookAt(glm::vec3(0,4,5),glm::vec3(0,1.5,0),glm::vec3(0,1,0));
+		glm::mat4 ViewMatrix = glm::lookAt(glm::vec3(0,16,20),glm::vec3(0,6,0),glm::vec3(0,1,0));
 		// Model matrix : glm::rotate( angle_in_degrees, myRotationAxis )
-		glm::mat4 ModelMatrix = glm::rotate(0.5f*CurrentTime(),glm::vec3(0,1,0)) * glm::scale(glm::vec3(0.25)) * glm::mat4(1.0f);
+		glm::mat4 ModelMatrix = glm::rotate(0.5f*CurrentTime(),glm::vec3(0,1,0)) * glm::scale(glm::vec3(1.0f)) * glm::mat4(1.0f);
 		// glm::mat4 lightModelMatrix = glm::rotate(-0.5f*CurrentTime(),glm::vec3(0,1,0)) * glm::scale(glm::vec3(0.25)) * glm::mat4(1.0f);
 		glm::mat4 ModelViewMatrix = ViewMatrix * ModelMatrix;
 		glm::mat3 ModelView3x3Matrix = glm::mat3(ModelViewMatrix);
@@ -90,6 +91,7 @@ int main(void) {
 		glUniformMatrix4fv(matrixUniform,1,GL_FALSE,&MVP[0][0]);
 		glUniformMatrix4fv(matrixModelUniform,1,GL_FALSE,&ModelMatrix[0][0]);
 		glUniformMatrix4fv(matrixViewUniform,1,GL_FALSE,&ViewMatrix[0][0]);
+		glUniformMatrix4fv(matrixProjectUniform,1,GL_FALSE,&ProjectionMatrix[0][0]);
 		glUniformMatrix3fv(matrixModelViewUniform, 1, GL_FALSE, &ModelView3x3Matrix[0][0]);
 
 		glm::vec3 lightPos = glm::vec3(0,4,5);

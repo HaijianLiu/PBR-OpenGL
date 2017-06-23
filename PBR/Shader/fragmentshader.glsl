@@ -41,6 +41,20 @@ float fresnelSchlick(float cosTheta, float n, float roughness) {
 	return mix(f0+(1.0 - f0) * pow(1.0 - cosTheta, 5.0),1-f0,roughness);
 }
 
+vec3 exposureToneMapping(vec3 color, float exposure) {
+	return color = vec3(1.0) - exp(-color * exposure);
+}
+
+vec3 reinhardToneMapping(vec3 color) {
+	// reinhard tone mapping
+	return color = color / (color + vec3(1.0));
+}
+
+vec3 gammaCorrection(vec3 color, float gamma) {
+	// gamma correction
+	return color = pow(color,vec3(1.0 / gamma));
+}
+
 
 void main(){
 
@@ -67,8 +81,14 @@ void main(){
 
 	// float fresnel = fresnelSchlick(cosTheta,f0);
 
-	color = (1 - materialSpecularColor) * fresnelSchlick(cosTheta,1.0,0.4) * materialDiffuseColor + materialSpecularColor * fresnelSchlick(cosTheta,1.45,0.1) * materialDiffuseColor - 0.3 * materialAmbientColor;
-	color *= 2;
+	color = (1 - materialSpecularColor) * fresnelSchlick(cosTheta,1.0,0.4) * materialDiffuseColor + materialSpecularColor * fresnelSchlick(cosTheta,1.45,0.1) * materialDiffuseColor - 0.4 * materialAmbientColor;
+	color *= 3;
+	// color = exposureToneMapping(color,1); // Light intense
+
+	color = reinhardToneMapping(color);
+	// color = gammaCorrection(color,2.2);
+
+
 	// fresnel * materialSpecularColor + materialDiffuseColor;
 	// fresnel * materialDiffuseColor;
 	// vec3(cosTheta);

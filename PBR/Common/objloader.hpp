@@ -37,19 +37,19 @@ Give the data to OpenGL for generating buffers
 ................................................................................
 Return:
 
-3 buffers: vertexBuffer, uvBuffer, normalBuffer (for attributes)
+3 buffers: vertexBuffer, uvBuffer, normalBuffer, tangentBuffer, bitangentBuffer (for attributes)
 1 count (for draw triangles)
 ................................................................................
 Parameters:
 
-vertexBuffer, uvBuffer, normalBuffer: GLint buffers for attributes
+vertexBuffer, uvBuffer, normalBuffer, tangentBuffer, bitangentBuffer: GLint buffers for attributes
 count: number of triangles
 ................................................................................
 Example:
 
-GLuint vertexBuffer, uvBuffer, normalBuffer;
+GLuint vertexBuffer, uvBuffer, normalBuffer, tangentBuffer, bitangentBuffer;
 unsigned long count;
-loadObj("filename.obj",vertexBuffer,uvBuffer,normalBuffer,count);
+loadObj(FILE_OBJ,vertexBuffer,uvBuffer,normalBuffer,tangentBuffer,bitangentBuffer,count);
 ------------------------------------------------------------------------------*/
 
 

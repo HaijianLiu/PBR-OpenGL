@@ -4,11 +4,8 @@
 in vec3 vertex;
 in vec2 uv;
 in vec3 normal;
-// in vec3 l;
-// in vec3 e;
-// in float lightDistance;
+in mat3 tbn;
 
-// Ouput data
 out vec3 color;
 
 // Values that stay constant for the whole mesh.
@@ -16,25 +13,12 @@ uniform sampler2D texDiffuse;
 uniform sampler2D texNormal;
 uniform sampler2D texAO;
 uniform sampler2D texSpec;
-uniform mat3 matrixModelView3x3;
-uniform mat4 matrixView;
-uniform mat4 matrixProject;
-uniform mat4 matrixMVP;
-// uniform mat4 matrixModel;
+uniform mat4 matrixModel;
 
-// vec3 mixColor(vec3 color1, vec3 color2, float percent){
-// 	return percent * color1 + (1.0 - percent) * color2;
-// }
-//
-// float fresnel(float ior, float roughness){
-//
-// 	ior = sin1/sin2
-// 	return opacity - pow(dot(normalCameraspace,vec3(0,0,1)),range);
-// }
 
-// float kS = calculateSpecularComponent(...); // reflection/specular fraction
-// float kD = 1.0 - kS;                        // refraction/diffuse  fraction
-
+float specular(float cosReflect, float shininess) {
+	return pow(cosReflect,shininess);
+}
 
 float fresnelSchlick(float cosTheta, float n, float roughness) {
 	float f0 = pow((1-n)/(1+n),2);
@@ -79,46 +63,31 @@ void main(){
 	vec3 materialAmbientColor = vec3(1)-vec3(texture(texAO,uv).r);
 	vec3 materialSpecularColor = vec3(texture(texSpec,uv).r);
 	vec3 materialNormalColor = texture(texNormal,uv).rgb;
+	materialNormalColor = normalize(materialNormalColor * 2.0 - 1.0);
 
+	vec3 vertexWorldspace = (matrixModel * vec4(vertex,1)).xyz;
+	vec3 normalWorldspace = normalize(tbn * materialNormalColor);
 
-	vec3 lightPositionWorldspace = vec3(0,50,200);
+	vec3 lightColor = vec3(1);
+	vec3 lightPositionWorldspace = vec3(20,40,20);
+	vec3 eyeWorldspace = vec3(0,16,20);
 
-	vec3 lightPositionCameraspace = (matrixProject * matrixView * vec4(lightPositionWorldspace,1)).xyz;
+	vec3 eyeDirectionWorldspace = normalize(eyeWorldspace - vertexWorldspace);
+	vec3 lightDirectionWorldspace = normalize(lightPositionWorldspace - vertexWorldspace);
+	vec3 halfwayDirectionWorldspace = normalize(lightDirectionWorldspace + eyeDirectionWorldspace);
 
-	vec3 vertexCameraspace = (matrixMVP * vec4(vertex,1)).xyz;
+	float cosTheta = dot(eyeDirectionWorldspace,normalWorldspace);
+	float cosReflect = max(dot(normalWorldspace,halfwayDirectionWorldspace),0.0);
 
-	vec3 lightDirectionCameraspace = normalize(vertexCameraspace - lightPositionCameraspace);
+	color =
+	(1 - materialSpecularColor) * (fresnelSchlick(cosTheta,1.0,0.8) * materialDiffuseColor + lightColor * 0.1/0.8 * specular(cosReflect,10/0.8))
+	+ materialSpecularColor * (fresnelSchlick(cosTheta,1.45,0.15) * 3 * materialDiffuseColor + lightColor * 0.1/0.15 * specular(cosReflect,10/0.15))
+	- 0.6 * materialAmbientColor;
+	color *= 7;
 
-	vec3 normalCameraspace = normalize(matrixModelView3x3 * normal);
-
-	float cosTheta = dot(lightDirectionCameraspace,normalCameraspace);
-
-
-	// float fresnel = fresnelSchlick(cosTheta,f0);
-
-	color = (1 - materialSpecularColor) * fresnelSchlick(cosTheta,1.0,0.4) * materialDiffuseColor + materialSpecularColor * fresnelSchlick(cosTheta,1.45,0.1) * materialDiffuseColor - 0.3 * materialAmbientColor;
-	color *= 8;
 	// color = exposureToneMapping(color,1); // Light intense
 
 	color = uncharted2ToneMaping(color);
 	color = color / uncharted2ToneMaping(vec3(11.2));
-	// color = gammaCorrection(color,2.2);
-
-
-	// fresnel * materialSpecularColor + materialDiffuseColor;
-	// fresnel * materialDiffuseColor;
-	// vec3(cosTheta);
-	// cosTheta * materialDiffuseColor - 0.3 * materialAmbientColor;
-	// (1 - materialSpecularColor) * mixColor(3 * materialDiffuseColor * ambientShader, 3 * materialDiffuseColor * fresnel(1,0.5,normalCameraspace),0.4) + materialSpecularColor *  1.5 * mixColor(materialDiffuseColor, materialSpecularColor * fresnel(1,0.5,normalCameraspace),0.1) - 0.7 * materialAmbientColor;
-	// vec3(pow(dot(normalize(vertexCameraspace),normalize(normalCameraspace)),2));
-
-
-	// color =
-	// 	// Ambient : simulates indirect lighting
-	// 	- 0.5 * materialAmbientColor +
-	// 	// Diffuse : "color" of the object
-	// 	(vec3(1)-materialSpecularColor) * materialDiffuseColor * lightColor * lightPower / lightDistance +
-	// 	// Specular : reflective highlight, like a mirror
-	// 	2.0 * materialDiffuseColor * materialSpecularColor * cosReflect * lightColor * lightPower / lightDistance;
 
 }

@@ -295,8 +295,11 @@ bool loadObj(const char* path, GLuint& vertexBuffer, GLuint& uvBuffer, GLuint& n
 		glm::vec2 deltaUV2 = uv2-uv0;
 
 		float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
-		glm::vec3 tangent = (deltaPos1 * deltaUV2.y   - deltaPos2 * deltaUV1.y)*r;
-		glm::vec3 bitangent = (deltaPos2 * deltaUV1.x   - deltaPos1 * deltaUV2.x)*r;
+		glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
+		glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
+
+		tangent = glm::normalize(tangent);
+		bitangent = glm::normalize(bitangent);
 
 		// Set the same tangent for all three vertices of the triangle.
 		// They will be merged later, in vboindexer.cpp

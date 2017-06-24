@@ -10,7 +10,6 @@ layout(location = 4) in vec3 bitangentModelspace;
 
 out vec3 vertex;
 out vec2 uv;
-out vec3 normal;
 out mat3 tbn;
 
 uniform mat4 matrixMVP;
@@ -24,7 +23,6 @@ void main(){
 	// UV of the vertex. No special space for this one.
 	vertex = vertexModelspace;
 	uv = uvModelspace;
-	normal = normalModelspace;
 
 	vec3 t = normalize(vec3(matrixModel * vec4(tangentModelspace,   0.0)));
 	vec3 b = normalize(vec3(matrixModel * vec4(bitangentModelspace, 0.0)));

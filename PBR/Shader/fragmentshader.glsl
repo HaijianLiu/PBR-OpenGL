@@ -3,7 +3,6 @@
 // Interpolated values from the vertex shaders
 in vec3 vertex;
 in vec2 uv;
-in vec3 normal;
 in mat3 tbn;
 
 out vec3 color;
@@ -80,10 +79,10 @@ void main(){
 	float cosReflect = max(dot(normalWorldspace,halfwayDirectionWorldspace),0.0);
 
 	color =
-	(1 - materialSpecularColor) * (fresnelSchlick(cosTheta,1.0,0.8) * materialDiffuseColor + lightColor * 0.1/0.8 * specular(cosReflect,10/0.8))
-	+ materialSpecularColor * (fresnelSchlick(cosTheta,1.45,0.15) * 3 * materialDiffuseColor + lightColor * 0.1/0.15 * specular(cosReflect,10/0.15))
+	(1 - materialSpecularColor) * (fresnelSchlick(cosTheta,1.0,0.7) * materialDiffuseColor + lightColor * 0.05/0.7 * specular(cosReflect,10/0.7))
+	+ materialSpecularColor * (fresnelSchlick(cosTheta,1.45,0.15) * 3 * materialDiffuseColor + lightColor * 0.05/0.15 * specular(cosReflect,10/0.15))
 	- 0.6 * materialAmbientColor;
-	color *= 7;
+	color *= 5;
 
 	// color = exposureToneMapping(color,1); // Light intense
 

@@ -50,6 +50,22 @@ vec3 reinhardToneMapping(vec3 color) {
 	return color = color / (color + vec3(1.0));
 }
 
+vec3 richardToneMapping(vec3 color) {
+	// optimized formula by Jim Hejl and Richard Burgess-Dawson
+	vec3 x = max(vec3(0),color - vec3(0.004));
+	return color = (x * (6.2 * x + 0.5)) / (x * (6.2 * x + 1.7) + vec3(0.06));
+}
+
+vec3 uncharted2ToneMaping(vec3 color) {
+	float A = 0.15;
+	float B = 0.50;
+	float C = 0.10;
+	float D = 0.20;
+	float E = 0.02;
+	float F = 0.30;
+	return ((color * (A * color + C * B) + D * E) / (color * (A * color + B) + D * F)) - E / F;
+}
+
 vec3 gammaCorrection(vec3 color, float gamma) {
 	// gamma correction
 	return color = pow(color,vec3(1.0 / gamma));
@@ -71,7 +87,6 @@ void main(){
 
 	vec3 vertexCameraspace = (matrixMVP * vec4(vertex,1)).xyz;
 
-
 	vec3 lightDirectionCameraspace = normalize(vertexCameraspace - lightPositionCameraspace);
 
 	vec3 normalCameraspace = normalize(matrixModelView3x3 * normal);
@@ -81,11 +96,12 @@ void main(){
 
 	// float fresnel = fresnelSchlick(cosTheta,f0);
 
-	color = (1 - materialSpecularColor) * fresnelSchlick(cosTheta,1.0,0.4) * materialDiffuseColor + materialSpecularColor * fresnelSchlick(cosTheta,1.45,0.1) * materialDiffuseColor - 0.4 * materialAmbientColor;
-	color *= 3;
+	color = (1 - materialSpecularColor) * fresnelSchlick(cosTheta,1.0,0.4) * materialDiffuseColor + materialSpecularColor * fresnelSchlick(cosTheta,1.45,0.1) * materialDiffuseColor - 0.3 * materialAmbientColor;
+	color *= 8;
 	// color = exposureToneMapping(color,1); // Light intense
 
-	color = reinhardToneMapping(color);
+	color = uncharted2ToneMaping(color);
+	color = color / uncharted2ToneMaping(vec3(11.2));
 	// color = gammaCorrection(color,2.2);
 
 

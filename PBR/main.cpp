@@ -22,43 +22,34 @@ int main(void) {
 
 	// initialize start time
 	initTime();
-
 	// Created a OpenGL Window: (Default settings)
 	GLFWwindow* window = createWindow(WINDOW_NAME,SCREEN_WIDTH,SCREEN_HEIGHT);
 	// Create Vertex Array Object
 	GLuint vertexArrayID = getVertexArray();
-
-
 	// Create and compile GLSL program from the shaders
 	GLuint shaderPBR = loadShader(VERTEXSHADER_GLSL,FRAGMENTSHADER_GLSL);
-
 	// Load Model & Texture
 	Model* grenadeMK2Model     = new Model(FILE_OBJ);
 	Texture* grenadeMK2Texture = new Texture(FILE_DIFFUSE_TGA,FILE_NORMAL_TGA,FILE_SPEC_TGA,FILE_AO_TGA);
-
 	// Create Camera & Object
 	Camera* camera     = new Camera;
 	Object* grenadeMK2 = new Object;
 
 
 	do {
-
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
 		// Update object and camera position
-		grenadeMK2->rotate(0.5f*currentTime(),glm::vec3(0,1,0));
+		grenadeMK2->rotate(0.5 * currentTime(),glm::vec3(0,1,0));
 		camera->setTarget(grenadeMK2->getPosition() + glm::vec3(0,6,0));
 		// rendering object using (model,texture,shader) in the view of camera
 		rendering(grenadeMK2,grenadeMK2Model,grenadeMK2Texture,shaderPBR,camera);
-
-
 		// Swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
 	} while (glfwGetKey(window,GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
+
 
 	// Cleanup VBO
 	delete grenadeMK2Model;

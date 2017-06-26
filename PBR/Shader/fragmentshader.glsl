@@ -15,14 +15,51 @@ uniform sampler2D texSpec;
 uniform mat4 matrixModel;
 
 
-float specular(float cosReflect, float shininess) {
-	return pow(cosReflect,shininess);
+float specular(float cosHalfway, float shininess) {
+	return pow(cosHalfway,shininess);
 }
 
-float fresnelSchlick(float cosTheta, float n, float roughness) {
+float fresnelSchlick(float cosView, float n, float roughness) {
 	float f0 = pow((1-n)/(1+n),2);
-	return mix(f0+(1.0 - f0) * pow(1.0 - cosTheta, 5.0),1-f0,roughness);
+	return mix(f0+(1.0 - f0) * pow(1.0 - cosView, 5.0),1-f0,roughness);
 }
+
+// -----------------------------------------------------------------------------
+float PI = 3.14159265359;
+
+// vec3 f0 = vec3(0.04);
+// f0 = mix(f0,albedo,metallic);
+
+float fresnelSchlick(float cosView, float f0) {
+	return f0 + (1.0 - f0) * pow(1.0 - cosView, 5.0);
+}
+
+float distributionGGX(float cosHalfway, float roughness) {
+	float nom   = pow(roughness,4);
+	float denom = pow(cosHalfway,2) * (nom - 1.0) + 1.0;
+	denom = PI * denom * denom;
+
+	return nom / denom;
+}
+
+float geometrySchlickGGX(float cosView, float roughness) {
+	float r = (roughness + 1.0);
+	float k = (r*r) / 8.0;
+
+	float nom   = cosView;
+	float denom = cosView * (1.0 - k) + k;
+
+	return nom / denom;
+}
+
+float geometrySmith(float cosView, float cosLight, float roughness) {
+	float ggx1  = geometrySchlickGGX(cosLight, roughness);
+	float ggx2  = geometrySchlickGGX(cosView, roughness);
+
+	return ggx1 * ggx2;
+}
+
+// -----------------------------------------------------------------------------
 
 vec3 exposureToneMapping(vec3 color, float exposure) {
 	return color = vec3(1.0) - exp(-color * exposure);
@@ -54,6 +91,25 @@ vec3 gammaCorrection(vec3 color, float gamma) {
 	return color = pow(color,vec3(1.0 / gamma));
 }
 
+float fresnel_dielectric_cos(float cosi, float eta)
+{
+	/* compute fresnel reflectance without explicitly computing
+	 * the refracted direction */
+	float c = abs(cosi);
+	float g = eta * eta - 1 + c * c;
+	float result;
+
+	if (g > 0) {
+		g = sqrt(g);
+		float A = (g - c) / (g + c);
+		float B = (c * (g + c) - 1) / (c * (g - c) + 1);
+		result = 0.5 * A * A * (1 + B * B);
+	}
+	else
+		result = 1.0;  /* TIR (no refracted component) */
+
+	return result;
+}
 
 void main(){
 
@@ -75,18 +131,47 @@ void main(){
 	vec3 lightDirectionWorldspace = normalize(lightPositionWorldspace - vertexWorldspace);
 	vec3 halfwayDirectionWorldspace = normalize(lightDirectionWorldspace + eyeDirectionWorldspace);
 
-	float cosTheta = dot(eyeDirectionWorldspace,normalWorldspace);
-	float cosReflect = max(dot(normalWorldspace,halfwayDirectionWorldspace),0.0);
+	float cosView    = max(dot(normalWorldspace,eyeDirectionWorldspace),0);
+	float cosLight   = max(dot(normalWorldspace,lightDirectionWorldspace),0);
+	float cosHalfway = max(dot(normalWorldspace,halfwayDirectionWorldspace),0);
 
 	color =
-	(1 - materialSpecularColor) * (fresnelSchlick(cosTheta,1.0,0.7) * materialDiffuseColor + lightColor * 0.05/0.7 * specular(cosReflect,10/0.7))
-	+ materialSpecularColor * (fresnelSchlick(cosTheta,1.45,0.15) * 3 * materialDiffuseColor + lightColor * 0.05/0.15 * specular(cosReflect,10/0.15))
+	(1 - materialSpecularColor) * (fresnelSchlick(cosView,2.8735,0.7) * materialDiffuseColor + lightColor * 0.05/0.7 * specular(cosHalfway,10/0.7))
+	+ materialSpecularColor * (fresnelSchlick(cosView,1.6232,0.15) * 3 * materialDiffuseColor + lightColor * 0.05/0.15 * specular(cosHalfway,10/0.15))
 	- 0.6 * materialAmbientColor;
 	color *= 5;
 
+
+	// float metallic = 0;
+	// float roughness = 0.03;
+	// float albedo = 10;
+	// float f0 = mix(0.04,albedo,roughness);
+	// // cook-torrance brdf
+	// float NDF = distributionGGX(cosHalfway,roughness);
+	// float G   = geometrySmith  (cosView,cosLight,roughness);
+	// float F   = fresnelSchlick (cosView,f0);
+	//
+	// float kS = F;
+	// float kD = 1 - kS;
+	//       kD *= 1.0 - metallic;
+	//
+	// float nominator   = NDF * G * F;
+	// float denominator = 4 * cosView * cosLight + 0.001;
+	// float specular    = nominator / denominator;
+	//
+	// // add to outgoing radiance Lo
+	// float lo = (kD * albedo / PI + specular) * cosLight;
+	//
+	// float ambient = 0.03 * albedo;
+	//
+	// color = materialDiffuseColor * (ambient + lo);
+
+
 	// color = exposureToneMapping(color,1); // Light intense
+	// color = lightColor * geometrySmith(cosView,cosLight,0.9);
 
 	color = uncharted2ToneMaping(color);
 	color = color / uncharted2ToneMaping(vec3(11.2));
+
 
 }

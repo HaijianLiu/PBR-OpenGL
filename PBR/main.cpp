@@ -1,6 +1,5 @@
 // Include standard headers
 #include <iostream>
-#include <sys/time.h>
 
 // Include header file
 #include "opengl.hpp"
@@ -19,15 +18,10 @@
 #define FILE_SPEC_TGA       "WPNT_MK2Grenade_Metallic.tga"
 
 
-// Time Function
-struct timeval startTime;
-float CurrentTime();
-
 int main(void) {
 
 	// initialize start time
-	gettimeofday(&startTime,NULL);
-
+	initTime();
 
 	// Created a OpenGL Window: (Default settings)
 	GLFWwindow* window = createWindow(WINDOW_NAME,SCREEN_WIDTH,SCREEN_HEIGHT);
@@ -48,12 +42,13 @@ int main(void) {
 
 
 	do {
+
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 		// Update object and camera position
-		grenadeMK2->rotate(0.5f*CurrentTime(),glm::vec3(0,1,0));
+		grenadeMK2->rotate(0.5f*currentTime(),glm::vec3(0,1,0));
 		camera->setTarget(grenadeMK2->getPosition() + glm::vec3(0,6,0));
 		// rendering object using (model,texture,shader) in the view of camera
 		rendering(grenadeMK2,grenadeMK2Model,grenadeMK2Texture,shaderPBR,camera);
@@ -78,10 +73,4 @@ int main(void) {
 	glfwTerminate();
 
 	return 0;
-}
-
-float CurrentTime() {
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	return (float)(tv.tv_sec-startTime.tv_sec)+(tv.tv_usec-startTime.tv_usec)/1000000.0f;
 }

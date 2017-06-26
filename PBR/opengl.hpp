@@ -14,6 +14,7 @@
 #include "shaderloader.hpp"
 #include "objloader.hpp"
 #include "tgaloader.hpp"
+#include "timecontrol.hpp"
 // Include Class
 #include "Object.hpp"
 #include "Camera.hpp"

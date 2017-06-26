@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		601744B21F01798B007A2EB2 /* timecontrol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 601744B01F01798B007A2EB2 /* timecontrol.cpp */; };
 		603BABFD1F011CA4007A0DCD /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 603BABFB1F011CA4007A0DCD /* Object.cpp */; };
 		603BAC001F0137BB007A0DCD /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 603BABFE1F0137BB007A0DCD /* Camera.cpp */; };
 		60924C2C1EEAEB1700B1D430 /* libGLEW.2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 60924C2B1EEAEB1700B1D430 /* libGLEW.2.0.0.dylib */; };
@@ -32,6 +33,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		601744B01F01798B007A2EB2 /* timecontrol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timecontrol.cpp; sourceTree = "<group>"; };
+		601744B11F01798B007A2EB2 /* timecontrol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = timecontrol.hpp; sourceTree = "<group>"; };
 		603BABFB1F011CA4007A0DCD /* Object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Object.cpp; sourceTree = "<group>"; };
 		603BABFC1F011CA4007A0DCD /* Object.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Object.hpp; sourceTree = "<group>"; };
 		603BABFE1F0137BB007A0DCD /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
@@ -100,6 +103,8 @@
 				60C438F91EEAE55F00549AE9 /* Common */,
 				60C438EF1EEAE50C00549AE9 /* main.cpp */,
 				603BABFE1F0137BB007A0DCD /* Camera.cpp */,
+				601744B01F01798B007A2EB2 /* timecontrol.cpp */,
+				601744B11F01798B007A2EB2 /* timecontrol.hpp */,
 				603BABFF1F0137BB007A0DCD /* Camera.hpp */,
 				603BABFB1F011CA4007A0DCD /* Object.cpp */,
 				603BABFC1F011CA4007A0DCD /* Object.hpp */,
@@ -190,6 +195,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				601744B21F01798B007A2EB2 /* timecontrol.cpp in Sources */,
 				60B066841EEEA16F00D8B7CB /* tgaloader.cpp in Sources */,
 				60B066811EEE9E9D00D8B7CB /* opengl.cpp in Sources */,
 				603BAC001F0137BB007A0DCD /* Camera.cpp in Sources */,

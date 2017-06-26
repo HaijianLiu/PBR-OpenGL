@@ -1,8 +1,6 @@
 // Include standard headers
 #include <iostream>
-#include <vector>
 #include <sys/time.h>
-#include <math.h>
 
 // Include header file
 #include "opengl.hpp"
@@ -37,26 +35,15 @@ int main(void) {
 	GLuint vertexArrayID = getVertexArray();
 
 
-	// Load Model
-	GLuint vertexBuffer, uvBuffer, normalBuffer, tangentBuffer, bitangentBuffer;
-	unsigned long count;
-	loadObj(FILE_OBJ,vertexBuffer,uvBuffer,normalBuffer,tangentBuffer,bitangentBuffer,count);
-
-
 	// Create and compile GLSL program from the shaders
-	GLuint programID = loadShader(VERTEXSHADER_GLSL,FRAGMENTSHADER_GLSL);
+	GLuint shaderPBR = loadShader(VERTEXSHADER_GLSL,FRAGMENTSHADER_GLSL);
 
+	// Load Model & Texture
+	Model* grenadeMK2Model     = new Model(FILE_OBJ);
+	Texture* grenadeMK2Texture = new Texture(FILE_DIFFUSE_TGA,FILE_NORMAL_TGA,FILE_SPEC_TGA,FILE_AO_TGA);
 
-	// Load Texture
-	GLuint texDiffuseID = loadTGA(FILE_DIFFUSE_TGA);
-	GLuint texAOID      = loadTGA(FILE_AO_TGA);
-	GLuint texNormalID  = loadTGA(FILE_NORMAL_TGA);
-	GLuint texSpecID    = loadTGA(FILE_SPEC_TGA);
-
-
-	// Create Camera
-	Camera* camera = new Camera;
-	// Create Object
+	// Create Camera & Object
+	Camera* camera     = new Camera;
 	Object* grenadeMK2 = new Object;
 
 
@@ -65,38 +52,12 @@ int main(void) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
+		// Update object and camera position
 		grenadeMK2->rotate(0.5f*CurrentTime(),glm::vec3(0,1,0));
 		camera->setTarget(grenadeMK2->getPosition() + glm::vec3(0,6,0));
+		// rendering object using (model,texture,shader) in the view of camera
+		rendering(grenadeMK2,grenadeMK2Model,grenadeMK2Texture,shaderPBR,camera);
 
-		// renderScreen(Camera* camera);
-
-		// Use shaders
-		glUseProgram(programID);
-
-		glm::mat4 matrixProjection = camera->getMatrixProjection();
-		glm::mat4 matrixView       = camera->getMatrixView();
-		glm::mat4 matrixModel      = grenadeMK2->getMatrixModel();
-		glm::mat4 matrixMVP        = matrixProjection * matrixView * matrixModel;
-		// Get uniform
-		GLuint matrixMVPUniform   = glGetUniformLocation(programID,"matrixMVP"); // Get uniform ID
-		GLuint matrixModelUniform = glGetUniformLocation(programID,"matrixModel"); // Get uniform ID
-		// Send transformation to the currently bound shader,
-		glUniformMatrix4fv(matrixMVPUniform,1,GL_FALSE,&matrixMVP[0][0]);
-		glUniformMatrix4fv(matrixModelUniform,1,GL_FALSE,&matrixModel[0][0]);
-
-		// Get uniform
-		GLuint texDiffuseUniform  = glGetUniformLocation(programID,"texDiffuse"); // Get uniform ID
-		GLuint texAOUniform       = glGetUniformLocation(programID,"texAO"); // Get uniform ID
-		GLuint texNormalUniform   = glGetUniformLocation(programID,"texNormal"); // Get uniform ID
-		GLuint texSpecUniform     = glGetUniformLocation(programID,"texSpec"); // Get uniform ID
-		// Bind texture in Texture Unit 0 ~
-		updateTexture(texDiffuseID,texDiffuseUniform,0);
-		updateTexture(texAOID,texAOUniform,1);
-		updateTexture(texNormalID,texNormalUniform,2);
-		updateTexture(texSpecID,texSpecUniform,3);
-
-		// Draw model
-		updateModel(vertexBuffer,uvBuffer,normalBuffer,tangentBuffer,bitangentBuffer,count);
 
 		// Swap buffers
 		glfwSwapBuffers(window);
@@ -105,21 +66,15 @@ int main(void) {
 	} while (glfwGetKey(window,GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
 
 	// Cleanup VBO
-	glDeleteBuffers(1, &vertexBuffer);
-	glDeleteBuffers(1, &uvBuffer);
-	glDeleteBuffers(1, &normalBuffer);
-	glDeleteBuffers(1, &tangentBuffer);
-	glDeleteBuffers(1, &bitangentBuffer);
-	glDeleteTextures(1, &texDiffuseID);
-	glDeleteTextures(1, &texAOID);
-	glDeleteTextures(1, &texNormalID);
-	glDeleteTextures(1, &texSpecID);
-	glDeleteVertexArrays(1, &vertexArrayID);
-	glDeleteProgram(programID);
+	delete grenadeMK2Model;
+	delete grenadeMK2Texture;
 	// Delete Object
 	delete camera;
 	delete grenadeMK2;
+	// Delete shader
+	glDeleteProgram(shaderPBR);
 	// Close OpenGL window and terminate GLFW
+	glDeleteVertexArrays(1, &vertexArrayID);
 	glfwTerminate();
 
 	return 0;

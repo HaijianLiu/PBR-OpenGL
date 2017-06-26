@@ -56,6 +56,7 @@ GLFWwindow* createWindow(const char* name, int screenWidth, int screenHeight) {
 	return window;
 }
 
+
 // Create Vertex Array Object
 GLuint getVertexArray() {
 	GLuint vertexArrayID;
@@ -63,6 +64,7 @@ GLuint getVertexArray() {
 	glBindVertexArray(vertexArrayID);
 	return vertexArrayID;
 }
+
 
 // Draw model
 void updateModel(GLuint vertexBuffer, GLuint uvBuffer, GLuint normalBuffer, unsigned long count) {
@@ -167,10 +169,73 @@ void updateModel(GLuint vertexBuffer, GLuint uvBuffer, GLuint normalBuffer, GLui
 	glDisableVertexAttribArray(4);
 }
 
+
 void updateTexture(GLuint textureID, GLint uniformID, int unit) {
 	// Bind our diffuse texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0 + unit); // GL_TEXTURE0
 	glBindTexture(GL_TEXTURE_2D,textureID);
 	// Set our "DiffuseTextureSampler" sampler to user Texture Unit 0
 	glUniform1i(uniformID,unit);
+}
+
+
+// Class Model
+Model::Model(const char* path) {
+	loadObj(path,vertexBuffer,uvBuffer,normalBuffer,tangentBuffer,bitangentBuffer,count);
+}
+
+Model::~Model() {
+	glDeleteBuffers(1, &vertexBuffer);
+	glDeleteBuffers(1, &uvBuffer);
+	glDeleteBuffers(1, &normalBuffer);
+	glDeleteBuffers(1, &tangentBuffer);
+	glDeleteBuffers(1, &bitangentBuffer);
+}
+
+// Class Texture
+Texture::Texture(const char* diffusePath, const char* normalPath, const char* specPath, const char* aoPath) {
+	texDiffuseID = loadTGA(diffusePath);
+	texNormalID  = loadTGA(normalPath);
+	texSpecID    = loadTGA(specPath);
+	texAOID      = loadTGA(aoPath);
+}
+
+Texture::~Texture() {
+	glDeleteTextures(1, &texDiffuseID);
+	glDeleteTextures(1, &texNormalID);
+	glDeleteTextures(1, &texSpecID);
+	glDeleteTextures(1, &texAOID);
+}
+
+
+// Rendering Object
+void rendering(Object* object, Model* model, Texture* texture, GLuint shader, Camera* camera) {
+	// Use shaders
+	glUseProgram(shader);
+
+	// Matrix
+	glm::mat4 matrixProjection = camera->getMatrixProjection();
+	glm::mat4 matrixView       = camera->getMatrixView();
+	glm::mat4 matrixModel      = object->getMatrixModel();
+	glm::mat4 matrixMVP        = matrixProjection * matrixView * matrixModel;
+	// Get uniform
+	GLuint matrixMVPUniform   = glGetUniformLocation(shader,"matrixMVP"); // Get uniform ID
+	GLuint matrixModelUniform = glGetUniformLocation(shader,"matrixModel"); // Get uniform ID
+	// Send transformation to the currently bound shader,
+	glUniformMatrix4fv(matrixMVPUniform,1,GL_FALSE,&matrixMVP[0][0]);
+	glUniformMatrix4fv(matrixModelUniform,1,GL_FALSE,&matrixModel[0][0]);
+
+	// Texture
+	GLuint texDiffuseUniform  = glGetUniformLocation(shader,"texDiffuse"); // Get uniform ID
+	GLuint texAOUniform       = glGetUniformLocation(shader,"texAO"); // Get uniform ID
+	GLuint texNormalUniform   = glGetUniformLocation(shader,"texNormal"); // Get uniform ID
+	GLuint texSpecUniform     = glGetUniformLocation(shader,"texSpec"); // Get uniform ID
+	// Bind texture in Texture Unit 0 ~
+	updateTexture(texture->texDiffuseID,texDiffuseUniform,0);
+	updateTexture(texture->texNormalID,texNormalUniform,1);
+	updateTexture(texture->texSpecID,texSpecUniform,2);
+	updateTexture(texture->texAOID,texAOUniform,3);
+
+	// Model
+	updateModel(model->vertexBuffer,model->uvBuffer,model->normalBuffer,model->tangentBuffer,model->bitangentBuffer,model->count);
 }

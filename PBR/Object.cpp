@@ -31,6 +31,10 @@ void Object::rotate(float angle, glm::vec3 axis) {
 	rotationAngle = angle;
 }
 
+glm::vec3 Object::getPosition() {
+	return position;
+}
+
 glm::mat4 Object::getMatrixModel() {
 	return glm::rotate(rotationAngle,rotationAxis) * glm::scale(scales) * glm::translate(position);
 }

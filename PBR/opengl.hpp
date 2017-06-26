@@ -14,7 +14,9 @@
 #include "shaderloader.hpp"
 #include "objloader.hpp"
 #include "tgaloader.hpp"
+// Include Object
 #include "Object.hpp"
+#include "Camera.hpp"
 
 /*----------------------------------------------------------------------------*/
 GLFWwindow* createWindow(const char* name, int screenWidth, int screenHeight);

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		603BABFD1F011CA4007A0DCD /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 603BABFB1F011CA4007A0DCD /* Object.cpp */; };
 		60924C2C1EEAEB1700B1D430 /* libGLEW.2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 60924C2B1EEAEB1700B1D430 /* libGLEW.2.0.0.dylib */; };
 		60924C2E1EEAEB2500B1D430 /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 60924C2D1EEAEB2500B1D430 /* libglfw.3.2.dylib */; };
 		60924C351EEAFEB300B1D430 /* objloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60924C331EEAFEB300B1D430 /* objloader.cpp */; };
@@ -30,6 +31,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		603BABFB1F011CA4007A0DCD /* Object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Object.cpp; sourceTree = "<group>"; };
+		603BABFC1F011CA4007A0DCD /* Object.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Object.hpp; sourceTree = "<group>"; };
 		60924C2B1EEAEB1700B1D430 /* libGLEW.2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLEW.2.0.0.dylib; path = ../../../../../usr/local/Cellar/glew/2.0.0/lib/libGLEW.2.0.0.dylib; sourceTree = "<group>"; };
 		60924C2D1EEAEB2500B1D430 /* libglfw.3.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.2.dylib; path = ../../../../../usr/local/Cellar/glfw/3.2.1/lib/libglfw.3.2.dylib; sourceTree = "<group>"; };
 		60924C331EEAFEB300B1D430 /* objloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = objloader.cpp; path = Common/objloader.cpp; sourceTree = "<group>"; };
@@ -93,6 +96,8 @@
 				60924C2F1EEAF61400B1D430 /* Shader */,
 				60C438F91EEAE55F00549AE9 /* Common */,
 				60C438EF1EEAE50C00549AE9 /* main.cpp */,
+				603BABFB1F011CA4007A0DCD /* Object.cpp */,
+				603BABFC1F011CA4007A0DCD /* Object.hpp */,
 				60B0667F1EEE9E9D00D8B7CB /* opengl.cpp */,
 				60B066801EEE9E9D00D8B7CB /* opengl.hpp */,
 			);
@@ -182,6 +187,7 @@
 			files = (
 				60B066841EEEA16F00D8B7CB /* tgaloader.cpp in Sources */,
 				60B066811EEE9E9D00D8B7CB /* opengl.cpp in Sources */,
+				603BABFD1F011CA4007A0DCD /* Object.cpp in Sources */,
 				60B066861EEEE21100D8B7CB /* shaderloader.cpp in Sources */,
 				60924C351EEAFEB300B1D430 /* objloader.cpp in Sources */,
 				60C438F01EEAE50C00549AE9 /* main.cpp in Sources */,

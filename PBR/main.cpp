@@ -16,9 +16,10 @@
 #define FRAGMENTSHADER_GLSL "fragmentshader.glsl"
 #define FILE_OBJ            "WPN_MK2Grenade.obj"
 #define FILE_DIFFUSE_TGA    "WPNT_MK2Grenade_Base_Color.tga"
-#define FILE_AO_TGA         "WPNT_MK2Grenade_Ambient_occlusion.tga"
 #define FILE_NORMAL_TGA     "WPNT_MK2Grenade_Normal_DirectX.tga"
-#define FILE_SPEC_TGA       "WPNT_MK2Grenade_Metallic.tga"
+#define FILE_METAL_TGA      "WPNT_MK2Grenade_Metallic.tga"
+#define FILE_ROUGH_TGA      "WPNT_MK2Grenade_Roughness.tga"
+#define FILE_AO_TGA         "WPNT_MK2Grenade_Ambient_occlusion.tga"
 
 
 int main(void) {
@@ -37,7 +38,7 @@ int main(void) {
 
 	// Load Model & Texture
 	Model* grenadeMK2Model        = new Model(FILE_OBJ);
-	TexturePBR* grenadeMK2Texture = new TexturePBR(FILE_DIFFUSE_TGA,FILE_NORMAL_TGA,FILE_SPEC_TGA,FILE_AO_TGA);
+	TexturePBR* grenadeMK2Texture = new TexturePBR(FILE_DIFFUSE_TGA,FILE_NORMAL_TGA,FILE_METAL_TGA,FILE_ROUGH_TGA,FILE_AO_TGA);
 
 	Model* cubeModel              = new Model("cube.obj");
 

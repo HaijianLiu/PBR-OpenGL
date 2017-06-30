@@ -156,9 +156,9 @@ delete model;
 /*----------------------------------------------------------------------------*/
 class TexturePBR {
 public:
-	TexturePBR (const char* diffusePath, const char* normalPath, const char* specPath, const char* aoPath);
+	TexturePBR (const char* diffusePath, const char* normalPath, const char* MetalPath, const char* roughPath, const char* aoPath);
 	virtual ~TexturePBR ();
-	GLuint texDiffuseID, texNormalID, texSpecID, texAOID;
+	GLuint texDiffuseID, texNormalID, texMetalID, texRoughID, texAOID;
 };
 /*------------------------------------------------------------------------------
 < Texture Class >
@@ -169,12 +169,12 @@ Store textureIDs
 ................................................................................
 Members:
 
-const char* diffusePath, normalPath, specPath, aoPath : texture file path
-GLuint texDiffuseID, texNormalID, texSpecID, texAOID : textureIDs
+const char* diffusePath, normalPath, MetalPath, aoPath : texture file path
+GLuint texDiffuseID, texNormalID, texMetalID, texAOID : textureIDs
 ................................................................................
 Example:
 
-Texture* texture = new Texture(diffusePath, normalPath, specPath, aoPath);
+Texture* texture = new Texture(diffusePath, normalPath, MetalPath, aoPath);
 ...
 delete texture;
 ------------------------------------------------------------------------------*/

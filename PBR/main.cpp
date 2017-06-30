@@ -4,6 +4,9 @@
 // Include header file
 #include "opengl.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 
 // Define settings
 #define WINDOW_NAME "PBR"
@@ -26,24 +29,68 @@ int main(void) {
 	GLFWwindow* window = createWindow(WINDOW_NAME,SCREEN_WIDTH,SCREEN_HEIGHT);
 	// Create Vertex Array Object
 	GLuint vertexArrayID = getVertexArray();
+
 	// Create and compile GLSL program from the shaders
 	GLuint shaderPBR = loadShader(VERTEXSHADER_GLSL,FRAGMENTSHADER_GLSL);
+
+	GLuint shaderHDR = loadShader("hdrVertex.glsl","hdrFragment.glsl");
+
 	// Load Model & Texture
-	Model* grenadeMK2Model     = new Model(FILE_OBJ);
-	Texture* grenadeMK2Texture = new Texture(FILE_DIFFUSE_TGA,FILE_NORMAL_TGA,FILE_SPEC_TGA,FILE_AO_TGA);
+	Model* grenadeMK2Model        = new Model(FILE_OBJ);
+	TexturePBR* grenadeMK2Texture = new TexturePBR(FILE_DIFFUSE_TGA,FILE_NORMAL_TGA,FILE_SPEC_TGA,FILE_AO_TGA);
+
+	Model* cubeModel              = new Model("cube.obj");
+
+
+
+// =============================================================================
+	// stbi_set_flip_vertically_on_load(true);
+	// int width, height, nrComponents;
+	// float *data = stbi_loadf("/Users/haijian/Documents/OpenGL/PBR/PBR/Texture/hdrvfx_0012_sand_v11_Ref.hdr", &width, &height, &nrComponents, 0);
+	// unsigned int hdrTexture;
+	// if (data)
+	// {
+	// 	glGenTextures(1, &hdrTexture);
+	// 	glBindTexture(GL_TEXTURE_2D, hdrTexture);
+	// 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data);
+	//
+	// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//
+	// 	stbi_image_free(data);
+	// }
+	// else
+	// {
+	// 	std::cout << "Failed to load HDR image." << std::endl;
+	// }
+// =============================================================================
+
+
+
 	// Create Camera & Object
 	Camera* camera     = new Camera;
 	Object* grenadeMK2 = new Object;
+	// Object* cube       = new Object;
 
 
 	do {
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		// Update object and camera position
 		grenadeMK2->rotate(0.5 * currentTime(),glm::vec3(0,1,0));
 		camera->setTarget(grenadeMK2->getPosition() + glm::vec3(0,6,0));
+
+		// cube->scale(5.0,5.0,5.0);
+		// rendering(cube,cubeModel,hdrTexture,shaderHDR,camera);
+
 		// rendering object using (model,texture,shader) in the view of camera
 		rendering(grenadeMK2,grenadeMK2Model,grenadeMK2Texture,shaderPBR,camera);
+
+
+
 		// Swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();

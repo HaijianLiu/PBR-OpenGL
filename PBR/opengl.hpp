@@ -154,10 +154,10 @@ delete model;
 
 
 /*----------------------------------------------------------------------------*/
-class Texture {
+class TexturePBR {
 public:
-	Texture (const char* diffusePath, const char* normalPath, const char* specPath, const char* aoPath);
-	virtual ~Texture ();
+	TexturePBR (const char* diffusePath, const char* normalPath, const char* specPath, const char* aoPath);
+	virtual ~TexturePBR ();
 	GLuint texDiffuseID, texNormalID, texSpecID, texAOID;
 };
 /*------------------------------------------------------------------------------
@@ -181,7 +181,7 @@ delete texture;
 
 
 /*----------------------------------------------------------------------------*/
-void rendering(Object* object, Model* model, Texture* texture, GLuint shader, Camera* camera);
+void rendering(Object* object, Model* model, TexturePBR* texture, GLuint shader, Camera* camera);
 /*------------------------------------------------------------------------------
 < Rendering Object >
 
@@ -200,5 +200,7 @@ Example:
 
 rendering(object,model,texture,shader,camera);
 ------------------------------------------------------------------------------*/
+
+void rendering(Object* object, Model* model, unsigned int texture, GLuint shader, Camera* camera);
 
 #endif /* opengl_hpp */

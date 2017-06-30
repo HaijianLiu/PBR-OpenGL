@@ -39,6 +39,9 @@
 		603BABFC1F011CA4007A0DCD /* Object.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Object.hpp; sourceTree = "<group>"; };
 		603BABFE1F0137BB007A0DCD /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
 		603BABFF1F0137BB007A0DCD /* Camera.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Camera.hpp; sourceTree = "<group>"; };
+		6055058E1F040ADE00071511 /* stb_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stb_image.h; path = Common/stb_image.h; sourceTree = "<group>"; };
+		6055058F1F040CB400071511 /* hdrFragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = hdrFragment.glsl; path = Shader/hdrFragment.glsl; sourceTree = "<group>"; };
+		605505901F040CB400071511 /* hdrVertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = hdrVertex.glsl; path = Shader/hdrVertex.glsl; sourceTree = "<group>"; };
 		60924C2B1EEAEB1700B1D430 /* libGLEW.2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLEW.2.0.0.dylib; path = ../../../../../usr/local/Cellar/glew/2.0.0/lib/libGLEW.2.0.0.dylib; sourceTree = "<group>"; };
 		60924C2D1EEAEB2500B1D430 /* libglfw.3.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.2.dylib; path = ../../../../../usr/local/Cellar/glfw/3.2.1/lib/libglfw.3.2.dylib; sourceTree = "<group>"; };
 		60924C331EEAFEB300B1D430 /* objloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = objloader.cpp; path = Common/objloader.cpp; sourceTree = "<group>"; };
@@ -73,6 +76,8 @@
 		60924C2F1EEAF61400B1D430 /* Shader */ = {
 			isa = PBXGroup;
 			children = (
+				6055058F1F040CB400071511 /* hdrFragment.glsl */,
+				605505901F040CB400071511 /* hdrVertex.glsl */,
 				60B066881EEEF39000D8B7CB /* fragmentshader.glsl */,
 				60B066891EEEF39000D8B7CB /* vertexshader.glsl */,
 			);
@@ -127,6 +132,7 @@
 		60C438F91EEAE55F00549AE9 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				6055058E1F040ADE00071511 /* stb_image.h */,
 				60B066871EEEE21C00D8B7CB /* shaderloader.hpp */,
 				60B066851EEEE21100D8B7CB /* shaderloader.cpp */,
 				60B066821EEEA16F00D8B7CB /* tgaloader.cpp */,

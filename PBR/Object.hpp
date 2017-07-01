@@ -12,6 +12,7 @@ public:
 	Object ();
 	void translate(float x, float y, float z);
 	void scale(float x, float y, float z);
+	void scale(float x);
 	void rotate(float angle, glm::vec3 axis);
 	glm::vec3 getPosition();
 	glm::mat4 getMatrixModel();

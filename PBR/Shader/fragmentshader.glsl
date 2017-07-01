@@ -15,10 +15,9 @@ uniform sampler2D texRough;
 uniform sampler2D texAO;
 uniform mat4 matrixModel;
 float PI = 3.14159265359;
-
-
+float roughness = 0.5;
 float specular(float cosHalfway, float roughness) {
-	return pow(cosHalfway,roughness);
+	return pow(cosHalfway,roughness); // 1/2 2 = 1/4   1/3 2 = 1/9    1/4 2 = 1/6
 }
 
 float fresnelSchlick(float cosView, float n, float roughness) {
@@ -141,6 +140,7 @@ void main(){
 	float cosLight   = max(dot(normalWorldspace,lightDirectionWorldspace),0);
 	float cosHalfway = max(dot(normalWorldspace,halfwayDirectionWorldspace),0);
 
+
 	color =
 
 	hdrColor *
@@ -151,7 +151,9 @@ void main(){
 		1 -
 		fresnelSchlick(cosView,materialDiffuseColor,materialMetallicColor) * specular(cosHalfway,10*(1-materialRoughnessColor.x))
 	)
-	- 0.9 * materialAmbientColor;
+	- 0.5 * materialAmbientColor;
+
+	color = max(vec3(0),color);
 
 	// (1-materialMetallicColor) *
 	// (
@@ -175,7 +177,7 @@ void main(){
 	// (1 - materialMetallicColor) * (fresnelSchlick(cosView,2.8735,0.7) * materialDiffuseColor + lightColor * 0.05/0.7 * specular(cosHalfway,10/0.7))
 	// + materialMetallicColor * (fresnelSchlick(cosView,1.6232,0.15) * 3 * materialDiffuseColor + lightColor * 0.05/0.15 * specular(cosHalfway,10/0.15))
 	// - 0.7 * materialAmbientColor;
-	color *= 3;
+	color *= 8;
 
 
 	// float metallic = 0;

@@ -26,6 +26,9 @@ void Object::translate(float x, float y, float z) {
 void Object::scale(float x, float y, float z) {
 	scales = glm::vec3(x,y,z);
 }
+void Object::scale(float x) {
+	scales = glm::vec3(x,x,x);
+}
 void Object::rotate(float angle, glm::vec3 axis) {
 	rotationAxis  = axis;
 	rotationAngle = angle;

@@ -87,7 +87,7 @@ int main(void) {
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		grenadeMK2->scale(0.3);
+		grenadeMK2->scale(0.8);
 		// Update object and camera position
 		grenadeMK2->rotate(0.3 * currentTime(),glm::vec3(0,1,0));
 

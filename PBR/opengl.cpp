@@ -196,7 +196,7 @@ Model::~Model() {
 TexturePBR::TexturePBR(const char* diffusePath, const char* normalPath, const char* MetalPath, const char* roughPath, const char* aoPath) {
 	texDiffuseID = loadTGA(diffusePath);
 	texNormalID  = loadTGA(normalPath);
-	texMetalID    = loadTGA(MetalPath);
+	texMetalID   = loadTGA(MetalPath);
 	texRoughID   = loadTGA(roughPath);
 	texAOID      = loadTGA(aoPath);
 }
@@ -205,6 +205,7 @@ TexturePBR::~TexturePBR() {
 	glDeleteTextures(1, &texDiffuseID);
 	glDeleteTextures(1, &texNormalID);
 	glDeleteTextures(1, &texMetalID);
+	glDeleteTextures(1, &texRoughID);
 	glDeleteTextures(1, &texAOID);
 }
 
@@ -231,11 +232,13 @@ void rendering(Object* object, Model* model, TexturePBR* texture, GLuint shader,
 	GLuint texAOUniform       = glGetUniformLocation(shader,"texAO"); // Get uniform ID
 	GLuint texNormalUniform   = glGetUniformLocation(shader,"texNormal"); // Get uniform ID
 	GLuint texMetalUniform    = glGetUniformLocation(shader,"texMetal"); // Get uniform ID
+	GLuint texRoughUniform    = glGetUniformLocation(shader,"texRough"); // Get uniform ID
 	// Bind texture in Texture Unit 0 ~
 	updateTexture(texture->texDiffuseID,texDiffuseUniform,0);
 	updateTexture(texture->texNormalID,texNormalUniform,1);
 	updateTexture(texture->texMetalID,texMetalUniform,2);
-	updateTexture(texture->texAOID,texAOUniform,3);
+	updateTexture(texture->texRoughID,texRoughUniform,3);
+	updateTexture(texture->texAOID,texAOUniform,4);
 
 	// Model
 	updateModel(model->vertexBuffer,model->uvBuffer,model->normalBuffer,model->tangentBuffer,model->bitangentBuffer,model->count);

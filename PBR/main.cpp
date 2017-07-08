@@ -43,6 +43,24 @@ int main(void) {
 
 	GLuint shaderHDR  = loadShader("hdrVertex.glsl","hdrFragment.glsl");
 
+
+	// =============================================================================
+	// configure global opengl state
+	// -----------------------------
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL); // set depth function to less than AND equal for skybox depth trick.
+
+	// activate the shader
+	glUseProgram(shaderHDR);
+	// utility uniform functions
+	glUniform3f(glGetUniformLocation(shaderHDR,"albedo"),0.5f,0.0f,0.0f);
+	glUniform1f(glGetUniformLocation(shaderHDR,"ao"),1.0f);
+
+
+
+	// =============================================================================
+
+
 	// Load Model & Texture
 	Model* grenadeMK2Model        = new Model(FILE_OBJ);
 	TexturePBR* grenadeMK2Texture = new TexturePBR(FILE_DIFFUSE_TGA,FILE_NORMAL_TGA,FILE_METAL_TGA,FILE_ROUGH_TGA,FILE_AO_TGA);

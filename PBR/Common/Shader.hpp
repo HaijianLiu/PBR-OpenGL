@@ -1,10 +1,28 @@
-#ifndef Shader_hpp
-#define Shader_hpp
+#ifndef shaderloader_hpp
+#define shaderloader_hpp
+
+/*----------------------------------------------------------------------------*/
+GLuint loadShader(std::string vertexPath, std::string fragmentPath);
+/*------------------------------------------------------------------------------
+< Load Shaders >
+
+Load vertexshader and fragmentshader
+Create and compile GLSL program from the shaders
+................................................................................
+Return:
+
+GLuint programID
+................................................................................
+Example:
+
+GLuint programID = loadShader("vertexshader.glsl","fragmentshader.glsl");
+------------------------------------------------------------------------------*/
+
 
 /*----------------------------------------------------------------------------*/
 class Shader {
 public:
-	unsigned int programID;
+	GLuint programID;
 	// constructor generates the shader on the fly
 	Shader(const char* vertexPath, const char* fragmentPath);
 	virtual ~Shader ();
@@ -23,9 +41,6 @@ public:
 	void setMat2(const char* name, glm::mat2 mat);
 	void setMat3(const char* name, glm::mat3 mat);
 	void setMat4(const char* name, glm::mat4 mat);
-
-private:
-	unsigned int loadShader(std::string vertexPath, std::string fragmentPath);
 };
 /*------------------------------------------------------------------------------
 < Shader Class >
@@ -36,33 +51,13 @@ Create uniforms
 ................................................................................
 Members:
 
-unsigned int programID
+GLuint programID
 ................................................................................
 Example:
 
 Shader* shader = new Shader(vertexPath,fragmentPath);
 ...
 delete shader;
-
-Shader shader = Shader(vertexPath,fragmentPath);
-------------------------------------------------------------------------------*/
-
-
-/*----------------------------------------------------------------------------*/
-// unsigned int loadShader(std::string vertexPath, std::string fragmentPath);
-/*------------------------------------------------------------------------------
-< Load Shaders >
-
-Load vertexshader and fragmentshader
-Create and compile GLSL program from the shaders
-................................................................................
-Return:
-
-unsigned int programID
-................................................................................
-Example:
-
-unsigned int programID = loadShader("vertexshader.glsl","fragmentshader.glsl");
 ------------------------------------------------------------------------------*/
 
 

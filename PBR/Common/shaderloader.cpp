@@ -1,168 +1,285 @@
 // Include standard headers
 #include <iostream>
-#include <sstream>
-#include <fstream>
-#include <string>
-#include <vector>
 
 // Include GLEW (include before gl.h and glfw.h)
 #include <GL/glew.h>
 // Include GLFW
 #include <GLFW/glfw3.h>
-// Include GLM
-#include <glm/glm.hpp>
-// #include <glm/gtx/transform.hpp>
-// #include <glm/gtc/matrix_transform.hpp>
 
 // Include header file
-#include "shaderloader.hpp"
+#include "tgaloader.hpp"
 
 
-GLuint loadShader(std::string vertexPath, std::string fragmentPath) {
+GLuint loadTGA(const char* path){
 
 	// Set path
 	std::string currentDir = __FILE__;
 	std::string targetDir = currentDir.substr(0,currentDir.rfind("/"));
-	targetDir = targetDir.substr(0,targetDir.rfind("/")) + "/Shader/";
-	vertexPath = targetDir + vertexPath;
-	fragmentPath = targetDir + fragmentPath;
+	targetDir = targetDir.substr(0,targetDir.rfind("/")) + "/Texture/";
+	path = targetDir.append(path).c_str();
+	printf("[loadTGA] Loading TGA file... <%s>\n",path); // Debug Information
 
-	// Create the shaders
-	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+	// File Header To Determine File Type
+	unsigned char header[18];
 
-	// Read the Vertex Shader code from the file
-	std::string vertexShaderCode;
-	std::ifstream vertexShaderStream(vertexPath,std::ios::in);
-	if (vertexShaderStream.is_open()) {
-		std::string line = "";
-		while (getline(vertexShaderStream,line)) {
-			vertexShaderCode += "\n" + line;
-		}
-		vertexShaderStream.close();
-	} else {
-		printf("[loadShader] Impossible to open: <%s>\n",vertexPath.c_str());
+	FILE* file;              // Declare File Pointer
+	file = fopen(path,"rb"); // Open File For Reading
+
+	// Attempt To Open The File Header
+	if (file == NULL) {
+		printf("[ERROR] Impossible to open.\n"); // Debug Information
+		return 0;
+	}
+	// Attempt To Read The File Header
+	if (fread(&header,sizeof(header),1,file) == 0) {
+		printf("[ERROR] Impossible to read\n"); // Debug Information
 		return 0;
 	}
 
-	// Read the Fragment Shader code from the file
-	std::string fragmentShaderCode;
-	std::ifstream fragmentShaderStream(fragmentPath,std::ios::in);
-	if (fragmentShaderStream.is_open()) {
-		std::string line = "";
-		while (getline(fragmentShaderStream,line)) {
-			fragmentShaderCode += "\n" + line;
-		}
-		fragmentShaderStream.close();
+	// Debug Information output first 18 bytes header
+	printf("Header: [ ");
+	for (int i = 0; i < 18; i++) {
+		printf("%d ", header[i]);
+	}
+	printf("]\n");
+
+	// If The File Header Matches The Uncompressed Header
+	if (header[2] >= 1 && header[2] <= 3) {
+		// Load An Uncompressed TGA
+		printf("Uncompressed "); // Debug Information
+		return loadUncompressedTGA(path,file,header);
+	} else
+	// If The File Header Matches The Compressed Header
+	if (header[2] >= 9 && header[2] <= 11) {
+		// Load A Compressed TGA
+		printf("Compressed "); // Debug Information
+		return loadRLEcompressedTGA(path,file,header);
 	} else {
-		printf("[loadShader] Impossible to open: <%s>\n",fragmentPath.c_str());
+		// If It Doesn't Match Either One
+		printf("[ERROR] Not a right TGA file.\n"); // Debug Information
 		return 0;
 	}
+}
 
-	GLint result = GL_FALSE;
-	int infoLogLength;
+// Load An Uncompressed TGA!
+GLuint loadUncompressedTGA(const char* path, FILE* file, unsigned char* header) {
 
-	// Compile Vertex Shader
-	printf("[loadShader] Compiling shader: <%s>\n",vertexPath.c_str());
-	const char* vertexSourcePointer = vertexShaderCode.c_str();
-	glShaderSource(vertexShaderID,1,&vertexSourcePointer,NULL);
-	glCompileShader(vertexShaderID);
-	// Check Vertex Shader
-	glGetShaderiv(vertexShaderID,GL_COMPILE_STATUS,&result);
-	glGetShaderiv(vertexShaderID,GL_INFO_LOG_LENGTH,&infoLogLength);
-	if (infoLogLength > 0) {
-		std::vector<char> vertexShaderErrorMessage(infoLogLength+1);
-		glGetShaderInfoLog(vertexShaderID,infoLogLength,NULL,&vertexShaderErrorMessage[0]);
-		printf("%s\n", &vertexShaderErrorMessage[0]);
+	// imageSize: Amount Of Memory Needed To Hold The Image
+	unsigned int width, height, bpp, type = 0, imageSize;
+	// Actual image data
+	unsigned char * data;
+
+	bpp = header[16]; // Calculate Bits Per Pixel
+
+	// Check for Image type (field 3)
+	// 1 uncompressed color-mapped image
+	if (header[2] == 1) {
+		printf("color-mapped.\n"); // Debug Information
+		printf("[ERROR] Unupported color-mapped (index) image.\n"); // Debug Information
+		return 0;               // If Not, Return False
+	}
+	// 2 uncompressed true-color image
+	if (header[2] == 2) {
+		printf("true-color "); // Debug Information
+		// RGB or RGBA channel
+		if (bpp == 24) {
+			printf("RGB ");
+			type = 0;
+		} else {
+			printf("RGBA ");
+			type = 1;
+		}
+	}
+	// 3 uncompressed black-and-white (grayscale) image
+	if (header[2] == 3) {
+		printf("black-and-white (grayscale) "); // Debug Information
+		type = 2;
 	}
 
-	// Compile Fragment Shader
-	printf("[loadShader] Compiling shader: <%s>\n",fragmentPath.c_str());
-	const char* fragmentSourcePointer = fragmentShaderCode.c_str();
-	glShaderSource(fragmentShaderID,1,&fragmentSourcePointer,NULL);
-	glCompileShader(fragmentShaderID);
-	// Check Fragment Shader
-	glGetShaderiv(fragmentShaderID,GL_COMPILE_STATUS,&result);
-	glGetShaderiv(fragmentShaderID,GL_INFO_LOG_LENGTH,&infoLogLength);
-	if (infoLogLength > 0){
-		std::vector<char> fragmentShaderErrorMessage(infoLogLength+1);
-		glGetShaderInfoLog(fragmentShaderID,infoLogLength,NULL,&fragmentShaderErrorMessage[0]);
-		printf("%s\n",&fragmentShaderErrorMessage[0]);
+	// Calculate image size
+	width  = header[13] * 256 + header[12];
+	height = header[15] * 256 + header[14];
+	// Calculate Memory Needed To Store Image
+	imageSize = bpp/8 * width * height;
+	printf("< %d X %d >.\n",width,height);
+
+	// Allocate Memory : Create a buffer
+	data = new unsigned char [imageSize];
+	if (data == NULL) {           // Make Sure It Was Allocated Ok
+		printf("[ERROR] Can't Allocate Memory.\n"); // Debug Information
+		return 0;               // If Not, Return False
+	}
+	// Attempt To Read All The Image Data
+	if (fread(data,1,imageSize,file) != imageSize) {
+		printf("[ERROR] Can't read the image.\n"); // Debug Information
+		return 0;
+	}
+	// Everything is in memory, closed the file
+	fclose (file);
+	// Create one OpenGL texture
+	GLuint textureID;
+	glGenTextures(1,&textureID);
+	// "Bind" the newly created texture : all future texture functions will modify this texture
+	glBindTexture(GL_TEXTURE_2D,textureID);
+	// Give the image to OpenGL
+	switch (type) {
+		case 0:
+		glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,width,height,0,GL_BGR,GL_UNSIGNED_BYTE,data);
+		break;
+		case 1:
+		glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,width,height,0,GL_BGRA,GL_UNSIGNED_BYTE,data);
+		break;
+		case 2:
+		glTexImage2D(GL_TEXTURE_2D,0,GL_DEPTH_COMPONENT,width,height,0,GL_DEPTH_COMPONENT,GL_UNSIGNED_BYTE,data);
+		break;
+	}
+	// delete image data
+	delete [] data;
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	// Return the ID of the texture we just created
+	return textureID;
+}
+
+GLuint loadRLEcompressedTGA(const char* path, FILE* file, unsigned char* header){
+	// imageSize: Amount Of Memory Needed To Hold The Image
+	unsigned int width, height, bpp, type = 0, imageSize;
+	// Actual image data
+	unsigned char * data;
+
+	bpp = header[16]; // Calculate Bits Per Pixel
+
+	// Check for Image type (field 3)
+	// 1 uncompressed color-mapped image
+	if (header[2] == 1) {
+		printf("color-mapped.\n"); // Debug Information
+		printf("[ERROR] Unupported color-mapped (index) image.\n"); // Debug Information
+		return 0;               // If Not, Return False
+	}
+	// 2 uncompressed true-color image
+	if (header[2] == 10) {
+		printf("true-color "); // Debug Information
+		// RGB or RGBA channel
+		if (bpp == 24) {
+			printf("RGB ");
+			type = 0;
+		} else {
+			printf("RGBA ");
+			type = 1;
+		}
+	}
+	// 3 uncompressed black-and-white (grayscale) image
+	if (header[2] == 11) {
+		printf("black-and-white (grayscale) "); // Debug Information
+		type = 2;
 	}
 
-	// Link the program
-	printf("[loadShader] Linking program.\n");
-	GLuint programID = glCreateProgram();
-	glAttachShader(programID,vertexShaderID);
-	glAttachShader(programID,fragmentShaderID);
-	glLinkProgram(programID);
-	// Check the program
-	glGetProgramiv(programID,GL_LINK_STATUS,&result);
-	glGetProgramiv(programID,GL_INFO_LOG_LENGTH,&infoLogLength);
-	if (infoLogLength > 0) {
-		std::vector<char> programErrorMessage(infoLogLength+1);
-		glGetProgramInfoLog(programID,infoLogLength,NULL,&programErrorMessage[0]);
-		printf("%s\n",&programErrorMessage[0]);
+	// Calculate image size
+	width  = header[13] * 256 + header[12];
+	height = header[15] * 256 + header[14];
+	// Calculate Memory Needed To Store Image
+	imageSize = bpp/8 * width * height;
+	printf("< %d X %d >.\n",width,height);
+
+	// Allocate Memory : Create a buffer
+	data = new unsigned char [imageSize];
+	if (data == NULL) {       // Make Sure It Was Allocated Ok
+		printf("[ERROR] Can't Allocate Memory.\n"); // Debug Information
+		return 0;               // If Not, Return False
 	}
 
-	// Detach shader
-	glDetachShader(programID, vertexShaderID);
-	glDetachShader(programID, fragmentShaderID);
-	// Delete shader
-	glDeleteShader(vertexShaderID);
-	glDeleteShader(fragmentShaderID);
+	unsigned int pixelCount = width * height; // Number Of Pixels In The Image
+	unsigned int currentPixel = 0;            // Current Pixel We Are Reading From Data
+	unsigned int currentByte  = 0;            // Current Byte We Are Writing Into Imagedata
+	unsigned int bytePerPixel = bpp/8;
+	// Storage For 1 Pixel
+	unsigned char* colorBuffer = new unsigned char [bytePerPixel] ;
 
-	return programID;
-}
+	// Read TGA file
+	do {
+		unsigned int chunkHeader = 0; // Variable To Store The Value Of The Id Chunk
+		if (fread(&chunkHeader,1,1,file) == 0) { // Attempt To Read The Chunk's Header
+			printf("[ERROR] Can't Read The Chunk's Header.\n"); // Debug Information
+			return 0; // If It Fails, Return False
+		}
+		// Debug Information for chunkHeader and currentPixel// std::cout << chunkHeader << "[" << currentPixel << "]" << pixelCount << '\n';
+		if (chunkHeader < 128) { // If The Chunk Is A RAW Chunk
+			chunkHeader++; // Add 1 To The Value To Get Total Number Of Raw Pixels
+			// Repetition Count specifies how many pixel values are actually contained in the next field
+			// Start Pixel Reading Loop
+			for (int i = 0; i < chunkHeader; i++) {
+				// Try To Read 1 Pixel
+				if (fread(colorBuffer,1,bytePerPixel,file) == 0) {
+					printf("[ERROR] Can't Read The Pixels (RAW Chunk).\n"); // Debug Information
+					return 0;
+				}
+				// Dubug Information : the value of colorBuffer // printf("%d\n",colorBuffer[0]); // printf("%d\n",colorBuffer[1]); // printf("%d\n",colorBuffer[2]);
+				// Take the color values stored in colorbuffer and writing them to the imageData variable to be used later
+				data[currentByte] = colorBuffer[0];   // Write The 'B' Byte
+				data[currentByte+1] = colorBuffer[1]; // Write The 'G' Byte
+				data[currentByte+2] = colorBuffer[2]; // Write The 'R' Byte
+				if(bytePerPixel == 4) { // If It's A 32bpp Image...
+					data[currentByte+3] = colorBuffer[3]; // Write The 'A' Byte
+				}
+				// Increment The Byte Counter By The Number Of Bytes In A Pixel
+				currentByte += bytePerPixel;
+				currentPixel++; // Increment The Number Of Pixels By 1
+			}
+		} else { // If It's An RLE Header. Subtract 127 from the chunkheader to get the amount of times the next color is repeated
+			// this count indicates how many successive pixels have the pixel value specified by the Pixel Value field
+			chunkHeader -= 127; // Subtract 127 To Get Rid Of The ID Bit
+			// Try To Read 1 Pixel
+			if (fread(colorBuffer,1,bytePerPixel,file) == 0) {
+				printf("[ERROR] Can't Read The Pixels (RLE Chunk).\n"); // Debug Information
+				return 0;
+			}
+			// Dubug Information : the value of colorBuffer // printf("%d\n",colorBuffer[0]); // printf("%d\n",colorBuffer[1]); // printf("%d\n",colorBuffer[2]);
+			// Start Pixel Reading Loop
+			for (int i = 0; i < chunkHeader; i++) {
+				// Take the color values stored in colorbuffer and writing them to the imageData variable to be used later
+				data[currentByte] = colorBuffer[0];   // Write The 'B' Byte
+				data[currentByte+1] = colorBuffer[1]; // Write The 'G' Byte
+				data[currentByte+2] = colorBuffer[2]; // Write The 'R' Byte
+				if(bytePerPixel == 4) { // If It's A 32bpp Image...
+					data[currentByte+3] = colorBuffer[3]; // Write The 'A' Byte
+				}
+				// Increment The Byte Counter By The Number Of Bytes In A Pixel
+				currentByte += bytePerPixel;
+				currentPixel++; // Increment The Number Of Pixels By 1
+			}
+		}
+	} while(currentPixel < pixelCount); // More Pixels To Read? ... Start Loop Over
+	// Everything is in memory, closed the file
+	fclose (file);
+	// Create one OpenGL texture
+	GLuint textureID;
+	glGenTextures(1,&textureID);
+	// "Bind" the newly created texture : all future texture functions will modify this texture
+	glBindTexture(GL_TEXTURE_2D,textureID);
+	// Give the image to OpenGL
+	switch (type) {
+		case 0:
+		glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,width,height,0,GL_BGR,GL_UNSIGNED_BYTE,data);
+		break;
+		case 1:
+		glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,width,height,0,GL_BGRA,GL_UNSIGNED_BYTE,data);
+		break;
+		case 2:
+		glTexImage2D(GL_TEXTURE_2D,0,GL_DEPTH_COMPONENT,width,height,0,GL_DEPTH_COMPONENT,GL_UNSIGNED_BYTE,data);
+		break;
+	}
+	// delete image data
+	delete [] data;
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glGenerateMipmap(GL_TEXTURE_2D);
 
-
-/*------------------------------------------------------------------------------
-< Shader Class >
-------------------------------------------------------------------------------*/
-Shader::Shader(const char* vertexPath, const char* fragmentPath) {
-	programID = loadShader(vertexPath,fragmentPath);
-}
-Shader::~Shader() {
-	glDeleteProgram(programID);
-}
-// activate the shader
-void Shader::use() {
-	glUseProgram(programID);
-}
-// utility uniform functions
-void Shader::setBool(const char* name, bool value) {
-	glUniform1i(glGetUniformLocation(programID,name), (int)value );
-}
-void Shader::setInt(const char* name, int value) {
-	glUniform1i(glGetUniformLocation(programID, name), value);
-}
-void Shader::setFloat(const char* name, float value) {
-	glUniform1f(glGetUniformLocation(programID, name), value);
-}
-void Shader::setVec2(const char* name, glm::vec2 value) {
-	glUniform2fv(glGetUniformLocation(programID, name), 1, &value[0]);
-}
-void Shader::setVec2(const char* name, float x, float y) {
-	glUniform2f(glGetUniformLocation(programID, name), x, y);
-}
-void Shader::setVec3(const char* name, glm::vec3 value) {
-	glUniform3fv(glGetUniformLocation(programID, name), 1, &value[0]);
-}
-void Shader::setVec3(const char* name, float x, float y, float z) {
-	glUniform3f(glGetUniformLocation(programID, name), x, y, z);
-}
-void Shader::setVec4(const char* name, glm::vec4 value) {
-	glUniform4fv(glGetUniformLocation(programID, name), 1, &value[0]);
-}
-void Shader::setVec4(const char* name, float x, float y, float z, float w) {
-	glUniform4f(glGetUniformLocation(programID, name), x, y, z, w);
-}
-void Shader::setMat2(const char* name, glm::mat2 mat) {
-	glUniformMatrix2fv(glGetUniformLocation(programID, name), 1, GL_FALSE, &mat[0][0]);
-}
-void Shader::setMat3(const char* name, glm::mat3 mat) {
-	glUniformMatrix3fv(glGetUniformLocation(programID, name), 1, GL_FALSE, &mat[0][0]);
-}
-void Shader::setMat4(const char* name, glm::mat4 mat) {
-	glUniformMatrix4fv(glGetUniformLocation(programID, name), 1, GL_FALSE, &mat[0][0]);
+	// Return the ID of the texture we just created
+	return textureID;
 }

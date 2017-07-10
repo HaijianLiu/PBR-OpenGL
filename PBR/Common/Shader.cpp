@@ -17,70 +17,19 @@
 // Include header file
 #include "Shader.hpp"
 
-/*------------------------------------------------------------------------------
-< Shader Class >
-------------------------------------------------------------------------------*/
-Shader::Shader(const char* vertexPath, const char* fragmentPath) {
-	programID = loadShader(vertexPath,fragmentPath);
-}
-Shader::~Shader() {
-	glDeleteProgram(programID);
-}
-// activate the shader
-void Shader::use() {
-	glUseProgram(programID);
-}
-// utility uniform functions
-void Shader::setBool(const char* name, bool value) {
-	glUniform1i(glGetUniformLocation(programID,name), (int)value );
-}
-void Shader::setInt(const char* name, int value) {
-	glUniform1i(glGetUniformLocation(programID, name), value);
-}
-void Shader::setFloat(const char* name, float value) {
-	glUniform1f(glGetUniformLocation(programID, name), value);
-}
-void Shader::setVec2(const char* name, glm::vec2 value) {
-	glUniform2fv(glGetUniformLocation(programID, name), 1, &value[0]);
-}
-void Shader::setVec2(const char* name, float x, float y) {
-	glUniform2f(glGetUniformLocation(programID, name), x, y);
-}
-void Shader::setVec3(const char* name, glm::vec3 value) {
-	glUniform3fv(glGetUniformLocation(programID, name), 1, &value[0]);
-}
-void Shader::setVec3(const char* name, float x, float y, float z) {
-	glUniform3f(glGetUniformLocation(programID, name), x, y, z);
-}
-void Shader::setVec4(const char* name, glm::vec4 value) {
-	glUniform4fv(glGetUniformLocation(programID, name), 1, &value[0]);
-}
-void Shader::setVec4(const char* name, float x, float y, float z, float w) {
-	glUniform4f(glGetUniformLocation(programID, name), x, y, z, w);
-}
-void Shader::setMat2(const char* name, glm::mat2 mat) {
-	glUniformMatrix2fv(glGetUniformLocation(programID, name), 1, GL_FALSE, &mat[0][0]);
-}
-void Shader::setMat3(const char* name, glm::mat3 mat) {
-	glUniformMatrix3fv(glGetUniformLocation(programID, name), 1, GL_FALSE, &mat[0][0]);
-}
-void Shader::setMat4(const char* name, glm::mat4 mat) {
-	glUniformMatrix4fv(glGetUniformLocation(programID, name), 1, GL_FALSE, &mat[0][0]);
-}
 
-unsigned int Shader::loadShader(std::string vertexPath, std::string fragmentPath) {
+GLuint loadShader(std::string vertexPath, std::string fragmentPath) {
 
 	// Set path
 	std::string currentDir = __FILE__;
 	std::string targetDir = currentDir.substr(0,currentDir.rfind("/"));
-	// targetDir = targetDir.substr(0,targetDir.rfind("/")) + "/Shader/";
-	targetDir += "/Shader/";
+	targetDir = targetDir.substr(0,targetDir.rfind("/")) + "/Shader/";
 	vertexPath = targetDir + vertexPath;
 	fragmentPath = targetDir + fragmentPath;
 
 	// Create the shaders
-	unsigned int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-	unsigned int fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
 	// Read the Vertex Shader code from the file
 	std::string vertexShaderCode;
@@ -143,7 +92,7 @@ unsigned int Shader::loadShader(std::string vertexPath, std::string fragmentPath
 
 	// Link the program
 	printf("[loadShader] Linking program.\n");
-	unsigned int programID = glCreateProgram();
+	GLuint programID = glCreateProgram();
 	glAttachShader(programID,vertexShaderID);
 	glAttachShader(programID,fragmentShaderID);
 	glLinkProgram(programID);
@@ -164,4 +113,56 @@ unsigned int Shader::loadShader(std::string vertexPath, std::string fragmentPath
 	glDeleteShader(fragmentShaderID);
 
 	return programID;
+}
+
+
+/*------------------------------------------------------------------------------
+< Shader Class >
+------------------------------------------------------------------------------*/
+Shader::Shader(const char* vertexPath, const char* fragmentPath) {
+	programID = loadShader(vertexPath,fragmentPath);
+}
+Shader::~Shader() {
+	glDeleteProgram(programID);
+}
+// activate the shader
+void Shader::use() {
+	glUseProgram(programID);
+}
+// utility uniform functions
+void Shader::setBool(const char* name, bool value) {
+	glUniform1i(glGetUniformLocation(programID,name), (int)value );
+}
+void Shader::setInt(const char* name, int value) {
+	glUniform1i(glGetUniformLocation(programID, name), value);
+}
+void Shader::setFloat(const char* name, float value) {
+	glUniform1f(glGetUniformLocation(programID, name), value);
+}
+void Shader::setVec2(const char* name, glm::vec2 value) {
+	glUniform2fv(glGetUniformLocation(programID, name), 1, &value[0]);
+}
+void Shader::setVec2(const char* name, float x, float y) {
+	glUniform2f(glGetUniformLocation(programID, name), x, y);
+}
+void Shader::setVec3(const char* name, glm::vec3 value) {
+	glUniform3fv(glGetUniformLocation(programID, name), 1, &value[0]);
+}
+void Shader::setVec3(const char* name, float x, float y, float z) {
+	glUniform3f(glGetUniformLocation(programID, name), x, y, z);
+}
+void Shader::setVec4(const char* name, glm::vec4 value) {
+	glUniform4fv(glGetUniformLocation(programID, name), 1, &value[0]);
+}
+void Shader::setVec4(const char* name, float x, float y, float z, float w) {
+	glUniform4f(glGetUniformLocation(programID, name), x, y, z, w);
+}
+void Shader::setMat2(const char* name, glm::mat2 mat) {
+	glUniformMatrix2fv(glGetUniformLocation(programID, name), 1, GL_FALSE, &mat[0][0]);
+}
+void Shader::setMat3(const char* name, glm::mat3 mat) {
+	glUniformMatrix3fv(glGetUniformLocation(programID, name), 1, GL_FALSE, &mat[0][0]);
+}
+void Shader::setMat4(const char* name, glm::mat4 mat) {
+	glUniformMatrix4fv(glGetUniformLocation(programID, name), 1, GL_FALSE, &mat[0][0]);
 }

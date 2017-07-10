@@ -1,64 +1,38 @@
-#ifndef shaderloader_hpp
-#define shaderloader_hpp
+#ifndef tagloader_hpp
+#define tagloader_hpp
 
 /*----------------------------------------------------------------------------*/
-GLuint loadShader(std::string vertexPath, std::string fragmentPath);
+GLuint loadTGA(const char* path);
 /*------------------------------------------------------------------------------
-< Load Shaders >
+< Load TGA file >
 
-Load vertexshader and fragmentshader
-Create and compile GLSL program from the shaders
+Load data from the tga file
+Give the data to OpenGL for generating texture
 ................................................................................
 Return:
 
-GLuint programID
+GLuint textureID
 ................................................................................
 Example:
 
-GLuint programID = loadShader("vertexshader.glsl","fragmentshader.glsl");
+GLuint textureID = loadTGA("filename.tga");
+................................................................................
+Surpported:
+2 uncompressed true-color (RGB or RGBA) image
+3 uncompressed black-and-white (grayscale) image : (only return as red channel)
+10 run-length encoded true-color (RGB or RGBA) image
+11 run-length encoded black-and-white (grayscale) image : (only return as red channel)
+
+Unsurpported:
+1 uncompressed color-mapped (index) image
+9 run-length encoded color-mapped (index) image
 ------------------------------------------------------------------------------*/
 
 
-/*----------------------------------------------------------------------------*/
-class Shader {
-public:
-	GLuint programID;
-	// constructor generates the shader on the fly
-	Shader(const char* vertexPath, const char* fragmentPath);
-	virtual ~Shader ();
-	// activate the shader
-	void use();
-	// utility uniform functions
-	void setBool(const char* name, bool value);
-	void setInt(const char* name, int value);
-	void setFloat(const char* name, float value);
-	void setVec2(const char* name, glm::vec2 value);
-	void setVec2(const char* name, float x, float y);
-	void setVec3(const char* name, glm::vec3 value);
-	void setVec3(const char* name, float x, float y, float z);
-	void setVec4(const char* name, glm::vec4 value);
-	void setVec4(const char* name, float x, float y, float z, float w);
-	void setMat2(const char* name, glm::mat2 mat);
-	void setMat3(const char* name, glm::mat3 mat);
-	void setMat4(const char* name, glm::mat4 mat);
-};
-/*------------------------------------------------------------------------------
-< Shader Class >
-
-Load vertexshader and fragmentshader
-Delete vertexshader and fragmentshader
-Create uniforms
-................................................................................
-Members:
-
-GLuint programID
-................................................................................
-Example:
-
-Shader* shader = new Shader(vertexPath,fragmentPath);
-...
-delete shader;
-------------------------------------------------------------------------------*/
+// Load An Uncompressed File
+GLuint loadUncompressedTGA(const char* path, FILE* file, unsigned char* header);
+// Load A Compressed File
+GLuint loadRLEcompressedTGA(const char* path, FILE* file, unsigned char* header);
 
 
-#endif /* shaderloader_hpp */
+#endif

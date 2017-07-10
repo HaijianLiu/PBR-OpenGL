@@ -14,10 +14,13 @@
 #include "shaderloader.hpp"
 #include "objloader.hpp"
 #include "tgaloader.hpp"
+#include "imageloader.hpp"
 #include "timecontrol.hpp"
 // Include Class
 #include "Object.hpp"
 #include "Camera.hpp"
+
+
 
 /*----------------------------------------------------------------------------*/
 GLFWwindow* createWindow(const char* name, int screenWidth, int screenHeight);

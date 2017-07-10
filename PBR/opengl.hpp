@@ -11,14 +11,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 // Include header file
-#include "shaderloader.hpp"
+// #include "shaderloader.hpp"
 #include "objloader.hpp"
 #include "tgaloader.hpp"
 #include "imageloader.hpp"
 #include "timecontrol.hpp"
 // Include Class
+#include "Shader.hpp"
 #include "Object.hpp"
 #include "Camera.hpp"
+#include "Model.hpp"
 
 
 
@@ -29,7 +31,7 @@ GLFWwindow* createWindow(const char* name, int screenWidth, int screenHeight);
 
 Create a OpenGL window.
 Default window settings : 4x antialiasing, OpenGL 3.3
-Set Background color to (0.9,0.9,0.9,0.9)
+Set Background color to (0.9,0.9,0.9,1.0)
 Set input mode GLFW_STICKY_KEYS
 Initialize GLEW.
 Enable depth test.
@@ -49,21 +51,6 @@ int screenHeight : window height
 Example:
 
 GLFWwindow* window = createWindow("WindowName",screenWidth,screenHeight);
-------------------------------------------------------------------------------*/
-
-
-/*----------------------------------------------------------------------------*/
-GLuint getVertexArray();
-/*------------------------------------------------------------------------------
-< Create Vertex Array Object >
-................................................................................
-Return:
-
-GLuint vertexArrayID
-................................................................................
-Example:
-
-GLuint vertexArrayID = getVertexArray();
 ------------------------------------------------------------------------------*/
 
 
@@ -128,35 +115,6 @@ updateTexture(textureID,uniformID,0);
 
 
 /*----------------------------------------------------------------------------*/
-class Model {
-public:
-	Model (const char* path);
-	virtual ~Model ();
-	GLuint vertexBuffer, uvBuffer, normalBuffer, tangentBuffer, bitangentBuffer;
-	unsigned long count;
-};
-/*------------------------------------------------------------------------------
-< Model Class >
-
-Load model file
-Store buffers
-~Delete buffers
-................................................................................
-Members:
-
-const char* path : model file path
-vertexBuffer, uvBuffer, normalBuffer, tangentBuffer, bitangentBuffer : GLint buffers for attributes
-count: number of triangles
-................................................................................
-Example:
-
-Model* model = new Model(path);
-...
-delete model;
-------------------------------------------------------------------------------*/
-
-
-/*----------------------------------------------------------------------------*/
 class TexturePBR {
 public:
 	TexturePBR (const char* diffusePath, const char* normalPath, const char* MetalPath, const char* roughPath, const char* aoPath);
@@ -185,6 +143,7 @@ delete texture;
 
 /*----------------------------------------------------------------------------*/
 void rendering(Object* object, Model* model, TexturePBR* texture, GLuint shader, Camera* camera);
+void rendering(Object* object, Model* model, unsigned int texture, GLuint shader, Camera* camera);
 /*------------------------------------------------------------------------------
 < Rendering Object >
 
@@ -204,6 +163,7 @@ Example:
 rendering(object,model,texture,shader,camera);
 ------------------------------------------------------------------------------*/
 
-void rendering(Object* object, Model* model, unsigned int texture, GLuint shader, Camera* camera);
+void renderCamera(Object* object, Model* model, TexturePBR* texture, Shader* shader, Camera* camera);
+
 
 #endif /* opengl_hpp */

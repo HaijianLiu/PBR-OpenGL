@@ -43,7 +43,7 @@ GLFWwindow* createWindow(const char* name, int screenWidth, int screenHeight) {
 
 	// Other Default settings
 	// Dark blue background
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(0.9,0.9,0.9,1.0);
 	// Set input mode GLFW_STICKY_KEYS
 	glfwSetInputMode(window,GLFW_STICKY_KEYS,GL_TRUE);
 	// Enable depth test
@@ -56,14 +56,6 @@ GLFWwindow* createWindow(const char* name, int screenWidth, int screenHeight) {
 	return window;
 }
 
-
-// Create Vertex Array Object
-GLuint getVertexArray() {
-	GLuint vertexArrayID;
-	glGenVertexArrays(1, &vertexArrayID);
-	glBindVertexArray(vertexArrayID);
-	return vertexArrayID;
-}
 
 
 // Draw model
@@ -179,19 +171,6 @@ void updateTexture(GLuint textureID, GLint uniformID, int unit) {
 }
 
 
-// Class Model
-Model::Model(const char* path) {
-	loadObj(path,vertexBuffer,uvBuffer,normalBuffer,tangentBuffer,bitangentBuffer,count);
-}
-
-Model::~Model() {
-	glDeleteBuffers(1, &vertexBuffer);
-	glDeleteBuffers(1, &uvBuffer);
-	glDeleteBuffers(1, &normalBuffer);
-	glDeleteBuffers(1, &tangentBuffer);
-	glDeleteBuffers(1, &bitangentBuffer);
-}
-
 // Class TexturePBR
 TexturePBR::TexturePBR(const char* diffusePath, const char* normalPath, const char* MetalPath, const char* roughPath, const char* aoPath) {
 	texDiffuseID = loadTGA(diffusePath);
@@ -268,4 +247,44 @@ void rendering(Object* object, Model* model, unsigned int texture, GLuint shader
 
 	// Model
 	updateModel(model->vertexBuffer,model->uvBuffer,model->normalBuffer,model->tangentBuffer,model->bitangentBuffer,model->count);
+}
+
+void renderCamera(Object* object, Model* model, TexturePBR* texture, Shader* shader, Camera* camera) {
+
+	glDepthFunc(GL_LESS); // set depth function back to default
+
+	// Use shaders
+	shader->use();
+
+	glBindVertexArray(model->vertexArrayID);
+
+	// Matrix
+	glm::mat4 matrixProjection = camera->getMatrixProjection();
+	glm::mat4 matrixView       = camera->getMatrixView();
+	glm::mat4 matrixModel      = object->getMatrixModel();
+	glm::mat4 matrixMVP        = matrixProjection * matrixView * matrixModel;
+	// Get uniform
+	GLuint matrixMVPUniform   = glGetUniformLocation(shader->programID,"matrixMVP"); // Get uniform ID
+	GLuint matrixModelUniform = glGetUniformLocation(shader->programID,"matrixModel"); // Get uniform ID
+	// Send transformation to the currently bound shader,
+	glUniformMatrix4fv(matrixMVPUniform,1,GL_FALSE,&matrixMVP[0][0]);
+	glUniformMatrix4fv(matrixModelUniform,1,GL_FALSE,&matrixModel[0][0]);
+
+	// Texture
+	GLuint texDiffuseUniform  = glGetUniformLocation(shader->programID,"texDiffuse"); // Get uniform ID
+	GLuint texAOUniform       = glGetUniformLocation(shader->programID,"texAO"); // Get uniform ID
+	GLuint texNormalUniform   = glGetUniformLocation(shader->programID,"texNormal"); // Get uniform ID
+	GLuint texMetalUniform    = glGetUniformLocation(shader->programID,"texMetal"); // Get uniform ID
+	GLuint texRoughUniform    = glGetUniformLocation(shader->programID,"texRough"); // Get uniform ID
+	// Bind texture in Texture Unit 0 ~
+	updateTexture(texture->texDiffuseID,texDiffuseUniform,0);
+	updateTexture(texture->texNormalID,texNormalUniform,1);
+	updateTexture(texture->texMetalID,texMetalUniform,2);
+	updateTexture(texture->texRoughID,texRoughUniform,3);
+	updateTexture(texture->texAOID,texAOUniform,4);
+
+	glDrawArrays(GL_TRIANGLES,0,model->count); // 3 indices starting at 0 -> 1 triangle
+	glBindVertexArray(0);
+	glDepthFunc(GL_LESS); // set depth function back to default
+
 }

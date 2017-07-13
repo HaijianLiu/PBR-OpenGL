@@ -1,6 +1,9 @@
 // Include standard headers
 #include <iostream>
 #include <vector>
+#include <string>
+#include <fstream>
+#include <sstream>
 
 // Include GLEW (include before gl.h and glfw.h)
 #include <GL/glew.h>
@@ -11,6 +14,9 @@
 // #include <glm/gtx/transform.hpp>
 // #include <glm/gtc/matrix_transform.hpp>
 
+// Include assimp libaray
+#include <assimp/Importer.hpp>
+
 // Include header file
 #include "Mesh.hpp"
 
@@ -20,6 +26,15 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices) {
 
 	// set the vertex buffers and its attribute pointers.
 	Mesh::setupMesh();
+}
+
+void Mesh::Draw() {
+
+	// draw mesh
+	glBindVertexArray(vertexArrayID);
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
 }
 
 void Mesh::setupMesh() {

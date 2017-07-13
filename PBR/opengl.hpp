@@ -10,11 +10,13 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+// #include <assimp/Importer.hpp>
+
 // Include header file
 // #include "shaderloader.hpp"
 #include "objloader.hpp"
 #include "tgaloader.hpp"
-#include "imageloader.hpp"
+// #include "imageloader.hpp"
 #include "timecontrol.hpp"
 // Include Class
 #include "Shader.hpp"
@@ -55,7 +57,7 @@ GLFWwindow* window = createWindow("WindowName",screenWidth,screenHeight);
 
 
 /*----------------------------------------------------------------------------*/
-void updateModel(GLuint vertexBuffer, GLuint uvBuffer, GLuint normalBuffer, unsigned long count);
+// void updateModel(GLuint vertexBuffer, GLuint uvBuffer, GLuint normalBuffer, unsigned long count);
 /*------------------------------------------------------------------------------
 < Draw Model >
 
@@ -75,7 +77,7 @@ updateModel(vertexBuffer,uvBuffer,normalBuffer,count);
 
 
 /*----------------------------------------------------------------------------*/
-void updateModel(GLuint vertexBuffer, GLuint uvBuffer, GLuint normalBuffer, GLuint tangentBuffer, GLuint bitangentBuffer, unsigned long count);
+// void updateModel(GLuint vertexBuffer, GLuint uvBuffer, GLuint normalBuffer, GLuint tangentBuffer, GLuint bitangentBuffer, unsigned long count);
 /*------------------------------------------------------------------------------
 < Draw Model >
 
@@ -95,7 +97,7 @@ updateModel(vertexBuffer,uvBuffer,normalBuffer,count);
 
 
 /*----------------------------------------------------------------------------*/
-void updateTexture(GLuint textureID, GLint uniformID, int unit);
+// void updateTexture(GLuint textureID, GLint uniformID, int unit);
 /*------------------------------------------------------------------------------
 < Update Texture >
 
@@ -115,12 +117,12 @@ updateTexture(textureID,uniformID,0);
 
 
 /*----------------------------------------------------------------------------*/
-class TexturePBR {
-public:
-	TexturePBR (const char* diffusePath, const char* normalPath, const char* MetalPath, const char* roughPath, const char* aoPath);
-	virtual ~TexturePBR ();
-	GLuint texDiffuseID, texNormalID, texMetalID, texRoughID, texAOID;
-};
+// class TexturePBR {
+// public:
+// 	TexturePBR (const char* diffusePath, const char* normalPath, const char* MetalPath, const char* roughPath, const char* aoPath);
+// 	virtual ~TexturePBR ();
+// 	GLuint texDiffuseID, texNormalID, texMetalID, texRoughID, texAOID;
+// };
 /*------------------------------------------------------------------------------
 < Texture Class >
 
@@ -142,8 +144,8 @@ delete texture;
 
 
 /*----------------------------------------------------------------------------*/
-void rendering(Object* object, Model* model, TexturePBR* texture, GLuint shader, Camera* camera);
-void rendering(Object* object, Model* model, unsigned int texture, GLuint shader, Camera* camera);
+// void rendering(Object* object, Model* model, TexturePBR* texture, GLuint shader, Camera* camera);
+// void rendering(Object* object, Model* model, unsigned int texture, GLuint shader, Camera* camera);
 /*------------------------------------------------------------------------------
 < Rendering Object >
 
@@ -163,7 +165,8 @@ Example:
 rendering(object,model,texture,shader,camera);
 ------------------------------------------------------------------------------*/
 
-void renderCamera(Object* object, Model* model, TexturePBR* texture, Shader* shader, Camera* camera);
+// void renderCamera(Object* object, Model* model, TexturePBR* texture, Shader* shader, Camera* camera);
+// void renderCamera(Object* object, Model* model, TexturePBR* texture, Shader* shader, unsigned int cubemapID, Camera* camera);
 
 
 #endif /* opengl_hpp */

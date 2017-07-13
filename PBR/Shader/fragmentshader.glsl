@@ -13,7 +13,10 @@ uniform sampler2D texNormal;
 uniform sampler2D texMetal;
 uniform sampler2D texRough;
 uniform sampler2D texAO;
+uniform samplerCube texSky;
+
 uniform mat4 matrixModel;
+
 float PI = 3.14159265359;
 float roughness = 0.5;
 float specular(float cosHalfway, float roughness) {
@@ -154,6 +157,9 @@ void main(){
 	- 0.5 * materialAmbientColor;
 
 	color = max(vec3(0),color);
+
+	// color = reflect(eyeDirectionWorldspace,normalWorldspace);
+	// color = texture(texSky,uv).rgb;
 
 	// (1-materialMetallicColor) *
 	// (

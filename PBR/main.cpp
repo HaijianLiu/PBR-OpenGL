@@ -1,143 +1,202 @@
 // Include standard headers
 #include <iostream>
+// #include <vector>
+
+// Include GLEW (include before gl.h and glfw.h)
+#include <GL/glew.h>
+// Include GLFW
+#include <GLFW/glfw3.h>
+// Include GLM
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 // Include header file
-#include "opengl.hpp"
+#include "Shader.hpp"
+#include "Camera.hpp"
+#include "Model.hpp"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void processInput(GLFWwindow *window);
+
+// settings
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
+// camera
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
+bool firstMouse = true;
+
+// timing
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+int main()
+{
+	// Create OpenGL Window
+	GLFWwindow* window;
+
+	// Initialise GLFW
+	if (!glfwInit()) {
+		printf("[GLFW] Failed to initialize GLFW\n"); // Debug information
+		return NULL;
+	}
+
+	// Default window settings
+	glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // OpenGL 3.3
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // don't want the old OpenGL
+
+	// Open a window and create its OpenGL context
+	window = glfwCreateWindow(800,600,"name",NULL,NULL);
+	if (window == NULL) {
+		glfwTerminate();
+		return NULL;
+	}
+	glfwMakeContextCurrent(window);
+
+	// Initialize GLEW
+	glewExperimental = true; // Needed for core profile
+	if (glewInit() != GLEW_OK) {
+		printf("[GLEW] Failed to initialize GLEW\n"); // Debug information
+		glfwTerminate();
+		return NULL;
+	}
 
 
-// Define settings
-#define WINDOW_NAME "PBR"
-#define SCREEN_WIDTH (800)
-#define SCREEN_HEIGHT (600)
-#define VERTEXSHADER_GLSL   "vertexshader.glsl"
-#define FRAGMENTSHADER_GLSL "fragmentshader.glsl"
-// #define FILE_OBJ            "WPN_MK2Grenade.obj"
-// #define FILE_DIFFUSE_TGA    "WPNT_MK2Grenade_Base_Color.tga"
-// #define FILE_NORMAL_TGA     "WPNT_MK2Grenade_Normal_DirectX.tga"
-// #define FILE_METAL_TGA      "WPNT_MK2Grenade_Metallic.tga"
-// #define FILE_ROUGH_TGA      "WPNT_MK2Grenade_Roughness.tga"
-// #define FILE_AO_TGA         "WPNT_MK2Grenade_Ambient_occlusion.tga"
-#define FILE_OBJ            "WPN_AKM.obj"
-#define FILE_DIFFUSE_TGA    "WPNT_AKM_Base_Color.tga"
-#define FILE_NORMAL_TGA     "WPNT_AKM_DirectX.tga"
-#define FILE_METAL_TGA      "WPNT_AKM_Metallic.tga"
-#define FILE_ROUGH_TGA      "WPNT_AKM_Roughness.tga"
-#define FILE_AO_TGA         "WPNT_AKM_Ambient_occlusion.tga"
 
-
-
-int main(void) {
-
-	// initialize start time
-	initTime();
-	// Created a OpenGL Window: (Default settings)
-	GLFWwindow* window = createWindow(WINDOW_NAME,SCREEN_WIDTH,SCREEN_HEIGHT);
-	// Create Vertex Array Object
-	GLuint vertexArrayID = getVertexArray();
-
-	// Create and compile GLSL program from the shaders
-	GLuint shaderPBR = loadShader(VERTEXSHADER_GLSL,FRAGMENTSHADER_GLSL);
-
-	GLuint shaderHDR  = loadShader("hdrVertex.glsl","hdrFragment.glsl");
-
-
-	// =============================================================================
-	// configure global opengl state
-	// -----------------------------
+	// Other Default settings
+	// Dark blue background
+	glClearColor(0.9,0.9,0.9,1.0);
+	// Set input mode GLFW_STICKY_KEYS
+	glfwSetInputMode(window,GLFW_STICKY_KEYS,GL_TRUE);
+	// Enable depth test
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL); // set depth function to less than AND equal for skybox depth trick.
-
-	// activate the shader
-	glUseProgram(shaderHDR);
-	// utility uniform functions
-	glUniform3f(glGetUniformLocation(shaderHDR,"albedo"),0.5f,0.0f,0.0f);
-	glUniform1f(glGetUniformLocation(shaderHDR,"ao"),1.0f);
+	// Accept fragment if it closer to the camera than the former one
+	glDepthFunc(GL_LESS);
+	// Cull triangles which normal is not towards the camera
+	glEnable(GL_CULL_FACE);
 
 
+    // configure global opengl state
+    // -----------------------------
+    glEnable(GL_DEPTH_TEST);
 
-	// =============================================================================
+    // build and compile shaders
+    // -------------------------
+    Shader ourShader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.fs.glsl");
 
-
-	// Load Model & Texture
-	Model* grenadeMK2Model        = new Model(FILE_OBJ);
-	TexturePBR* grenadeMK2Texture = new TexturePBR(FILE_DIFFUSE_TGA,FILE_NORMAL_TGA,FILE_METAL_TGA,FILE_ROUGH_TGA,FILE_AO_TGA);
-
-	// Model* cubeModel              = new Model("cube.obj");
-
-
-	// Create Camera & Object
-	Camera* camera     = new Camera;
-	Object* grenadeMK2 = new Object;
-
-	// Object* cube       = new Object;
+    // load models
+    // -----------
+    Model ourModel("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/nanosuit/nanosuit.obj");
 
 
-// // =============================================================================
-// 	stbi_set_flip_vertically_on_load(true);
-// 	int width, height, nrComponents;
-// 	float *data = stbi_loadf("/Users/haijian/Documents/OpenGL/PBR/PBR/Texture/hdrvfx_0012_sand_v11_Ref.hdr", &width, &height, &nrComponents, 0);
-//
-// 	unsigned int hdrTexture;
-// 	if (data)
-// 	{
-// 		glGenTextures(1, &hdrTexture);
-// 		glBindTexture(GL_TEXTURE_2D, hdrTexture);
-// 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data);
-//
-// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//
-// 		stbi_image_free(data);
-// 	}
-// 	else
-// 	{
-// 		std::cout << "Failed to load HDR image." << std::endl;
-// 	}
-// // =============================================================================
+    // draw in wireframe
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    // render loop
+    // -----------
+    while (!glfwWindowShouldClose(window))
+    {
+        // per-frame time logic
+        // --------------------
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        // input
+        // -----
+        processInput(window);
+
+        // render
+        // ------
+        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // don't forget to enable shader before setting uniforms
+        ourShader.use();
+
+        // view/projection transformations
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 view = camera.GetViewMatrix();
+        ourShader.setMat4("projection", projection);
+        ourShader.setMat4("view", view);
+
+        // render the loaded model
+        glm::mat4 model;
+        model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        ourModel.Draw(ourShader);
 
 
-	do {
-		// Clear the screen
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
 
-		grenadeMK2->scale(0.8);
-		// Update object and camera position
-		grenadeMK2->rotate(0.3 * currentTime(),glm::vec3(0,1,0));
+    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // ------------------------------------------------------------------
+    glfwTerminate();
+    return 0;
+}
 
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
+void processInput(GLFWwindow *window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
 
-		camera->setTarget(grenadeMK2->getPosition() + glm::vec3(0,0,0));
-		// rendering object using (model,texture,shader) in the view of camera
-		rendering(grenadeMK2,grenadeMK2Model,grenadeMK2Texture,shaderPBR,camera);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.ProcessKeyboard(BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.ProcessKeyboard(LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessKeyboard(RIGHT, deltaTime);
+}
 
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions; note that width and
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
+}
 
-		// cube->scale(5.0,5.0,5.0);
-		// cube->translate(0,6,0);
-		// rendering(cube,cubeModel,hdrTexture,shaderHDR,camera);
+// glfw: whenever the mouse moves, this callback is called
+// -------------------------------------------------------
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
 
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 
-		// Swap buffers
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+    lastX = xpos;
+    lastY = ypos;
 
-	} while (glfwGetKey(window,GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
+    camera.ProcessMouseMovement(xoffset, yoffset);
+}
 
-
-	// Cleanup VBO
-	delete grenadeMK2Model;
-	delete grenadeMK2Texture;
-	// Delete Object
-	delete camera;
-	delete grenadeMK2;
-	// Delete shader
-	glDeleteProgram(shaderPBR);
-	// Close OpenGL window and terminate GLFW
-	glDeleteVertexArrays(1, &vertexArrayID);
-	glfwTerminate();
-
-	return 0;
+// glfw: whenever the mouse scroll wheel scrolls, this callback is called
+// ----------------------------------------------------------------------
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    camera.ProcessMouseScroll(yoffset);
 }

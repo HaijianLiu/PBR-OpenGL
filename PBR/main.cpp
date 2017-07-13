@@ -4,6 +4,8 @@
 
 // Include header files
 #include "opengl.hpp"
+#include "timecontrol.hpp"
+// Include class
 #include "Shader.hpp"
 #include "Camera.hpp"
 #define STB_IMAGE_IMPLEMENTATION
@@ -31,6 +33,8 @@ float lastFrame = 0.0f;
 
 int main()
 {
+	initTime();
+
 	GLFWwindow* window = createWindow("WindowName",800,600);
 
 	// Other Default settings
@@ -52,11 +56,11 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader ourShader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.fs.glsl");
+    Shader ourShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.fs.glsl");
 
     // load models
     // -----------
-    Model ourModel("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/nanosuit/nanosuit.obj");
+    Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/nanosuit/nanosuit.obj");
 
 
     // draw in wireframe

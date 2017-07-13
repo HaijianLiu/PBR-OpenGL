@@ -10,21 +10,6 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-// #include <assimp/Importer.hpp>
-
-// Include header file
-// #include "shaderloader.hpp"
-#include "objloader.hpp"
-#include "tgaloader.hpp"
-// #include "imageloader.hpp"
-#include "timecontrol.hpp"
-// Include Class
-#include "Shader.hpp"
-#include "Object.hpp"
-#include "Camera.hpp"
-#include "Model.hpp"
-
-
 
 /*----------------------------------------------------------------------------*/
 GLFWwindow* createWindow(const char* name, int screenWidth, int screenHeight);

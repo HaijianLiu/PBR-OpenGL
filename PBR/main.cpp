@@ -1,20 +1,12 @@
 // Include standard headers
 #include <iostream>
-// #include <vector>
 
-// Include GLEW (include before gl.h and glfw.h)
-#include <GL/glew.h>
-// Include GLFW
-#include <GLFW/glfw3.h>
-// Include GLM
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-// Include header file
+// Include header files
+#include "opengl.hpp"
 #include "Shader.hpp"
 #include "Camera.hpp"
 #include "Model.hpp"
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -37,39 +29,7 @@ float lastFrame = 0.0f;
 
 int main()
 {
-	// Create OpenGL Window
-	GLFWwindow* window;
-
-	// Initialise GLFW
-	if (!glfwInit()) {
-		printf("[GLFW] Failed to initialize GLFW\n"); // Debug information
-		return NULL;
-	}
-
-	// Default window settings
-	glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // OpenGL 3.3
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // don't want the old OpenGL
-
-	// Open a window and create its OpenGL context
-	window = glfwCreateWindow(800,600,"name",NULL,NULL);
-	if (window == NULL) {
-		glfwTerminate();
-		return NULL;
-	}
-	glfwMakeContextCurrent(window);
-
-	// Initialize GLEW
-	glewExperimental = true; // Needed for core profile
-	if (glewInit() != GLEW_OK) {
-		printf("[GLEW] Failed to initialize GLEW\n"); // Debug information
-		glfwTerminate();
-		return NULL;
-	}
-
-
+	GLFWwindow* window = createWindow("WindowName",800,600);
 
 	// Other Default settings
 	// Dark blue background

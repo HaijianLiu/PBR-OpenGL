@@ -12,6 +12,7 @@
 		60C438F01EEAE50C00549AE9 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60C438EF1EEAE50C00549AE9 /* main.cpp */; };
 		60C438F81EEAE51B00549AE9 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60C438F71EEAE51B00549AE9 /* OpenGL.framework */; };
 		60CB07431F17CBBB002975D0 /* opengl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60CB07421F17CBBB002975D0 /* opengl.cpp */; };
+		60CB07451F17D079002975D0 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60CB07441F17D079002975D0 /* Shader.cpp */; };
 		60DDD4451F14B679005A31FA /* libassimp.3.3.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 60DDD4441F14B679005A31FA /* libassimp.3.3.1.dylib */; };
 /* End PBXBuildFile section */
 
@@ -44,6 +45,7 @@
 		60C438F71EEAE51B00549AE9 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		60CB07411F17CBBB002975D0 /* opengl.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = opengl.hpp; sourceTree = "<group>"; };
 		60CB07421F17CBBB002975D0 /* opengl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = opengl.cpp; sourceTree = "<group>"; };
+		60CB07441F17D079002975D0 /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
 		60DDD4441F14B679005A31FA /* libassimp.3.3.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.3.3.1.dylib; path = ../../../../../usr/local/Cellar/assimp/3.3.1/lib/libassimp.3.3.1.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -101,6 +103,7 @@
 				6013A73F1F15F55F00761F73 /* Mesh.hpp */,
 				60A39F411F13BA1700A381E5 /* Model.hpp */,
 				60A39F3A1F13ABE200A381E5 /* Shader.hpp */,
+				60CB07441F17D079002975D0 /* Shader.cpp */,
 				603BABFF1F0137BB007A0DCD /* Camera.hpp */,
 			);
 			path = PBR;
@@ -184,6 +187,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				60CB07431F17CBBB002975D0 /* opengl.cpp in Sources */,
+				60CB07451F17D079002975D0 /* Shader.cpp in Sources */,
 				60C438F01EEAE50C00549AE9 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

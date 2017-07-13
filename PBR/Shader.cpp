@@ -1,9 +1,9 @@
 // Include standard headers
 #include <iostream>
-#include <sstream>
-#include <fstream>
-#include <string>
 #include <vector>
+#include <string>
+#include <fstream>
+#include <sstream>
 
 // Include GLEW (include before gl.h and glfw.h)
 #include <GL/glew.h>
@@ -14,7 +14,7 @@
 // #include <glm/gtx/transform.hpp>
 // #include <glm/gtc/matrix_transform.hpp>
 
-// Include header file
+// Include class
 #include "Shader.hpp"
 
 /*------------------------------------------------------------------------------
@@ -69,14 +69,6 @@ void Shader::setMat4(const char* name, glm::mat4 mat) {
 }
 
 unsigned int Shader::loadShader(std::string vertexPath, std::string fragmentPath) {
-
-	// Set path
-	std::string currentDir = __FILE__;
-	std::string targetDir = currentDir.substr(0,currentDir.rfind("/"));
-	// targetDir = targetDir.substr(0,targetDir.rfind("/")) + "/Shader/";
-	targetDir += "/Shader/";
-	vertexPath = targetDir + vertexPath;
-	fragmentPath = targetDir + fragmentPath;
 
 	// Create the shaders
 	unsigned int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);

@@ -1,10 +1,12 @@
 // Include standard headers
 #include <iostream>
 
+
 // Include header files
 #include "opengl.hpp"
 #include "Shader.hpp"
 #include "Camera.hpp"
+#define STB_IMAGE_IMPLEMENTATION
 #include "Model.hpp"
 
 

@@ -2,15 +2,6 @@
 #define Camera_hpp
 
 class Camera {
-private:
-	glm::vec3 position; // in World Space
-	glm::vec3 target; // in World Space
-	glm::vec3 upside; // Head is up (0,1,0)
-	float field; // Degree° Field of View
-	float ratio;
-	float rangeStart;
-	float rangeEnd;
-
 public:
 	Camera();
 	void translate(float x, float y, float z);
@@ -22,6 +13,15 @@ public:
 	void setRange(float start, float end);
 	glm::mat4 getMatrixProjection();
 	glm::mat4 getMatrixView();
+
+private:
+	glm::vec3 position; // in World Space
+	glm::vec3 target; // in World Space
+	glm::vec3 upside; // Head is up (0,1,0)
+	float field; // Degree° Field of View
+	float ratio;
+	float rangeStart;
+	float rangeEnd;
 };
 
 #endif /* Camera_hpp */

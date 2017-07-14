@@ -18,15 +18,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 // void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
-// settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
-
-// camera
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
-bool firstMouse = true;
-
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -52,7 +43,7 @@ int main()
 
     // configure global opengl state
     // -----------------------------
-    glEnable(GL_DEPTH_TEST);
+    // glEnable(GL_DEPTH_TEST);
 
     // build and compile shaders
     // -------------------------
@@ -64,8 +55,10 @@ int main()
 
 		Camera camera = Camera();
 
+		Object ourObject = Object();
+
     // draw in wireframe
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // render loop
     // -----------
@@ -83,23 +76,20 @@ int main()
 
         // render
         // ------
-        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+        glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // don't forget to enable shader before setting uniforms
         ourShader.use();
 
         // view/projection transformations
-        glm::mat4 projection = camera.getMatrixProjection();
-        glm::mat4 view = camera.getMatrixView();
-        ourShader.setMat4("projection", projection);
-        ourShader.setMat4("view", view);
+				camera.setTarget(0.0,7.0,0.0);
+        ourShader.setMat4("projection", camera.getMatrixProjection());
+        ourShader.setMat4("view", camera.getMatrixView());
 
         // render the loaded model
-        glm::mat4 model;
-        model = glm::translate(model, glm::vec3(0.0f, -5.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-        ourShader.setMat4("model", model);
+				ourObject.rotate(currentTime(), glm::vec3(0.0,1.0,0.0));
+        ourShader.setMat4("model", ourObject.getMatrixModel());
         ourModel.Draw(ourShader);
 
 

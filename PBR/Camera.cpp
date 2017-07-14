@@ -1,5 +1,6 @@
 // Include standard headers
 #include <iostream>
+#include <vector>
 
 // Include GLEW (include before gl.h and glfw.h)
 #include <GL/glew.h>
@@ -10,11 +11,11 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-// Include header file
+// Include class
 #include "Camera.hpp"
 
 Camera::Camera() {
-	position   = glm::vec3(0.0,16.0,20.0);
+	position   = glm::vec3(0.0,5.0,20.0);
 	target     = glm::vec3(0.0,0.0,0.0);
 	upside     = glm::vec3(0.0,1.0,0.0);
 	field      = 45.0;

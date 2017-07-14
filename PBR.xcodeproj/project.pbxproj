@@ -17,6 +17,7 @@
 		60CB074B1F17DC96002975D0 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60CB074A1F17DC96002975D0 /* Model.cpp */; };
 		60CB074E1F17E730002975D0 /* timecontrol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60CB074C1F17E730002975D0 /* timecontrol.cpp */; };
 		60CB07511F1857CC002975D0 /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60CB074F1F1857CC002975D0 /* Object.cpp */; };
+		60CB07531F185D7C002975D0 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 60CB07521F185D7C002975D0 /* Camera.cpp */; };
 		60DDD4451F14B679005A31FA /* libassimp.3.3.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 60DDD4441F14B679005A31FA /* libassimp.3.3.1.dylib */; };
 /* End PBXBuildFile section */
 
@@ -56,6 +57,7 @@
 		60CB074D1F17E730002975D0 /* timecontrol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = timecontrol.hpp; sourceTree = "<group>"; };
 		60CB074F1F1857CC002975D0 /* Object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Object.cpp; sourceTree = "<group>"; };
 		60CB07501F1857CC002975D0 /* Object.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Object.hpp; sourceTree = "<group>"; };
+		60CB07521F185D7C002975D0 /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
 		60DDD4441F14B679005A31FA /* libassimp.3.3.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.3.3.1.dylib; path = ../../../../../usr/local/Cellar/assimp/3.3.1/lib/libassimp.3.3.1.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -119,6 +121,7 @@
 				60A39F3A1F13ABE200A381E5 /* Shader.hpp */,
 				60CB07441F17D079002975D0 /* Shader.cpp */,
 				603BABFF1F0137BB007A0DCD /* Camera.hpp */,
+				60CB07521F185D7C002975D0 /* Camera.cpp */,
 				60CB074D1F17E730002975D0 /* timecontrol.hpp */,
 				60CB074C1F17E730002975D0 /* timecontrol.cpp */,
 			);
@@ -206,6 +209,7 @@
 				60CB07451F17D079002975D0 /* Shader.cpp in Sources */,
 				60CB074B1F17DC96002975D0 /* Model.cpp in Sources */,
 				60CB07491F17D6E0002975D0 /* Mesh.cpp in Sources */,
+				60CB07531F185D7C002975D0 /* Camera.cpp in Sources */,
 				60CB07511F1857CC002975D0 /* Object.cpp in Sources */,
 				60CB074E1F17E730002975D0 /* timecontrol.cpp in Sources */,
 				60C438F01EEAE50C00549AE9 /* main.cpp in Sources */,

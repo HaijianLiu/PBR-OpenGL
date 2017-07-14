@@ -10,7 +10,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-// Include header file
+// Include class
 #include "Object.hpp"
 
 Object::Object() {

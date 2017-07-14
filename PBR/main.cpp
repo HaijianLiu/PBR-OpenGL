@@ -10,6 +10,7 @@
 #include "Camera.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "Model.hpp"
+#include "Object.hpp"
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);

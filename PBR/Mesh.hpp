@@ -2,7 +2,6 @@
 #define Mesh_hpp
 
 #include <vector>
-#include "Shader.hpp"
 
 struct Vertex {
 	glm::vec3 position;

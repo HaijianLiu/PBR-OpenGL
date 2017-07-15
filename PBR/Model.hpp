@@ -9,6 +9,7 @@
 #include <assimp/postprocess.h>
 
 // Include Class
+#include "Shader.hpp"
 #include "Mesh.hpp"
 
 class Model {

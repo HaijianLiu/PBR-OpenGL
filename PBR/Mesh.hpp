@@ -7,7 +7,6 @@
 #define UNIFORM_TEX_ROUGH   "texRough"
 #define UNIFORM_TEX_AO      "texAO"
 
-
 struct Vertex {
 	glm::vec3 position;
 	glm::vec3 normal;

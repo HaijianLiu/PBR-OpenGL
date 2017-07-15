@@ -24,6 +24,37 @@ Model::Model(std::string const& path) {
 	Model::loadModel(path);
 }
 
+void Model::loadPBRTextures(const char* diffusePath, const char* normalPath, const char* metalPath, const char* roughPath, const char* aoPath) {
+	Texture texDiffuse;
+	texDiffuse.id = loadTexture(diffusePath,directory);
+	texDiffuse.type = UNIFORM_TEX_DIFFUSE;
+	texDiffuse.path = directory;
+	Texture texNormal;
+	texNormal.id = loadTexture(normalPath,directory);
+	texNormal.type = UNIFORM_TEX_NORMAL;
+	texNormal.path = directory;
+	Texture texMetal;
+	texMetal.id = loadTexture(metalPath,directory);
+	texMetal.type = UNIFORM_TEX_METAL;
+	texMetal.path = directory;
+	Texture texRough;
+	texRough.id = loadTexture(roughPath,directory);
+	texRough.type = UNIFORM_TEX_ROUGH;
+	texRough.path = directory;
+	Texture texAO;
+	texAO.id = loadTexture(aoPath,directory);
+	texAO.type = UNIFORM_TEX_AO;
+	texAO.path = directory;
+
+	for (unsigned int i = 0; i < meshes.size(); i++) {
+		meshes[i].textures.push_back(texDiffuse);
+		meshes[i].textures.push_back(texNormal);
+		meshes[i].textures.push_back(texMetal);
+		meshes[i].textures.push_back(texRough);
+		meshes[i].textures.push_back(texAO);
+	}
+}
+
 // draws the model, and thus all its meshes
 void Model::Draw(Shader shader) {
 	for(unsigned int i = 0; i < meshes.size(); i++)

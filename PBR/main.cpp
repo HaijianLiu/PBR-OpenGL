@@ -50,44 +50,15 @@ int main()
     // Shader ourShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.fs.glsl");
 		Shader ourShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/vertexshader.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/fragmentshader.glsl");
 
-
     // load models
     // -----------
     // Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/nanosuit/nanosuit.obj");
 
 		Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/WPN_AKM/WPN_AKM.obj");
-		Texture texDiffuse;
-		texDiffuse.id = loadTexture("WPNT_AKM_Base_Color.tga",ourModel.directory);
-		texDiffuse.type = UNIFORM_TEX_DIFFUSE;
-		texDiffuse.path = ourModel.directory;
-		Texture texNormal;
-		texNormal.id = loadTexture("WPNT_AKM_DirectX.tga",ourModel.directory);
-		texNormal.type = UNIFORM_TEX_NORMAL;
-		texNormal.path = ourModel.directory;
-		Texture texMetal;
-		texMetal.id = loadTexture("WPNT_AKM_Metallic.tga",ourModel.directory);
-		texMetal.type = UNIFORM_TEX_METAL;
-		texMetal.path = ourModel.directory;
-		Texture texRough;
-		texRough.id = loadTexture("WPNT_AKM_Roughness.tga",ourModel.directory);
-		texRough.type = UNIFORM_TEX_ROUGH;
-		texRough.path = ourModel.directory;
-		Texture texAO;
-		texAO.id = loadTexture("WPNT_AKM_Ambient_occlusion.tga",ourModel.directory);
-		texAO.type = UNIFORM_TEX_AO;
-		texAO.path = ourModel.directory;
+		ourModel.loadPBRTextures("WPNT_AKM_Base_Color.tga","WPNT_AKM_DirectX.tga","WPNT_AKM_Metallic.tga","WPNT_AKM_Roughness.tga","WPNT_AKM_Ambient_occlusion.tga");
 
-		for (unsigned int i = 0; i < ourModel.meshes.size(); i++) {
-			ourModel.meshes[i].textures.push_back(texDiffuse);
-			ourModel.meshes[i].textures.push_back(texNormal);
-			ourModel.meshes[i].textures.push_back(texMetal);
-			ourModel.meshes[i].textures.push_back(texRough);
-			ourModel.meshes[i].textures.push_back(texAO);
-
-		}
 
 		Camera camera = Camera();
-
 		Object ourObject = Object();
 
     // draw in wireframe

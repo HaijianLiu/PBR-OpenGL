@@ -21,6 +21,8 @@ public:
 	/*  Functions   */
 	// constructor, expects a filepath to a 3D model.
 	Model(std::string const& path);
+	// if the model has no defined textures, load textures manually
+	void loadPBRTextures(const char* diffusePath, const char* normalPath, const char* metalPath, const char* roughPath, const char* aoPath);
 	// draws the model, and thus all its meshes
 	void Draw(Shader shader);
 

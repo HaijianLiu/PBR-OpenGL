@@ -51,14 +51,23 @@ int main()
 
     // load models
     // -----------
-    Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/nanosuit/nanosuit.obj");
+    // Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/nanosuit/nanosuit.obj");
+		Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/WPN_AKM/WPN_AKM.obj");
+		Texture texture;
+		texture.id = loadTexture("WPNT_AKM_Base_Color.tga",ourModel.directory);
+		texture.type = "texture_diffuse";
+		texture.path = ourModel.directory;
+
+		for (unsigned int i = 0; i < ourModel.meshes.size(); i++) {
+			ourModel.meshes[i].textures.push_back(texture);
+		}
 
 		Camera camera = Camera();
 
 		Object ourObject = Object();
 
     // draw in wireframe
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // render loop
     // -----------

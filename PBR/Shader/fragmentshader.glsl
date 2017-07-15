@@ -183,7 +183,7 @@ void main(){
 	// (1 - materialMetallicColor) * (fresnelSchlick(cosView,2.8735,0.7) * materialDiffuseColor + lightColor * 0.05/0.7 * specular(cosHalfway,10/0.7))
 	// + materialMetallicColor * (fresnelSchlick(cosView,1.6232,0.15) * 3 * materialDiffuseColor + lightColor * 0.05/0.15 * specular(cosHalfway,10/0.15))
 	// - 0.7 * materialAmbientColor;
-	color *= 8;
+	color *= 4;
 
 
 	// float metallic = 0;

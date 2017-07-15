@@ -1,6 +1,12 @@
 #ifndef Shader_hpp
 #define Shader_hpp
 
+#define UNIFORM_TEX_DIFFUSE "texDiffuse"
+#define UNIFORM_TEX_NORMAL  "texNormal"
+#define UNIFORM_TEX_METAL   "texMetal"
+#define UNIFORM_TEX_ROUGH   "texRough"
+#define UNIFORM_TEX_AO      "texAO"
+
 /*----------------------------------------------------------------------------*/
 class Shader {
 public:

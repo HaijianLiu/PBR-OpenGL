@@ -13,20 +13,21 @@
 
 class Model {
 public:
-	/*  Model Data */
-	std::vector<Texture> texturesLoaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-	std::vector<Mesh> meshes;
-	std::string directory;
-
 	/*  Functions   */
 	// constructor, expects a filepath to a 3D model.
 	Model(std::string const& path);
 	// if the model has no defined textures, load textures manually
 	void loadPBRTextures(const char* diffusePath, const char* normalPath, const char* metalPath, const char* roughPath, const char* aoPath);
+	void loadPBRTextures(const char* diffusePath, const char* normalPath, const char* roughPath, const char* aoPath);
 	// draws the model, and thus all its meshes
 	void Draw(Shader shader);
 
 private:
+	/*  Model Data */
+	std::vector<Texture> texturesLoaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
+	std::vector<Mesh> meshes;
+	std::string directory;
+
 	/*  Functions   */
 	// loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
 	void loadModel(std::string const& path);

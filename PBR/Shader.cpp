@@ -23,9 +23,7 @@
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	programID = loadShader(vertexPath,fragmentPath);
 }
-Shader::~Shader() {
-	glDeleteProgram(programID);
-}
+
 // activate the shader
 void Shader::use() {
 	glUseProgram(programID);

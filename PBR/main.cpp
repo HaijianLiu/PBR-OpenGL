@@ -59,7 +59,7 @@ int main()
 		// ourModel.loadPBRTextures("WPNT_AKM_Base_Color.tga","WPNT_AKM_DirectX.tga","WPNT_AKM_Metallic.tga","WPNT_AKM_Roughness.tga","WPNT_AKM_Ambient_occlusion.tga");
 
 		Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Wood_Log_qdtdP_4K_3d_ms/Aset_wood_log_M_qdtdP_LOD0.obj");
-		ourModel.loadPBRTextures("Aset_wood_log_M_qdtdP_4K_Albedo.jpg","Aset_wood_log_M_qdtdP_4K_Normal_LOD0.jpg","Aset_wood_log_M_qdtdP_false_Metal.jpg","Aset_wood_log_M_qdtdP_4K_Roughness.jpg","Aset_wood_log_M_qdtdP_4K_Cavity.jpg");
+		ourModel.loadPBRTextures("Aset_wood_log_M_qdtdP_4K_Albedo.jpg","Aset_wood_log_M_qdtdP_4K_Normal_LOD0.jpg","Aset_wood_log_M_qdtdP_4K_Roughness.jpg","Aset_wood_log_M_qdtdP_4K_Cavity.jpg");
 
 
 

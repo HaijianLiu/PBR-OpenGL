@@ -13,9 +13,10 @@
 class Shader {
 public:
 	unsigned int programID;
+
 	// constructor generates the shader on the fly
 	Shader(const char* vertexPath, const char* fragmentPath);
-	virtual ~Shader ();
+
 	// activate the shader
 	void use();
 	// utility uniform functions

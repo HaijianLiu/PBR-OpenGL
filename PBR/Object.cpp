@@ -13,11 +13,12 @@
 // Include class
 #include "Object.hpp"
 
-Object::Object() {
+Object::Object(Model* model) {
 	position      = glm::vec3(0.0,0.0,0.0);
 	scales        = glm::vec3(1.0,1.0,1.0);
 	rotationAxis  = glm::vec3(0.0,1.0,0.0);
 	rotationAngle = 0.0;
+	this->model = model;
 }
 
 void Object::translate(float x, float y, float z) {

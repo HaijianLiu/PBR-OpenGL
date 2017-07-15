@@ -1,6 +1,6 @@
 // Include standard libraries
 #include <iostream>
-#include <vector>
+// #include <vector>
 
 // Include header files
 #include "opengl.hpp"
@@ -9,7 +9,7 @@
 #include "Shader.hpp"
 #include "Camera.hpp"
 #define STB_IMAGE_IMPLEMENTATION
-#include "Model.hpp"
+// #include "Model.hpp"
 #include "Object.hpp"
 
 
@@ -58,12 +58,15 @@ int main()
 		// Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/WPN_AKM/WPN_AKM.obj");
 		// ourModel.loadPBRTextures("WPNT_AKM_Base_Color.tga","WPNT_AKM_DirectX.tga","WPNT_AKM_Metallic.tga","WPNT_AKM_Roughness.tga","WPNT_AKM_Ambient_occlusion.tga");
 
+		// Model* testModel = new Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/nanosuit/nanosuit.obj", &ourShader);
+		// delete testModel;
+
 		Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Wood_Log_qdtdP_4K_3d_ms/Aset_wood_log_M_qdtdP_LOD0.obj",&ourShader);
 		ourModel.loadPBRTextures("Aset_wood_log_M_qdtdP_4K_Albedo.jpg","Aset_wood_log_M_qdtdP_4K_Normal_LOD0.jpg","Aset_wood_log_M_qdtdP_4K_Roughness.jpg","Aset_wood_log_M_qdtdP_4K_Cavity.jpg");
 
 
 		Camera camera = Camera();
-		Object ourObject = Object();
+		Object ourObject = Object(&ourModel);
 
     // draw in wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -89,8 +92,6 @@ int main()
 
 
 
-        // don't forget to enable shader before setting uniforms
-        ourModel.shader->use();
 
         // view/projection transformations
 				camera.translate(0.0,16.0,20.0);
@@ -102,9 +103,9 @@ int main()
         // ourShader.setMat4("view", camera.getMatrixView());
         // ourShader.setMat4("model", ourObject.getMatrixModel());
 
+        ourModel.shader->use();
 				ourModel.shader->setMat4(UNIFORM_MATRIX_MODEL,ourObject.getMatrixModel());
 				ourModel.shader->setMat4(UNIFORM_MATRIX_MVP,camera.getMatrixProjection()*camera.getMatrixView()*ourObject.getMatrixModel());
-
         ourModel.Draw();
 
 

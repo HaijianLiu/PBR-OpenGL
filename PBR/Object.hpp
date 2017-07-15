@@ -1,9 +1,12 @@
 #ifndef Object_hpp
 #define Object_hpp
 
+#include "Model.hpp"
+
 class Object {
 public:
-	Object();
+	Model* model;
+	Object(Model* model);
 	void translate(float x, float y, float z);
 	void scale(float x, float y, float z);
 	void scale(float x);

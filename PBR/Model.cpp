@@ -16,7 +16,6 @@
 // #include <glm/gtc/matrix_transform.hpp>
 
 // Include Class
-#include "Shader.hpp"
 #include "Model.hpp"
 
 // constructor, expects a filepath to a 3D model.

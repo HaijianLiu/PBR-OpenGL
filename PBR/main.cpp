@@ -102,8 +102,8 @@ int main()
         // ourShader.setMat4("view", camera.getMatrixView());
         // ourShader.setMat4("model", ourObject.getMatrixModel());
 
-				ourShader.setMat4("matrixModel",ourObject.getMatrixModel());
-				ourShader.setMat4("matrixMVP",camera.getMatrixProjection()*camera.getMatrixView()*ourObject.getMatrixModel());
+				ourShader.setMat4(UNIFORM_MATRIX_MODEL,ourObject.getMatrixModel());
+				ourShader.setMat4(UNIFORM_MATRIX_MVP,camera.getMatrixProjection()*camera.getMatrixView()*ourObject.getMatrixModel());
 
         ourModel.Draw(ourShader);
 

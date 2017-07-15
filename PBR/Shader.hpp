@@ -1,11 +1,13 @@
 #ifndef Shader_hpp
 #define Shader_hpp
 
-#define UNIFORM_TEX_DIFFUSE "texDiffuse"
-#define UNIFORM_TEX_NORMAL  "texNormal"
-#define UNIFORM_TEX_METAL   "texMetal"
-#define UNIFORM_TEX_ROUGH   "texRough"
-#define UNIFORM_TEX_AO      "texAO"
+#define UNIFORM_TEX_DIFFUSE  "texDiffuse"
+#define UNIFORM_TEX_NORMAL   "texNormal"
+#define UNIFORM_TEX_METAL    "texMetal"
+#define UNIFORM_TEX_ROUGH    "texRough"
+#define UNIFORM_TEX_AO       "texAO"
+#define UNIFORM_MATRIX_MVP   "matrixMVP"
+#define UNIFORM_MATRIX_MODEL "matrixModel"
 
 /*----------------------------------------------------------------------------*/
 class Shader {

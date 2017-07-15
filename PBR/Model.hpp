@@ -23,7 +23,7 @@ public:
 	void loadPBRTextures(const char* diffusePath, const char* normalPath, const char* metalPath, const char* roughPath, const char* aoPath);
 	void loadPBRTextures(const char* diffusePath, const char* normalPath, const char* roughPath, const char* aoPath);
 	// draws the model, and thus all its meshes
-	void Draw();
+	void draw();
 
 private:
 	/*  Model Data */

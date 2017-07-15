@@ -64,9 +64,17 @@ int main()
 		Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Wood_Log_qdtdP_4K_3d_ms/Aset_wood_log_M_qdtdP_LOD0.obj",&ourShader);
 		ourModel.loadPBRTextures("Aset_wood_log_M_qdtdP_4K_Albedo.jpg","Aset_wood_log_M_qdtdP_4K_Normal_LOD0.jpg","Aset_wood_log_M_qdtdP_4K_Roughness.jpg","Aset_wood_log_M_qdtdP_4K_Cavity.jpg");
 
+		Model rockRound = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Rock_Sandstone_plras_4K_3d_ms/Aset_rock_sandstone_S_plww4_LOD0.obj",&ourShader);
+		rockRound.loadPBRTextures("Aset_rock_sandstone_S_plras_4K_Albedo.jpg","Aset_rock_sandstone_S_plras_4K_Normal_LOD0.jpg","Aset_rock_sandstone_S_plras_4K_Roughness.jpg","Aset_rock_sandstone_S_plras_4K_Cavity.jpg");
+
+		Model rockCube = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Rock_Sandstone_plww4_4K_3d_ms/Aset_wood_log_M_qdtdP_LOD0.obj",&ourShader);
+		rockCube.loadPBRTextures("Aset_rock_sandstone_S_plww4_4K_Albedo.jpg","Aset_rock_sandstone_S_plww4_4K_Normal_LOD0.jpg","Aset_rock_sandstone_S_plww4_4K_Roughness.jpg","Aset_rock_sandstone_S_plww4_4K_Cavity.jpg");
 
 		Camera camera = Camera();
 		Object ourObject = Object(&ourModel);
+		Object rockRoundObject = Object(&rockRound);
+		Object rockCubeObject = Object(&rockCube);
+
 
     // draw in wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -106,7 +114,7 @@ int main()
         ourModel.shader->use();
 				ourModel.shader->setMat4(UNIFORM_MATRIX_MODEL,ourObject.getMatrixModel());
 				ourModel.shader->setMat4(UNIFORM_MATRIX_MVP,camera.getMatrixProjection()*camera.getMatrixView()*ourObject.getMatrixModel());
-        ourModel.Draw();
+        ourModel.draw();
 
 
 

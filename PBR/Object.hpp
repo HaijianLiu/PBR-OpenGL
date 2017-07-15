@@ -13,6 +13,7 @@ public:
 	void rotate(float angle, glm::vec3 axis);
 	glm::vec3 getPosition();
 	glm::mat4 getMatrixModel();
+	// void draw
 
 private:
 	glm::vec3 position;

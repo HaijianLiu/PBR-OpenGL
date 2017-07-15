@@ -31,7 +31,7 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 }
 
 // render the mesh
-void Mesh::Draw(Shader* shader) {
+void Mesh::draw(Shader* shader) {
 	// bind appropriate textures
 	// unsigned int diffuseNr  = 1;
 	// unsigned int normalNr   = 1;

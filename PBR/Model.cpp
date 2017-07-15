@@ -82,9 +82,9 @@ void Model::loadPBRTextures(const char* diffusePath, const char* normalPath, con
 }
 
 // draws the model, and thus all its meshes
-void Model::Draw() {
+void Model::draw() {
 	for(unsigned int i = 0; i < meshes.size(); i++)
-		meshes[i].Draw(shader);
+		meshes[i].draw(shader);
 }
 
 // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.

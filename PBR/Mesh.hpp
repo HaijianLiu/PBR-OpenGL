@@ -29,7 +29,7 @@ public:
 	// constructor
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 	// render the mesh
-	void Draw(Shader* shader);
+	void draw(Shader* shader);
 
 private:
 	/*  Render data  */

@@ -20,8 +20,9 @@
 #include "Model.hpp"
 
 // constructor, expects a filepath to a 3D model.
-Model::Model(std::string const& path) {
+Model::Model(std::string const& path, Shader* shader) {
 	Model::loadModel(path);
+	this->shader = shader;
 }
 
 void Model::loadPBRTextures(const char* diffusePath, const char* normalPath, const char* metalPath, const char* roughPath, const char* aoPath) {
@@ -82,7 +83,7 @@ void Model::loadPBRTextures(const char* diffusePath, const char* normalPath, con
 }
 
 // draws the model, and thus all its meshes
-void Model::Draw(Shader shader) {
+void Model::Draw() {
 	for(unsigned int i = 0; i < meshes.size(); i++)
 		meshes[i].Draw(shader);
 }

@@ -31,7 +31,7 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 }
 
 // render the mesh
-void Mesh::Draw(Shader shader) {
+void Mesh::Draw(Shader* shader) {
 	// bind appropriate textures
 	// unsigned int diffuseNr  = 1;
 	// unsigned int normalNr   = 1;
@@ -60,7 +60,7 @@ void Mesh::Draw(Shader shader) {
 		// // now set the sampler to the correct texture unit
 		// glUniform1i(glGetUniformLocation(shader.programID, (name + number).c_str()), i);
 
-		glUniform1i(glGetUniformLocation(shader.programID, name.c_str()), i);
+		glUniform1i(glGetUniformLocation(shader->programID, name.c_str()), i);
 
 		// and finally bind the texture
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);

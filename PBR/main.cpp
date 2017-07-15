@@ -47,19 +47,43 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader ourShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.fs.glsl");
+    // Shader ourShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.fs.glsl");
+		Shader ourShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/vertexshader.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/fragmentshader.glsl");
+
 
     // load models
     // -----------
     // Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/nanosuit/nanosuit.obj");
+
 		Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/WPN_AKM/WPN_AKM.obj");
-		Texture texture;
-		texture.id = loadTexture("WPNT_AKM_Base_Color.tga",ourModel.directory);
-		texture.type = "texture_diffuse";
-		texture.path = ourModel.directory;
+		Texture texDiffuse;
+		texDiffuse.id = loadTexture("WPNT_AKM_Base_Color.tga",ourModel.directory);
+		texDiffuse.type = UNIFORM_TEX_DIFFUSE;
+		texDiffuse.path = ourModel.directory;
+		Texture texNormal;
+		texNormal.id = loadTexture("WPNT_AKM_DirectX.tga",ourModel.directory);
+		texNormal.type = UNIFORM_TEX_NORMAL;
+		texNormal.path = ourModel.directory;
+		Texture texMetal;
+		texMetal.id = loadTexture("WPNT_AKM_Metallic.tga",ourModel.directory);
+		texMetal.type = UNIFORM_TEX_METAL;
+		texMetal.path = ourModel.directory;
+		Texture texRough;
+		texRough.id = loadTexture("WPNT_AKM_Roughness.tga",ourModel.directory);
+		texRough.type = UNIFORM_TEX_ROUGH;
+		texRough.path = ourModel.directory;
+		Texture texAO;
+		texAO.id = loadTexture("WPNT_AKM_Ambient_occlusion.tga",ourModel.directory);
+		texAO.type = UNIFORM_TEX_AO;
+		texAO.path = ourModel.directory;
 
 		for (unsigned int i = 0; i < ourModel.meshes.size(); i++) {
-			ourModel.meshes[i].textures.push_back(texture);
+			ourModel.meshes[i].textures.push_back(texDiffuse);
+			ourModel.meshes[i].textures.push_back(texNormal);
+			ourModel.meshes[i].textures.push_back(texMetal);
+			ourModel.meshes[i].textures.push_back(texRough);
+			ourModel.meshes[i].textures.push_back(texAO);
+
 		}
 
 		Camera camera = Camera();
@@ -85,20 +109,25 @@ int main()
 
         // render
         // ------
-        glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // don't forget to enable shader before setting uniforms
         ourShader.use();
 
         // view/projection transformations
-				camera.setTarget(0.0,7.0,0.0);
-        ourShader.setMat4("projection", camera.getMatrixProjection());
-        ourShader.setMat4("view", camera.getMatrixView());
+				camera.translate(0.0,16.0,20.0);
+				camera.setTarget(0.0,0.0,0.0);
+				ourObject.scale(0.5);
+				ourObject.rotate(0.5*currentTime(), glm::vec3(0.0,1.0,0.0));
 
-        // render the loaded model
-				ourObject.rotate(currentTime(), glm::vec3(0.0,1.0,0.0));
-        ourShader.setMat4("model", ourObject.getMatrixModel());
+        // ourShader.setMat4("projection", camera.getMatrixProjection());
+        // ourShader.setMat4("view", camera.getMatrixView());
+        // ourShader.setMat4("model", ourObject.getMatrixModel());
+
+				ourShader.setMat4("matrixModel",ourObject.getMatrixModel());
+				ourShader.setMat4("matrixMVP",camera.getMatrixProjection()*camera.getMatrixView()*ourObject.getMatrixModel());
+
         ourModel.Draw(ourShader);
 
 

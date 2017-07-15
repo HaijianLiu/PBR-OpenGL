@@ -122,17 +122,20 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 	// normal: texture_normalN
 
 	// 1. diffuse maps
-	std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+	std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, UNIFORM_TEX_DIFFUSE);
 	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-	// 2. specular maps
-	std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-	// 3. normal maps
-	std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+	// 2. normal maps
+	std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, UNIFORM_TEX_NORMAL);
 	textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-	// 4. height maps
-	std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-	textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+	// 3. specular maps
+	std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, UNIFORM_TEX_METAL);
+	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+	// 4. shininess maps
+	std::vector<Texture> shininessMaps = loadMaterialTextures(material, aiTextureType_SHININESS, UNIFORM_TEX_ROUGH);
+	textures.insert(textures.end(), shininessMaps.begin(), shininessMaps.end());
+	// 5. ambient maps
+	std::vector<Texture> ambientMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, UNIFORM_TEX_AO);
+	textures.insert(textures.end(), ambientMaps.begin(), ambientMaps.end());
 
 	// return a mesh object created from the extracted mesh data
 	return Mesh(vertices, indices, textures);

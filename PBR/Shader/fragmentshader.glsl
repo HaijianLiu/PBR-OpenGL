@@ -217,5 +217,7 @@ void main(){
 	color = uncharted2ToneMaping(color);
 	color = color / uncharted2ToneMaping(vec3(11.2));
 
+	// color = materialDiffuseColor;
+
 
 }

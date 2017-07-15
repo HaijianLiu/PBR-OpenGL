@@ -1,6 +1,13 @@
 #ifndef Mesh_hpp
 #define Mesh_hpp
 
+#define UNIFORM_TEX_DIFFUSE "texDiffuse"
+#define UNIFORM_TEX_NORMAL  "texNormal"
+#define UNIFORM_TEX_METAL   "texMetal"
+#define UNIFORM_TEX_ROUGH   "texRough"
+#define UNIFORM_TEX_AO      "texAO"
+
+
 struct Vertex {
 	glm::vec3 position;
 	glm::vec3 normal;

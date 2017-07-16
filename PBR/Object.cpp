@@ -11,6 +11,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 // Include class
+#include "Camera.hpp"
 #include "Object.hpp"
 
 Object::Object(Model* model) {
@@ -41,4 +42,11 @@ glm::vec3 Object::getPosition() {
 
 glm::mat4 Object::getMatrixModel() {
 	return glm::rotate(rotationAngle,rotationAxis) * glm::scale(scales) * glm::translate(position);
+}
+
+void Object::draw(Camera camera) {
+	model->shader->use();
+	model->shader->setMat4(UNIFORM_MATRIX_MODEL, Object::getMatrixModel());
+	model->shader->setMat4(UNIFORM_MATRIX_MVP, camera.getMatrixProjection() * camera.getMatrixView() * Object::getMatrixModel());
+	model->draw();
 }

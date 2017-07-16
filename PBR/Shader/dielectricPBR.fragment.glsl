@@ -75,12 +75,12 @@ void main(){
 	materialDiffuseColor *
 	( 1 - fresnelSchlick(cosView) * specular(cosHalfway,materialRoughnessColor.x) )
 	// amibent color
-	- 0.5 * materialAmbientColor;
+	- 0.3 * materialAmbientColor;
 	// clamping min color to zero
 	color = max(vec3(0),color);
 
 	// exposure
-	color *= 4;
+	color *= 5;
 
 	// tonemapping and gammer correction
 	color = uncharted2ToneMaping(color);

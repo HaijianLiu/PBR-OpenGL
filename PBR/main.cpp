@@ -55,25 +55,25 @@ int main()
     // -----------
     // Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/nanosuit/nanosuit.obj");
 
-		// Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/WPN_AKM/WPN_AKM.obj");
-		// ourModel.loadPBRTextures("WPNT_AKM_Base_Color.tga","WPNT_AKM_DirectX.tga","WPNT_AKM_Metallic.tga","WPNT_AKM_Roughness.tga","WPNT_AKM_Ambient_occlusion.tga");
-
 		// Model* testModel = new Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/nanosuit/nanosuit.obj", &ourShader);
 		// delete testModel;
+
+		// Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/WPN_AKM/WPN_AKM.obj",&ourShader);
+		// ourModel.loadPBRTextures("WPNT_AKM_Base_Color.tga","WPNT_AKM_DirectX.tga","WPNT_AKM_Metallic.tga","WPNT_AKM_Roughness.tga","WPNT_AKM_Ambient_occlusion.tga");
 
 		Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Wood_Log_qdtdP_4K_3d_ms/Aset_wood_log_M_qdtdP_LOD0.obj",&ourShader);
 		ourModel.loadPBRTextures("Aset_wood_log_M_qdtdP_4K_Albedo.jpg","Aset_wood_log_M_qdtdP_4K_Normal_LOD0.jpg","Aset_wood_log_M_qdtdP_4K_Roughness.jpg","Aset_wood_log_M_qdtdP_4K_Cavity.jpg");
 
-		Model rockRound = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Rock_Sandstone_plras_4K_3d_ms/Aset_rock_sandstone_S_plww4_LOD0.obj",&ourShader);
-		rockRound.loadPBRTextures("Aset_rock_sandstone_S_plras_4K_Albedo.jpg","Aset_rock_sandstone_S_plras_4K_Normal_LOD0.jpg","Aset_rock_sandstone_S_plras_4K_Roughness.jpg","Aset_rock_sandstone_S_plras_4K_Cavity.jpg");
+		// Model rockRound = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Rock_Sandstone_plras_4K_3d_ms/Aset_rock_sandstone_S_plras_LOD0.obj",&ourShader);
+		// rockRound.loadPBRTextures("Aset_rock_sandstone_S_plras_4K_Albedo.jpg","Aset_rock_sandstone_S_plras_4K_Normal_LOD0.jpg","Aset_rock_sandstone_S_plras_4K_Roughness.jpg","Aset_rock_sandstone_S_plras_4K_Cavity.jpg");
 
-		Model rockCube = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Rock_Sandstone_plww4_4K_3d_ms/Aset_wood_log_M_qdtdP_LOD0.obj",&ourShader);
-		rockCube.loadPBRTextures("Aset_rock_sandstone_S_plww4_4K_Albedo.jpg","Aset_rock_sandstone_S_plww4_4K_Normal_LOD0.jpg","Aset_rock_sandstone_S_plww4_4K_Roughness.jpg","Aset_rock_sandstone_S_plww4_4K_Cavity.jpg");
+		// Model rockCube = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Rock_Sandstone_plww4_4K_3d_ms/Aset_rock_sandstone_S_plww4_LOD0.obj",&ourShader);
+		// rockCube.loadPBRTextures("Aset_rock_sandstone_S_plww4_4K_Albedo.jpg","Aset_rock_sandstone_S_plww4_4K_Normal_LOD0.jpg","Aset_rock_sandstone_S_plww4_4K_Roughness.jpg","Aset_rock_sandstone_S_plww4_4K_Cavity.jpg");
 
 		Camera camera = Camera();
 		Object ourObject = Object(&ourModel);
-		Object rockRoundObject = Object(&rockRound);
-		Object rockCubeObject = Object(&rockCube);
+		// Object rockRoundObject = Object(&rockRound);
+		// Object rockCubeObject = Object(&rockCube);
 
 
     // draw in wireframe
@@ -104,17 +104,20 @@ int main()
         // view/projection transformations
 				camera.translate(0.0,16.0,20.0);
 				camera.setTarget(0.0,5.0,0.0);
+
+
 				ourObject.scale(0.3);
 				ourObject.rotate(0.3*currentTime(), glm::vec3(0.0,1.0,0.0));
+				ourObject.draw(camera);
 
-        // ourShader.setMat4("projection", camera.getMatrixProjection());
-        // ourShader.setMat4("view", camera.getMatrixView());
-        // ourShader.setMat4("model", ourObject.getMatrixModel());
+				// rockRoundObject.scale(0.2);
+				// rockRoundObject.rotate(0.3*currentTime(), glm::vec3(0.0,1.0,0.0));
+				// rockRoundObject.draw(camera);
 
-        ourModel.shader->use();
-				ourModel.shader->setMat4(UNIFORM_MATRIX_MODEL,ourObject.getMatrixModel());
-				ourModel.shader->setMat4(UNIFORM_MATRIX_MVP,camera.getMatrixProjection()*camera.getMatrixView()*ourObject.getMatrixModel());
-        ourModel.draw();
+				// rockCubeObject.scale(0.1);
+				// rockCubeObject.translate(0.0,0.0,1.0);
+				// rockCubeObject.rotate(0.3*currentTime(), glm::vec3(0.0,1.0,0.0));
+				// rockCubeObject.draw(camera);
 
 
 

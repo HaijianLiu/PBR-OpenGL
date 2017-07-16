@@ -48,5 +48,6 @@ void Object::draw(Camera camera) {
 	model->shader->use();
 	model->shader->setMat4(UNIFORM_MATRIX_MODEL, Object::getMatrixModel());
 	model->shader->setMat4(UNIFORM_MATRIX_MVP, camera.getMatrixProjection() * camera.getMatrixView() * Object::getMatrixModel());
+	model->shader->setVec3(UNIFORM_EYE_WORLDSPACE, camera.getPosition());
 	model->draw();
 }

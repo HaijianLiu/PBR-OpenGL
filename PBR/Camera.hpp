@@ -13,6 +13,7 @@ public:
 	void setRange(float start, float end);
 	glm::mat4 getMatrixProjection();
 	glm::mat4 getMatrixView();
+	glm::vec3 getPosition();
 
 private:
 	glm::vec3 position; // in World Space

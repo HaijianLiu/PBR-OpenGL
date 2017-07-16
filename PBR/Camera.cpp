@@ -54,3 +54,6 @@ glm::mat4 Camera::getMatrixProjection() {
 glm::mat4 Camera::getMatrixView() {
 	return glm::lookAt(position,target,upside);
 }
+glm::vec3 Camera::getPosition() {
+	return position;
+}

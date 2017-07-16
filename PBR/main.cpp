@@ -61,18 +61,29 @@ int main()
 		// Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/WPN_AKM/WPN_AKM.obj",&ourShader);
 		// ourModel.loadPBRTextures("WPNT_AKM_Base_Color.tga","WPNT_AKM_DirectX.tga","WPNT_AKM_Metallic.tga","WPNT_AKM_Roughness.tga","WPNT_AKM_Ambient_occlusion.tga");
 
+
+		Model grassModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Grass/GrassMWVizwork_cust.obj",&ourShader);
+		grassModel.loadPBRTextures("Blade_02.jpg","Blade01_B.jpg");
+
 		Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Wood_Log_qdtdP_4K_3d_ms/Aset_wood_log_M_qdtdP_LOD0.obj",&ourShader);
 		ourModel.loadPBRTextures("Aset_wood_log_M_qdtdP_4K_Albedo.jpg","Aset_wood_log_M_qdtdP_4K_Normal_LOD0.jpg","Aset_wood_log_M_qdtdP_4K_Roughness.jpg","Aset_wood_log_M_qdtdP_4K_Cavity.jpg");
 
-		// Model rockRound = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Rock_Sandstone_plras_4K_3d_ms/Aset_rock_sandstone_S_plras_LOD0.obj",&ourShader);
-		// rockRound.loadPBRTextures("Aset_rock_sandstone_S_plras_4K_Albedo.jpg","Aset_rock_sandstone_S_plras_4K_Normal_LOD0.jpg","Aset_rock_sandstone_S_plras_4K_Roughness.jpg","Aset_rock_sandstone_S_plras_4K_Cavity.jpg");
+		// Model clayModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Soil_Mud_pjEqV0_4K_surface_ms/plane.obj",&ourShader);
+		// clayModel.loadPBRTextures("pjEqV_4K_Albedo.jpg","pjEqV_4K_Normal.jpg","pjEqV_4K_Roughness.jpg","pjEqV_4K_AO.jpg");
+
+		// Model sandstoneModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Rock_Sandstone_plras_4K_3d_ms/Aset_rock_sandstone_S_plras_LOD0.obj",&ourShader);
+		// sandstoneModel.loadPBRTextures("Aset_rock_sandstone_S_plras_4K_Albedo.jpg","Aset_rock_sandstone_S_plras_4K_Normal_LOD0.jpg","Aset_rock_sandstone_S_plras_4K_Roughness.jpg","Aset_rock_sandstone_S_plras_4K_Cavity.jpg");
 
 		// Model rockCube = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Rock_Sandstone_plww4_4K_3d_ms/Aset_rock_sandstone_S_plww4_LOD0.obj",&ourShader);
 		// rockCube.loadPBRTextures("Aset_rock_sandstone_S_plww4_4K_Albedo.jpg","Aset_rock_sandstone_S_plww4_4K_Normal_LOD0.jpg","Aset_rock_sandstone_S_plww4_4K_Roughness.jpg","Aset_rock_sandstone_S_plww4_4K_Cavity.jpg");
 
 		Camera camera = Camera();
+		Object grassObject = Object(&grassModel);
+		Object grassObject2 = Object(&grassModel);
+		Object grassObject3 = Object(&grassModel);
 		Object ourObject = Object(&ourModel);
-		// Object rockRoundObject = Object(&rockRound);
+		// Object clayObject = Object(&clayModel);
+		// Object sandstoneObject = Object(&sandstoneModel);
 		// Object rockCubeObject = Object(&rockCube);
 
 
@@ -106,13 +117,29 @@ int main()
 				camera.setTarget(0.0,5.0,0.0);
 
 
-				ourObject.scale(0.3);
-				ourObject.rotate(0.3*currentTime(), glm::vec3(0.0,1.0,0.0));
+
+				grassObject.scale(3.0);
+				grassObject.rotate(0.2*currentTime(), glm::vec3(0.0,1.0,0.0));
+				grassObject.draw(camera);
+				grassObject2.scale(3.0);
+				grassObject2.rotate(1.0+0.2*currentTime(), glm::vec3(0.0,1.0,0.0));
+				grassObject2.draw(camera);
+				grassObject3.scale(3.0);
+				grassObject3.rotate(4.0+0.2*currentTime(), glm::vec3(0.0,1.0,0.0));
+				grassObject3.draw(camera);
+
+				ourObject.scale(0.2);
+				ourObject.rotate(0.2*currentTime(), glm::vec3(0.0,1.0,0.0));
 				ourObject.draw(camera);
 
-				// rockRoundObject.scale(0.2);
-				// rockRoundObject.rotate(0.3*currentTime(), glm::vec3(0.0,1.0,0.0));
-				// rockRoundObject.draw(camera);
+				// clayObject.scale(10.0);
+				// clayObject.rotate(0.2*currentTime(), glm::vec3(0.0,1.0,0.0));
+				// clayObject.draw(camera);
+
+				// sandstoneObject.translate(0.5,-0.5,0.0);
+				// sandstoneObject.scale(0.3);
+				// sandstoneObject.rotate(0.2*currentTime(), glm::vec3(0.0,1.0,0.0));
+				// sandstoneObject.draw(camera);
 
 				// rockCubeObject.scale(0.1);
 				// rockCubeObject.translate(0.0,0.0,1.0);

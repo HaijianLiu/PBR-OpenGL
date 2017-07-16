@@ -81,7 +81,7 @@ void main(){
 	color = max(vec3(0),color);
 
 	// exposure
-	color *= 5;
+	color *= 4;
 
 	// tonemapping and gammer correction
 	color = uncharted2ToneMaping(color);

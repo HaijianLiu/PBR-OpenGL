@@ -24,6 +24,22 @@ Model::Model(std::string const& path, Shader* shader) {
 	this->shader = shader;
 }
 
+void Model::loadPBRTextures(const char* diffusePath, const char* roughPath) {
+	Texture texDiffuse;
+	texDiffuse.id = loadTexture(diffusePath,directory);
+	texDiffuse.type = UNIFORM_TEX_DIFFUSE;
+	texDiffuse.path = directory;
+	Texture texRough;
+	texRough.id = loadTexture(roughPath,directory);
+	texRough.type = UNIFORM_TEX_ROUGH;
+	texRough.path = directory;
+
+	for (unsigned int i = 0; i < meshes.size(); i++) {
+		meshes[i].textures.push_back(texDiffuse);
+		meshes[i].textures.push_back(texRough);
+	}
+}
+
 void Model::loadPBRTextures(const char* diffusePath, const char* normalPath, const char* metalPath, const char* roughPath, const char* aoPath) {
 	Texture texDiffuse;
 	texDiffuse.id = loadTexture(diffusePath,directory);

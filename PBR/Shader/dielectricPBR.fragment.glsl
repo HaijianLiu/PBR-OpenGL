@@ -16,6 +16,8 @@ uniform samplerCube texSky;
 
 uniform mat4 matrixModel;
 
+uniform vec3 eyeWorldspace;
+
 
 float specular(float cosHalfway, float roughness) {
 	return pow(cosHalfway,roughness);
@@ -55,7 +57,6 @@ void main(){
 
 	vec3 hdrColor = vec3(3,2.7,2.5);
 	vec3 lightPositionWorldspace = vec3(20,40,20);
-	vec3 eyeWorldspace = vec3(0,16,20);
 
 	vec3 eyeDirectionWorldspace = normalize(eyeWorldspace - vertexWorldspace);
 	vec3 lightDirectionWorldspace = normalize(lightPositionWorldspace - vertexWorldspace);

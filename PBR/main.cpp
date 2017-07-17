@@ -6,7 +6,6 @@
 #include "opengl.hpp"
 #include "timecontrol.hpp"
 // Include class
-#include "Shader.hpp"
 #include "Camera.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 // #include "Model.hpp"
@@ -50,6 +49,7 @@ int main()
     // Shader ourShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.fs.glsl");
 		// Shader ourShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/vertexshader.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/fragmentshader.glsl");
 		Shader ourShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/dielectricPBR.vertex.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/dielectricPBR.fragment.glsl");
+		Shader pbrShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.1PBR.vertex.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.1PBR.fragment.glsl");
 
     // load models
     // -----------
@@ -119,17 +119,15 @@ int main()
 
 
 				grassObject.scale(3.0);
-				grassObject.rotate(0.2*currentTime(), glm::vec3(0.0,1.0,0.0));
 				grassObject.draw(camera);
 				grassObject2.scale(3.0);
-				grassObject2.rotate(1.0+0.2*currentTime(), glm::vec3(0.0,1.0,0.0));
+				grassObject2.rotate(glm::vec3(0.0,1.0,0.0));
 				grassObject2.draw(camera);
 				grassObject3.scale(3.0);
-				grassObject3.rotate(4.0+0.2*currentTime(), glm::vec3(0.0,1.0,0.0));
+				grassObject3.rotate(glm::vec3(0.0,4.0,0.0));
 				grassObject3.draw(camera);
 
 				ourObject.scale(0.2);
-				ourObject.rotate(0.2*currentTime(), glm::vec3(0.0,1.0,0.0));
 				ourObject.draw(camera);
 
 				// clayObject.scale(10.0);
@@ -163,19 +161,18 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+void processInput(GLFWwindow *window) {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
 
-    // if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    //     camera.ProcessKeyboard(FORWARD, deltaTime);
-    // if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    //     camera.ProcessKeyboard(BACKWARD, deltaTime);
-    // if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    //     camera.ProcessKeyboard(LEFT, deltaTime);
-    // if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    //     camera.ProcessKeyboard(RIGHT, deltaTime);
+	// if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	// 	object->updateInput(turnUp,1 * deltaTime);
+	// if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	// 	object->updateInput(turnDown,1 * deltaTime);
+	// if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	// 	object->updateInput(turnLeft,1 * deltaTime);
+	// if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	// 	object->updateInput(turnRight,1 * deltaTime);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

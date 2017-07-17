@@ -1,14 +1,12 @@
-//
-//  input.hpp
-//  PBR
-//
-//  Created by haijian on 2017/07/17.
-//  Copyright © 2017年 haijian. All rights reserved.
-//
-
 #ifndef input_hpp
 #define input_hpp
 
-#include <stdio.h>
+enum KEY_INPUT {
+	KEY_NONE,
+	KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT,
+	KEY_W, KEY_S, KEY_A, KEY_D
+};
+
+int getKeyboardPress();
 
 #endif /* input_hpp */

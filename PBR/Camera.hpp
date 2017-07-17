@@ -5,8 +5,6 @@ class Camera {
 public:
 	Camera();
 	void translate(float x, float y, float z);
-	void setTarget(float x, float y, float z);
-	void setTarget(glm::vec3 tar);
 	void setUpside(glm::vec3 up);
 	void setField(float degree);
 	void setRatio(float ratio);
@@ -15,14 +13,27 @@ public:
 	glm::mat4 getMatrixView();
 	glm::vec3 getPosition();
 
+	void updateInput(GLFWwindow* window, float deltaTime);
+
 private:
-	glm::vec3 position; // in World Space
-	glm::vec3 target; // in World Space
-	glm::vec3 upside; // Head is up (0,1,0)
+	// Camera Position
+	glm::vec3 position;
+	glm::vec3 cameraFront, cameraUp, cameraRight;
+	glm::vec3 worldFront, worldUp, worldRight;
+	// Eular Angles
+	float yaw;
+	float pitch;
+	// Moment options
+	float moveSpeed;
+	float rotateSensitivity;
+
+	// Camera Attributes
 	float field; // Degree° Field of View
 	float ratio;
 	float rangeStart;
 	float rangeEnd;
+
+	void updateCameraVectors();
 };
 
 #endif /* Camera_hpp */

@@ -5,6 +5,7 @@
 // Include header files
 #include "opengl.hpp"
 #include "timecontrol.hpp"
+#include "input.hpp"
 // Include class
 #include "Camera.hpp"
 #define STB_IMAGE_IMPLEMENTATION
@@ -113,9 +114,8 @@ int main()
 
 
         // view/projection transformations
-				camera.translate(0.0,16.0,20.0);
-				camera.setTarget(0.0,5.0,0.0);
-
+				// camera.updateInput(getKeyboardPress(window));
+				camera.updateInput(window,deltaTime);
 
 
 				grassObject.scale(3.0);

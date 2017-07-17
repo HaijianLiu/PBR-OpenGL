@@ -7,6 +7,6 @@ enum KEY_INPUT {
 	KEY_W, KEY_S, KEY_A, KEY_D
 };
 
-int getKeyboardPress();
+int getKeyboardPress(GLFWwindow* window);
 
 #endif /* input_hpp */

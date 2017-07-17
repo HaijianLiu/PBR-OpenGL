@@ -3,6 +3,12 @@
 
 #include "Model.hpp"
 
+enum ObjectMovement {
+	moveForward, moveBackward, moveLeft, moveRight,
+	turnUp, turnDown, turnLeft, turnRight,
+	scaleUp, scaleDown
+};
+
 class Object {
 public:
 	Model* model;
@@ -10,16 +16,18 @@ public:
 	void translate(float x, float y, float z);
 	void scale(float x, float y, float z);
 	void scale(float x);
-	void rotate(float angle, glm::vec3 axis);
+	void rotate(glm::vec3 rotation);
+	void rotate(float x, float y, float z);
 	glm::vec3 getPosition();
 	glm::mat4 getMatrixModel();
 	void draw(Camera camera);
 
+	// void updateInput(ObjectMovement move, float speed);
+
 private:
 	glm::vec3 position;
 	glm::vec3 scales;
-	glm::vec3 rotationAxis;
-	float rotationAngle;
+	glm::vec3 rotation;
 };
 
 #endif /* Object_hpp */

@@ -18,6 +18,9 @@ uniform mat4 matrixModel;
 
 uniform vec3 eyeWorldspace;
 
+uniform vec3 lightPosition;
+uniform vec3 lightColor;
+
 
 const float PI = 3.14159265359;
 // ----------------------------------------------------------------------------
@@ -62,8 +65,13 @@ void main()
 {
 	// Material properties
 	vec3 materialDiffuseColor = texture(texDiffuse,uv).rgb;
-	vec3 materialAmbientColor = vec3(texture(texAO,uv).r);
+	vec3 albedo = pow(materialDiffuseColor, vec3(2.2));
+	float metallic = 0.0;
 	vec3 materialRoughnessColor = vec3(texture(texRough,uv).r);
+	float roughness = materialRoughnessColor.r;
+	vec3 materialAmbientColor = vec3(texture(texAO,uv).r);
+	float ao = materialAmbientColor.r;
+
 	vec3 materialNormalColor = texture(texNormal,uv).rgb;
 	materialNormalColor = normalize(materialNormalColor * 2.0 - 1.0);
 
@@ -84,19 +92,19 @@ void main()
 	// calculate reflectance at normal incidence; if dia-electric (like plastic) use F0
 	// of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)
 	vec3 F0 = vec3(0.04);
-	// F0 = mix(F0, albedo, metallic);
+	F0 = mix(F0, albedo, metallic);
 
 	// reflectance equation
 	vec3 Lo = vec3(0.0);
 
 	// calculate per-light radiance
-	// float distance = length(lightPositions[i] - WorldPos);
-	// float attenuation = 1.0 / (distance * distance);
-	// vec3 radiance = lightColors[i] * attenuation;
+	float lightDistance = length(lightPosition - vertexWorldspace);
+	float attenuation = 1.0 / (lightDistance * lightDistance);
+	vec3 radiance = lightColor * attenuation;
 
 	// Cook-Torrance BRDF
-	float NDF = distributionGGX(cosHalfway, materialRoughnessColor.r);
-	float G   = geometrySmith(cosLight, cosView, materialRoughnessColor.r);
+	float NDF = distributionGGX(cosHalfway, roughness);
+	float G   = geometrySmith(cosLight, cosView, roughness);
 	vec3  F   = fresnelSchlick(cosView, F0);
 
 	vec3 nominator    = NDF * G * F;
@@ -112,14 +120,14 @@ void main()
 	// multiply kD by the inverse metalness such that only non-metals
 	// have diffuse lighting, or a linear blend if partly metal (pure metals
 	// have no diffuse light).
-	// kD *= 1.0 - metallic;
+	kD *= 1.0 - metallic;
 
 	// add to outgoing radiance Lo
-	Lo += (kD * materialDiffuseColor / PI + specular) * cosLight / 20;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
+	Lo += (kD * albedo / PI + specular) * radiance * cosLight;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
 
 	// ambient lighting (note that the next IBL tutorial will replace
 	// this ambient lighting with environment lighting).
-	vec3 ambient = vec3(0.03) * materialDiffuseColor;
+	vec3 ambient = vec3(0.03) * albedo * ao;
 
 	color = ambient + Lo;
 
@@ -130,6 +138,5 @@ void main()
 
 	// HDR tonemapping
 	color = color / (color + vec3(1.0));
-	// gamma correct
 	color = pow(color, vec3(1.0/2.2));
 }

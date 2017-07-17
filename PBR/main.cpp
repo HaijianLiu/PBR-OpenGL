@@ -44,6 +44,10 @@ int main()
     // -----------------------------
     // glEnable(GL_DEPTH_TEST);
 
+		// lights
+    // ------
+    glm::vec3 lightPosition = glm::vec3(0.0f, 20.0f, 10.0f);
+    glm::vec3 lightColor = glm::vec3(150.0f, 150.0f, 150.0f);
     // build and compile shaders
     // -------------------------
     // Shader ourShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.model_loading.fs.glsl");
@@ -62,10 +66,10 @@ int main()
 		// ourModel.loadPBRTextures("WPNT_AKM_Base_Color.tga","WPNT_AKM_DirectX.tga","WPNT_AKM_Metallic.tga","WPNT_AKM_Roughness.tga","WPNT_AKM_Ambient_occlusion.tga");
 
 
-		Model grassModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Grass/GrassMWVizwork_cust.obj",&ourShader);
+		Model grassModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Grass/GrassMWVizwork_cust.obj",&pbrShader);
 		grassModel.loadPBRTextures("Blade_02.jpg","Blade01_B.jpg");
 
-		Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Wood_Log_qdtdP_4K_3d_ms/Aset_wood_log_M_qdtdP_LOD0.obj",&ourShader);
+		Model ourModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Wood_Log_qdtdP_4K_3d_ms/Aset_wood_log_M_qdtdP_LOD0.obj",&pbrShader);
 		ourModel.loadPBRTextures("Aset_wood_log_M_qdtdP_4K_Albedo.jpg","Aset_wood_log_M_qdtdP_4K_Normal_LOD0.jpg","Aset_wood_log_M_qdtdP_4K_Roughness.jpg","Aset_wood_log_M_qdtdP_4K_Cavity.jpg");
 
 		// Model clayModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Soil_Mud_pjEqV0_4K_surface_ms/plane.obj",&ourShader);
@@ -110,6 +114,13 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
+				// render light source (simply re-render sphere at light positions)
+         // this looks a bit off as we use the same shader, but it'll make their positions obvious and
+         // keeps the codeprint small.
+				//  lightPosition.y = 20 * (float)sin(glfwGetTime());
+				//  lightColor = glm::vec3(150.0f, 150.0f, 150.0f) * (float)sin(glfwGetTime());
+				 pbrShader.setVec3("lightPosition", lightPosition);
+				 pbrShader.setVec3("lightColor", lightColor);
 
 
         // view/projection transformations

@@ -32,7 +32,7 @@ Camera::Camera() {
 	rotateSensitivity = 40.0;
 	// Camera Attributes
 	field      = 45.0;
-	ratio      = 4.0/3.0;
+	ratio      = 800.0/600.0;
 	rangeStart = 0.1;
 	rangeEnd   = 100.0;
 }

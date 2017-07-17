@@ -5,7 +5,6 @@
 // Include header files
 #include "opengl.hpp"
 #include "timecontrol.hpp"
-#include "input.hpp"
 // Include class
 #include "Camera.hpp"
 #define STB_IMAGE_IMPLEMENTATION

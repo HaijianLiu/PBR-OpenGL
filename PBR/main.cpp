@@ -36,114 +36,266 @@ float lastFrame = 0.0f;
 
 int main()
 {
-    // glfw: initialize and configure
-    // ------------------------------
-		GLFWwindow* window = createWindow("WindowName",SCR_WIDTH,SCR_HEIGHT);
+	GLFWwindow* window = createWindow("WindowName",800,600);
 
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	// Other Default settings
+	// Dark blue background
+	glClearColor(0.9,0.9,0.9,1.0);
 
-    // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// configure global opengl state
+	// -----------------------------
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL); // set depth function to less than AND equal for skybox depth trick.
+
+	// build and compile shaders
+	// -------------------------
+	Shader pbrShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.pbr.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.pbr.fs.glsl");
+	Shader equirectangularToCubemapShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.cubemap.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.equirectangular_to_cubemap.fs.glsl");
+	Shader irradianceShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.cubemap.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.irradiance_convolution.fs.glsl");
+	Shader backgroundShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.background.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.background.fs.glsl");
 
 
-		// configure global opengl state
-		    // -----------------------------
-		    glEnable(GL_DEPTH_TEST);
+	pbrShader.use();
+	pbrShader.setInt("irradianceMap", 0);
+	pbrShader.setVec3("albedo", 0.5f, 0.0f, 0.0f);
+	pbrShader.setFloat("ao", 1.0f);
 
-		    // build and compile shaders
-		    // -------------------------
-		    Shader shader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.1.pbr.vs.glsl",  "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/1.1.pbr.fs.glsl");
+	backgroundShader.use();
+	backgroundShader.setInt("environmentMap", 0);
 
-		    shader.use();
-		    shader.setVec3("albedo", 0.5f, 0.0f, 0.0f);
-		    shader.setFloat("ao", 1.0f);
 
-		    // lights
-		    // ------
-		    glm::vec3 lightPositions[] = {
-		        glm::vec3(-10.0f,  10.0f, 10.0f),
-		        glm::vec3( 10.0f,  10.0f, 10.0f),
-		        glm::vec3(-10.0f, -10.0f, 10.0f),
-		        glm::vec3( 10.0f, -10.0f, 10.0f),
-		    };
-		    glm::vec3 lightColors[] = {
-		        glm::vec3(300.0f, 300.0f, 300.0f),
-		        glm::vec3(300.0f, 300.0f, 300.0f),
-		        glm::vec3(300.0f, 300.0f, 300.0f),
-		        glm::vec3(300.0f, 300.0f, 300.0f)
-		    };
-		    int nrRows    = 7;
-		    int nrColumns = 7;
-		    float spacing = 2.5;
+	// lights
+	// ------
+	glm::vec3 lightPositions[] = {
+			glm::vec3(-10.0f,  10.0f, 10.0f),
+			glm::vec3( 10.0f,  10.0f, 10.0f),
+			glm::vec3(-10.0f, -10.0f, 10.0f),
+			glm::vec3( 10.0f, -10.0f, 10.0f),
+	};
+	glm::vec3 lightColors[] = {
+			glm::vec3(300.0f, 300.0f, 300.0f),
+			glm::vec3(300.0f, 300.0f, 300.0f),
+			glm::vec3(300.0f, 300.0f, 300.0f),
+			glm::vec3(300.0f, 300.0f, 300.0f)
+	};
+	int nrRows = 7;
+	int nrColumns = 7;
+	float spacing = 2.5;
 
-		    // initialize static shader uniforms before rendering
-		    // --------------------------------------------------
-		    glm::mat4 projection = camera.getMatrixProjection();
-		    shader.use();
-		    shader.setMat4("projection", projection);
+	// pbr: setup framebuffer
+	// ----------------------
+	unsigned int captureFBO;
+	unsigned int captureRBO;
+	glGenFramebuffers(1, &captureFBO);
+	glGenRenderbuffers(1, &captureRBO);
 
-		    // render loop
-		    // -----------
-		    while (!glfwWindowShouldClose(window))
-		    {
-		        // per-frame time logic
-		        // --------------------
-		        float currentFrame = glfwGetTime();
-		        deltaTime = currentFrame - lastFrame;
-		        lastFrame = currentFrame;
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
-		        // input
-		        // -----
-		        processInput(window);
+	// pbr: load the HDR environment map
+	// ---------------------------------
+	stbi_set_flip_vertically_on_load(true);
+	int width, height, nrComponents;
+	float *data = stbi_loadf("/Users/haijian/Documents/OpenGL/PBR/PBR/Texture/Topanga_Forest_B_3k.hdr", &width, &height, &nrComponents, 0);
+	unsigned int hdrTexture;
+	if (data)
+	{
+			glGenTextures(1, &hdrTexture);
+			glBindTexture(GL_TEXTURE_2D, hdrTexture);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data); // note how we specify the texture's data value to be float
 
-		        // render
-		        // ------
-		        glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
-		        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		        shader.use();
-		        glm::mat4 view = camera.getMatrixView();
-		        shader.setMat4("view", view);
-		        shader.setVec3("camPos", camera.getPosition());
+			stbi_image_free(data);
+	}
+	else
+	{
+			std::cout << "Failed to load HDR image." << std::endl;
+	}
 
-		        // render rows*column number of spheres with varying metallic/roughness values scaled by rows and columns respectively
-		        glm::mat4 model;
-		        for (int row = 0; row < nrRows; ++row)
-		        {
-		            shader.setFloat("metallic", (float)row / (float)nrRows);
-		            for (int col = 0; col < nrColumns; ++col)
-		            {
-		                // we clamp the roughness to 0.025 - 1.0 as perfectly smooth surfaces (roughness of 0.0) tend to look a bit off
-		                // on direct lighting.
-		                shader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
+	// pbr: setup cubemap to render to and attach to framebuffer
+	// ---------------------------------------------------------
+	unsigned int envCubemap;
+	glGenTextures(1, &envCubemap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		                model = glm::mat4();
-		                model = glm::translate(model, glm::vec3(
-		                    (float)(col - (nrColumns / 2)) * spacing,
-		                    (float)(row - (nrRows / 2)) * spacing,
-		                    -2.0f
-		                ));
-		                shader.setMat4("model", model);
-		                renderSphere();
-		            }
-		        }
+	// pbr: set up projection and view matrices for capturing data onto the 6 cubemap face directions
+	// ----------------------------------------------------------------------------------------------
+	glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+	glm::mat4 captureViews[] =
+	{
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+	};
 
-		        // render light source (simply re-render sphere at light positions)
-		        // this looks a bit off as we use the same shader, but it'll make their positions obvious and
-		        // keeps the codeprint small.
-		        for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
-		        {
-		            glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
-		            newPos = lightPositions[i];
-		            shader.setVec3(("lightPositions[" + std::to_string(i) + "]").c_str(), newPos);
-		            shader.setVec3(("lightColors[" + std::to_string(i) + "]").c_str(), lightColors[i]);
+	// pbr: convert HDR equirectangular environment map to cubemap equivalent
+	// ----------------------------------------------------------------------
+	equirectangularToCubemapShader.use();
+	equirectangularToCubemapShader.setInt("equirectangularMap", 0);
+	equirectangularToCubemapShader.setMat4("projection", captureProjection);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, hdrTexture);
 
-		            model = glm::mat4();
-		            model = glm::translate(model, newPos);
-		            model = glm::scale(model, glm::vec3(0.5f));
-		            shader.setMat4("model", model);
-		            renderSphere();
-		        }
+	glViewport(0, 0, 512, 512); // don't forget to configure the viewport to the capture dimensions.
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+			equirectangularToCubemapShader.setMat4("view", captureViews[i]);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemap, 0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			renderCube();
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// pbr: create an irradiance cubemap, and re-scale capture FBO to irradiance scale.
+	// --------------------------------------------------------------------------------
+	unsigned int irradianceMap;
+	glGenTextures(1, &irradianceMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 32, 32, 0, GL_RGB, GL_FLOAT, nullptr);
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 32, 32);
+
+	// pbr: solve diffuse integral by convolution to create an irradiance (cube)map.
+	// -----------------------------------------------------------------------------
+	irradianceShader.use();
+	irradianceShader.setInt("environmentMap", 0);
+	irradianceShader.setMat4("projection", captureProjection);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+
+	glViewport(0, 0, 32, 32); // don't forget to configure the viewport to the capture dimensions.
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+			irradianceShader.setMat4("view", captureViews[i]);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMap, 0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			renderCube();
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// initialize static shader uniforms before rendering
+	// --------------------------------------------------
+	glm::mat4 projection = camera.getMatrixProjection();
+	pbrShader.use();
+	pbrShader.setMat4("projection", projection);
+	backgroundShader.use();
+	backgroundShader.setMat4("projection", projection);
+
+	// then before rendering, configure the viewport to the original framebuffer's screen dimensions
+	int scrWidth, scrHeight;
+	glfwGetFramebufferSize(window, &scrWidth, &scrHeight);
+	glViewport(0, 0, scrWidth, scrHeight);
+
+	// render loop
+	// -----------
+	while (!glfwWindowShouldClose(window))
+	{
+			// per-frame time logic
+			// --------------------
+			float currentFrame = glfwGetTime();
+			deltaTime = currentFrame - lastFrame;
+			lastFrame = currentFrame;
+
+			// input
+			// -----
+			processInput(window);
+
+			// render
+			// ------
+			glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			// render scene, supplying the convoluted irradiance map to the final shader.
+			// ------------------------------------------------------------------------------------------
+			pbrShader.use();
+			glm::mat4 view = camera.getMatrixView();
+			pbrShader.setMat4("view", view);
+			pbrShader.setVec3("camPos", camera.getPosition());
+
+			// bind pre-computed IBL data
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+
+			// render rows*column number of spheres with material properties defined by textures (they all have the same material properties)
+			glm::mat4 model;
+			for (int row = 0; row < nrRows; ++row)
+			{
+					pbrShader.setFloat("metallic", (float)row / (float)nrRows);
+					for (int col = 0; col < nrColumns; ++col)
+					{
+							// we clamp the roughness to 0.025 - 1.0 as perfectly smooth surfaces (roughness of 0.0) tend to look a bit off
+							// on direct lighting.
+							pbrShader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
+
+							model = glm::mat4();
+							model = glm::translate(model, glm::vec3(
+									(float)(col - (nrColumns / 2)) * spacing,
+									(float)(row - (nrRows / 2)) * spacing,
+									-2.0f
+							));
+							pbrShader.setMat4("model", model);
+							renderSphere();
+					}
+			}
+
+
+			// render light source (simply re-render sphere at light positions)
+			// this looks a bit off as we use the same shader, but it'll make their positions obvious and
+			// keeps the codeprint small.
+			for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
+			{
+					glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
+					newPos = lightPositions[i];
+					pbrShader.setVec3(("lightPositions[" + std::to_string(i) + "]").c_str(), newPos);
+					pbrShader.setVec3(("lightColors[" + std::to_string(i) + "]").c_str(), lightColors[i]);
+
+					model = glm::mat4();
+					model = glm::translate(model, newPos);
+					model = glm::scale(model, glm::vec3(0.5f));
+					pbrShader.setMat4("model", model);
+					renderSphere();
+			}
+
+			// render skybox (render as last to prevent overdraw)
+			backgroundShader.use();
+			backgroundShader.setMat4("view", view);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+			//glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap); // display irradiance map
+			renderCube();
+
 
 						camera.updateInput(window,deltaTime);
 

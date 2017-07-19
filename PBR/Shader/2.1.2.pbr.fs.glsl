@@ -64,8 +64,8 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 void main()
 {
     vec3 N = Normal;
-    vec3 V = normalize(camPos - WorldPos);
-    vec3 R = reflect(-V, N);
+    vec3 V = normalize(WorldPos - camPos);
+    vec3 R = reflect(V, N);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)
@@ -74,10 +74,11 @@ void main()
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
+		vec3 test;
     for(int i = 0; i < 4; ++i)
     {
         // calculate per-light radiance
-        vec3 L = normalize(lightPositions[i] - WorldPos);
+        vec3 L = normalize(WorldPos - lightPositions[i]);
         vec3 H = normalize(V + L);
         float distance = length(lightPositions[i] - WorldPos);
         float attenuation = 1.0 / (distance * distance);
@@ -108,6 +109,7 @@ void main()
 
         // add to outgoing radiance Lo
         Lo += (kD * albedo / PI + specular) * radiance * NdotL; // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
+				test = vec3(1) * G;
     }
 
     // ambient lighting (we now use IBL as the ambient term)
@@ -115,12 +117,15 @@ void main()
     vec3 kD = 1.0 - kS;
     kD *= 1.0 - metallic;
     vec3 irradiance = texture(irradianceMap, N).rgb;
+		// vec3 irradiance = vec3(0,1,0);
     vec3 diffuse      = irradiance * albedo;
     vec3 ambient = (kD * diffuse) * ao;
     // vec3 ambient = vec3(0.002);
 
-    // vec3 color = ambient + Lo;
-		vec3 color = kS * vec3(1);
+    vec3 color = ambient + Lo;
+		// color	= irradiance;
+		// color = test;
+		// vec3 color = kS * vec3(1);
 
     // HDR tonemapping
     color = color / (color + vec3(1.0));

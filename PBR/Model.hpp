@@ -44,6 +44,9 @@ private:
 	std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 };
 
+unsigned int loadTexture(const char* path);
 unsigned int loadTexture(const char* path, const std::string& directory);
+unsigned int loadHDR(const char* path);
+unsigned int loadCubemap(std::vector<const char*> faces);
 
 #endif /* Model_hpp */

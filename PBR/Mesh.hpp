@@ -44,5 +44,6 @@ void drawSphere();
 void drawSphereGroup(Shader shader, int metallicRows, int roughnessColumns);
 void drawSkybox();
 void drawCube();
+void drawQuad();
 
 #endif /* Mesh_hpp */

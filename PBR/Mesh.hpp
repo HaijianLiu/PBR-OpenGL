@@ -40,4 +40,9 @@ private:
 	void setupMesh();
 };
 
+void drawSphere();
+void drawSphereGroup(Shader shader, int metallicRows, int roughnessColumns);
+void drawSkybox();
+void drawCube();
+
 #endif /* Mesh_hpp */

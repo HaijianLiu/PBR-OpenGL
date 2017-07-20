@@ -3,11 +3,14 @@
 
 #define UNIFORM_TEX_DIFFUSE    "texDiffuse"
 #define UNIFORM_TEX_NORMAL     "texNormal"
-#define UNIFORM_TEX_METAL      "texMetal"
-#define UNIFORM_TEX_ROUGH      "texRough"
+// #define UNIFORM_TEX_METAL      "texMetal"
+#define UNIFORM_TEX_METAL      "metallic"
+// #define UNIFORM_TEX_ROUGH      "texRough"
+#define UNIFORM_TEX_ROUGH      "roughness"
 #define UNIFORM_TEX_AO         "texAO"
 #define UNIFORM_MATRIX_MVP     "matrixMVP"
-#define UNIFORM_MATRIX_MODEL   "matrixModel"
+// #define UNIFORM_MATRIX_MODEL   "matrixModel"
+#define UNIFORM_MATRIX_MODEL   "model"
 #define UNIFORM_EYE_WORLDSPACE "eyeWorldspace"
 
 /*----------------------------------------------------------------------------*/

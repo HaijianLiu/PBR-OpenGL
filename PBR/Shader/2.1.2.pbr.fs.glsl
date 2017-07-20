@@ -65,7 +65,7 @@ void main()
 {
     vec3 N = Normal;
     vec3 V = normalize(WorldPos - camPos);
-    vec3 R = reflect(V, N);
+    // vec3 R = reflect(V, N);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)
@@ -78,7 +78,7 @@ void main()
     for(int i = 0; i < 4; ++i)
     {
         // calculate per-light radiance
-        vec3 L = normalize(WorldPos - lightPositions[i]);
+        vec3 L = normalize(lightPositions[i] - WorldPos);
         vec3 H = normalize(V + L);
         float distance = length(lightPositions[i] - WorldPos);
         float attenuation = 1.0 / (distance * distance);
@@ -87,7 +87,7 @@ void main()
         // Cook-Torrance BRDF
         float NDF = DistributionGGX(N, H, roughness);
         float G   = GeometrySmith(N, V, L, roughness);
-        vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);
+        vec3 F    = fresnelSchlick(max(dot(N,V), 0.0), F0);
 
         vec3 nominator    = NDF * G * F;
         float denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001; // 0.001 to prevent divide by zero.
@@ -109,7 +109,7 @@ void main()
 
         // add to outgoing radiance Lo
         Lo += (kD * albedo / PI + specular) * radiance * NdotL; // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
-				test = vec3(1) * G;
+				test = vec3(1) * max(dot(N, L), 0.0);
     }
 
     // ambient lighting (we now use IBL as the ambient term)
@@ -117,6 +117,7 @@ void main()
     vec3 kD = 1.0 - kS;
     kD *= 1.0 - metallic;
     vec3 irradiance = texture(irradianceMap, N).rgb;
+		// irradiance *= 100;
 		// vec3 irradiance = vec3(0,1,0);
     vec3 diffuse      = irradiance * albedo;
     vec3 ambient = (kD * diffuse) * ao;
@@ -125,7 +126,7 @@ void main()
     vec3 color = ambient + Lo;
 		// color	= irradiance;
 		// color = test;
-		// vec3 color = kS * vec3(1);
+		// color = N * vec3(1);
 
     // HDR tonemapping
     color = color / (color + vec3(1.0));

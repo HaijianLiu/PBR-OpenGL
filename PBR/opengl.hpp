@@ -40,6 +40,7 @@ Example:
 GLFWwindow* window = createWindow("WindowName",screenWidth,screenHeight);
 ------------------------------------------------------------------------------*/
 
+void resetViewport(GLFWwindow* window);
 
 /*----------------------------------------------------------------------------*/
 // void updateModel(GLuint vertexBuffer, GLuint uvBuffer, GLuint normalBuffer, unsigned long count);

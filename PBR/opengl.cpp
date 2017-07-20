@@ -57,6 +57,13 @@ GLFWwindow* createWindow(const char* name, int screenWidth, int screenHeight) {
 }
 
 
+// configure the viewport to the original framebuffer's screen dimensions
+void resetViewport(GLFWwindow* window) {
+	int scrWidth, scrHeight;
+	glfwGetFramebufferSize(window, &scrWidth, &scrHeight);
+	glViewport(0, 0, scrWidth, scrHeight);
+}
+
 
 // // Draw model
 // void updateModel(GLuint vertexBuffer, GLuint uvBuffer, GLuint normalBuffer, unsigned long count) {

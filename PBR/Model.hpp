@@ -47,6 +47,8 @@ private:
 unsigned int loadTexture(const char* path);
 unsigned int loadTexture(const char* path, const std::string& directory);
 unsigned int loadHDR(const char* path);
+// unsigned int loadHDRtoCubemap(const char* path, int width);
+unsigned int loadHDRtoCubemap(GLFWwindow* window, Shader equirectangularToCubemapShader, unsigned int hdrTexture, int width);
 unsigned int loadCubemap(std::vector<const char*> faces);
 
 #endif /* Model_hpp */

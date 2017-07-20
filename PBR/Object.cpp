@@ -52,15 +52,3 @@ void Object::draw(Camera camera) {
 	model->shader->setVec3(UNIFORM_EYE_WORLDSPACE, camera.getPosition());
 	model->draw();
 }
-
-// void Object::updateInput(ObjectMovement move, float speed) {
-// 	// Turn Movement
-// 	if (move == turnUp)
-// 		rotation.x -= speed;
-// 	if (move == turnDown)
-// 		rotation.x += speed;
-// 	if (move == turnLeft)
-// 		rotation.y -= speed;
-// 	if (move == turnRight)
-// 		rotation.y += speed;
-// }

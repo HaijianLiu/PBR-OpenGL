@@ -47,7 +47,6 @@ private:
 unsigned int loadTexture(const char* path);
 unsigned int loadTexture(const char* path, const std::string& directory);
 unsigned int loadHDR(const char* path);
-// unsigned int loadHDRtoCubemap(const char* path, int width);
 unsigned int genCubemap(GLFWwindow* window, unsigned int hdrTexture, Shader shader, const char* uniform, int width, bool ifMipmap);
 unsigned int genIrradianceMap(GLFWwindow* window, unsigned int cubemap, Shader shader, const char* uniform, int width);
 unsigned int genPrefilterMap(GLFWwindow* window, unsigned int cubemap, Shader shader, const char* uniform, int width);

@@ -1,5 +1,7 @@
 #version 330 core
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
+// out vec4 FragColor;
 in vec2 TexCoords;
 in vec3 WorldPos;
 in vec3 Normal;
@@ -178,8 +180,11 @@ void main()
     vec3 color = ambient + Lo;
 		color -= 0.2*(1 - ao);
 		color = max(color,0);
-		color *= 2;
+		// color *= 2;
 		// color = V * vec3(1);
+		float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
+		if(brightness > 1.0)
+			BrightColor = vec4(color, 1.0);
 
     // HDR tonemapping
     color = color / (color + vec3(1.0));
@@ -187,4 +192,5 @@ void main()
     color = pow(color, vec3(1.0/2.2));
 
     FragColor = vec4(color , 1.0);
+		// check whether result is higher than some threshold, if so, output as bloom threshold color
 }

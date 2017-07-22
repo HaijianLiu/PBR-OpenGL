@@ -179,7 +179,7 @@ void main()
 		color -= 0.2*(1 - ao);
 		color = max(color,0);
 		color *= 2;
-		// color = ao * vec3(1);
+		// color = V * vec3(1);
 
     // HDR tonemapping
     color = color / (color + vec3(1.0));

@@ -44,9 +44,9 @@ void Mesh::draw(Shader* shader) {
 	// unsigned int metalNr    = 1;
 	// unsigned int roughNr    = 1;
 	// unsigned int ambientNr  = 1;
-	for(unsigned int i = 0; i < textures.size(); i++) {
-		glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
-		std::string name = textures[i].type;
+	// for(unsigned int i = 0; i < textures.size(); i++) {
+	// 	glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
+	// 	std::string name = textures[i].type;
 
 		/* Muti same kind of textures */
 		// // retrieve texture number (the N in diffuse_textureN)
@@ -66,11 +66,11 @@ void Mesh::draw(Shader* shader) {
 		// // now set the sampler to the correct texture unit
 		// glUniform1i(glGetUniformLocation(shader.programID, (name + number).c_str()), i);
 
-		glUniform1i(glGetUniformLocation(shader->programID, name.c_str()), i);
-
-		// and finally bind the texture
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
-	}
+	// 	glUniform1i(glGetUniformLocation(shader->programID, name.c_str()), i);
+	//
+	// 	// and finally bind the texture
+	// 	glBindTexture(GL_TEXTURE_2D, textures[i].id);
+	// }
 
 	// draw mesh
 	glBindVertexArray(vertexArrayID);

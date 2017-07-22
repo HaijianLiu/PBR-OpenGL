@@ -120,7 +120,7 @@ int main() {
 
 	// pbr: load the HDR environment map
 	// ---------------------------------
-	unsigned int hdrTexture = loadHDR("/Users/haijian/Documents/OpenGL/PBR/PBR/Texture/Tropical_Beach_8k.jpg");
+	unsigned int hdrTexture = loadHDR("/Users/haijian/Documents/OpenGL/PBR/PBR/Texture/NarrowPath_8k.jpg");
 	// std::vector<const char*> faces
 	// {
 	// 	"/Users/haijian/Documents/OpenGL/PBR/PBR/Texture/skybox/right.jpg",

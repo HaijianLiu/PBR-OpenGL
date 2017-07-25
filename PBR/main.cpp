@@ -4,22 +4,17 @@
 
 // Include header files
 #include "opengl.hpp"
-#include "timecontrol.hpp"
 // Include class
 #include "Camera.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 // #include "Model.hpp"
 #include "Object.hpp"
 
-
-void processInput(GLFWwindow *window);
-
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 bool bloom = true;
-bool bloomKeyPressed = false;
 float exposure = 1.0f;
 
 int main() {
@@ -27,7 +22,7 @@ int main() {
 	GLFWwindow* window = createWindow("WindowName",800,600);
 
 	// Other Default settings
-	glClearColor(0.9,0.9,0.9,1.0);
+	glClearColor(0.0,0.0,0.0,1.0);
 
 	// configure global opengl state
 	// -----------------------------
@@ -41,13 +36,6 @@ int main() {
 	Camera camera = Camera();
 
 	// build and compile shaders
-	// -------------------------
-	// Shader pbrShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.pbr.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.pbr.fs.glsl");
-	// Shader equirectangularToCubemapShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.cubemap.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.equirectangular_to_cubemap.fs.glsl");
-	// Shader irradianceShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.cubemap.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.irradiance_convolution.fs.glsl");
-	// Shader backgroundShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.background.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.1.2.background.fs.glsl");
-
-	// Shader pbrShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.pbr.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.pbr.fs.glsl");
 	Shader pbrShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.pbr.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.2.pbr.fs.glsl");
 	Shader equirectangularToCubemapShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.cubemap.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.equirectangular_to_cubemap.fs.glsl");
 	Shader irradianceShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.cubemap.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.irradiance_convolution.fs.glsl");
@@ -55,8 +43,7 @@ int main() {
 	Shader brdfShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.brdf.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.brdf.fs.glsl");
 	Shader backgroundShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.background.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.background.fs.glsl");
 
-	Shader shaderBlur = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/7.blur.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/7.blur.fs.glsl");
-	Shader shaderBloomFinal = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/7.bloom_final.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/7.bloom_final.fs.glsl");
+	// Shader shaderBlur = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/7.blur.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/7.blur.fs.glsl");
 
 	Model pbrModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/WPN_AKM/WPN_AKM.obj",&pbrShader);
 	unsigned int albedoMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/WPN_AKM/WPNT_AKM_Base_Color.tga");
@@ -65,29 +52,13 @@ int main() {
 	unsigned int roughnessMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/WPN_AKM/WPNT_AKM_Roughness.tga");
 	unsigned int aoMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/WPN_AKM/WPNT_AKM_Ambient_occlusion.tga");
 
-	// Model pbrModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Cerberus_by_Andrew_Maximov/Cerberus_LP.obj",&pbrShader);
-	// unsigned int albedoMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Cerberus_by_Andrew_Maximov/Cerberus_A.tga");
-	// unsigned int normalMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Cerberus_by_Andrew_Maximov/Cerberus_N.tga");
-	// unsigned int metallicMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Cerberus_by_Andrew_Maximov/Cerberus_M.tga");
-	// unsigned int roughnessMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Cerberus_by_Andrew_Maximov/Cerberus_R.tga");
-	// unsigned int aoMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Cerberus_by_Andrew_Maximov/Cerberus_by_Andrew_Maximov.tga");
+	// pbr: load the HDR environment map
+	unsigned int hdrTexture = loadHDR("/Users/haijian/Documents/OpenGL/PBR/PBR/Texture/NarrowPath_8k.jpg");
+	unsigned int envCubemap = genCubemap(window,hdrTexture,equirectangularToCubemapShader,"equirectangularMap",2048,true);
+	unsigned int irradianceMap = genIrradianceMap(window,envCubemap,irradianceShader,"environmentMap",32);
+	unsigned int prefilterMap = genPrefilterMap(window,envCubemap,prefilterShader,"environmentMap",128);
+	unsigned int brdfLUTTexture = genBRDFLUTTexture(window,brdfShader,512);
 
-	// Model pbrModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Wood_Log_qdtdP_4K_3d_ms/Aset_wood_log_M_qdtdP_LOD0.obj",&pbrShader);
-	// unsigned int albedoMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Wood_Log_qdtdP_4K_3d_ms/Aset_wood_log_M_qdtdP_4K_Albedo.jpg");
-	// unsigned int normalMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Wood_Log_qdtdP_4K_3d_ms/Aset_wood_log_M_qdtdP_4K_Normal_LOD0.jpg");
-	// unsigned int metallicMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Wood_Log_qdtdP_4K_3d_ms/Aset_wood_log_M_qdtdP_false_Metal.jpg");
-	// unsigned int roughnessMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Wood_Log_qdtdP_4K_3d_ms/Aset_wood_log_M_qdtdP_4K_Roughness.jpg");
-	// unsigned int aoMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/Wood_Log_qdtdP_4K_3d_ms/Aset_wood_log_M_qdtdP_4K_Cavity.jpg");
-
-	// Model pbrModel = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/ChamferZone/WPN_MK2Grenade.obj",&pbrShader);
-	// unsigned int albedoMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/ChamferZone/WPNT_MK2Grenade_Base_Color.tga");
-	// unsigned int normalMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/ChamferZone/WPNT_MK2Grenade_Normal_DirectX.tga");
-	// unsigned int metallicMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/ChamferZone/WPNT_MK2Grenade_Metallic.tga");
-	// unsigned int roughnessMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/ChamferZone/WPNT_MK2Grenade_Roughness.tga");
-	// unsigned int aoMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/ChamferZone/WPNT_MK2Grenade_Ambient_occlusion.tga");
-
-
-	pbrShader.use();
 	pbrShader.use();
 	pbrShader.setInt("irradianceMap", 0);
 	pbrShader.setInt("prefilterMap", 1);
@@ -98,23 +69,11 @@ int main() {
 	pbrShader.setInt("roughnessMap", 6);
 	pbrShader.setInt("aoMap", 7);
 
-	shaderBlur.use();
-	shaderBlur.setInt("image", 0);
-	shaderBloomFinal.use();
-	shaderBloomFinal.setInt("scene", 0);
-	shaderBloomFinal.setInt("bloomBlur", 1);
-
-
-	// pbrShader.use();
-	// pbrShader.setInt("irradianceMap", 0);
-	// pbrShader.setInt("prefilterMap", 1);
-	// pbrShader.setInt("brdfLUT", 2);
-	// pbrShader.setVec3("albedo", 0.5f, 0.0f, 0.0f);
-	// pbrShader.setFloat("ao", 1.0f);
-
-
 	backgroundShader.use();
 	backgroundShader.setInt("environmentMap", 0);
+
+	RenderPass renderPass = RenderPass(window,2);
+
 
 	// lights
 	// ------
@@ -131,66 +90,6 @@ int main() {
 		glm::vec3(100.0f, 100.0f, 100.0f)
 	};
 
-	// configure (floating point) framebuffers
-		unsigned int hdrFBO;
-		glGenFramebuffers(1, &hdrFBO);
-		glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
-		// create 2 floating point color buffers (1 for normal rendering, other for brightness treshold values)
-		unsigned int colorBuffers[2];
-		glGenTextures(2, colorBuffers);
-		for (unsigned int i = 0; i < 2; i++)
-		{
-				glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1600, 1200, 0, GL_RGB, GL_FLOAT, NULL);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-				// attach texture to framebuffer
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
-		}
-		// create and attach depth buffer (renderbuffer)
-		unsigned int rboDepth;
-		glGenRenderbuffers(1, &rboDepth);
-		glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1600, 1200);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-		// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
-		unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-		glDrawBuffers(2, attachments);
-		// finally check if framebuffer is complete
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-				std::cout << "Framebuffer not complete!" << std::endl;
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		// ping-pong-framebuffer for blurring
-		unsigned int pingpongFBO[2];
-		unsigned int pingpongColorbuffers[2];
-		glGenFramebuffers(2, pingpongFBO);
-		glGenTextures(2, pingpongColorbuffers);
-		for (unsigned int i = 0; i < 2; i++)
-		{
-				glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
-				glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[i]);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1600, 1200, 0, GL_RGB, GL_FLOAT, NULL);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorbuffers[i], 0);
-				// also check if framebuffers are complete (no need for depth buffer)
-				if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-						std::cout << "Framebuffer not complete!" << std::endl;
-		}
-
-
-	// pbr: load the HDR environment map
-	// ---------------------------------
-	unsigned int hdrTexture = loadHDR("/Users/haijian/Documents/OpenGL/PBR/PBR/Texture/NarrowPath_8k.jpg");
-	unsigned int envCubemap = genCubemap(window,hdrTexture,equirectangularToCubemapShader,"equirectangularMap",2048,true);
-	unsigned int irradianceMap = genIrradianceMap(window,envCubemap,irradianceShader,"environmentMap",32);
-	unsigned int prefilterMap = genPrefilterMap(window,envCubemap,prefilterShader,"environmentMap",128);
-	unsigned int brdfLUTTexture = genBRDFLUTTexture(window,brdfShader,512);
 
 	// initialize static shader uniforms before rendering
 	// --------------------------------------------------
@@ -198,31 +97,27 @@ int main() {
 	pbrShader.use();
 	pbrShader.setMat4("projection", projection);
 	backgroundShader.use();
-	backgroundShader.setMat4("projection", camera.getMatrixProjection());
+	backgroundShader.setMat4("projection", projection);
 
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window)) {
+
 		// per-frame time logic
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
 		// input
-		processInput(window);
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+			glfwSetWindowShouldClose(window, true);
 
-		// render
-		// ------
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// 1. render scene into floating point framebuffer
-		// -----------------------------------------------
-		glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		renderPass.use();
 
 		// render scene, supplying the convoluted irradiance map to the final shader.
-		// ------------------------------------------------------------------------------------------
 		pbrShader.use();
 		glm::mat4 view = camera.getMatrixView();
 		pbrShader.setMat4("view", view);
@@ -250,34 +145,13 @@ int main() {
 		glActiveTexture(GL_TEXTURE7);
 		glBindTexture(GL_TEXTURE_2D, aoMap);
 
-		// pbrShader.use();
-		// pbrShader.setMat4("view", camera.getMatrixView());
-		// pbrShader.setVec3("camPos", camera.getPosition());
-
 		for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
 		{
-			// glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
-			// newPos = lightPositions[i];
-			// pbrShader.setVec3(("lightPositions[" + std::to_string(i) + "]").c_str(), newPos);
-			// pbrShader.setVec3(("lightColors[" + std::to_string(i) + "]").c_str(), lightColors[i]);
-			// glm::mat4 model = glm::mat4();
-			// model = glm::translate(model, newPos);
-			// model = glm::scale(model, glm::vec3(0.5f));
-			// pbrShader.setMat4("model", model);
-			//
 			pbrShader.setVec3(("lightPositions[" + std::to_string(i) + "]").c_str(), lightPositions[i]);
 			pbrShader.setVec3(("lightColors[" + std::to_string(i) + "]").c_str(), lightColors[i]);
-
-			// glm::mat4 model = glm::mat4();
-			// model = glm::translate(model, lightPositions[i]);
-			// pbrShader.setMat4("model", model);
-			//
-			// drawSphere();
 		}
 
-
 		pbrModel.draw();
-		// drawSphereGroup(pbrShader,7,7);
 
 		// draw skybox as last
 		backgroundShader.use();
@@ -292,33 +166,38 @@ int main() {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+
+
 		// 2. blur bright fragments with two-pass Gaussian Blur
 		// --------------------------------------------------
-		bool horizontal = true, first_iteration = true;
-		unsigned int amount = 10;
-		shaderBlur.use();
-		for (unsigned int i = 0; i < amount; i++)
-		{
-				glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
-				shaderBlur.setInt("horizontal", horizontal);
-				glBindTexture(GL_TEXTURE_2D, first_iteration ? colorBuffers[1] : pingpongColorbuffers[!horizontal]);  // bind texture of other framebuffer (or scene if first iteration)
-				drawQuad();
-				horizontal = !horizontal;
-				if (first_iteration)
-						first_iteration = false;
-		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		// bool horizontal = true, first_iteration = true;
+		// unsigned int amount = 10;
+		// shaderBlur.use();
+		// for (unsigned int i = 0; i < amount; i++)
+		// {
+		// 		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+		// 		shaderBlur.setInt("horizontal", horizontal);
+		// 		glBindTexture(GL_TEXTURE_2D, first_iteration ? renderPass.pass[1] : pingpongColorbuffers[!horizontal]);  // bind texture of other framebuffer (or scene if first iteration)
+		// 		drawQuad();
+		// 		horizontal = !horizontal;
+		// 		if (first_iteration)
+		// 				first_iteration = false;
+		// }
+		// glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+
 
 		// 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
 		// --------------------------------------------------------------------------------------------------------------------------
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		shaderBloomFinal.use();
+		renderPass.shader->use();
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+		glBindTexture(GL_TEXTURE_2D, renderPass.pass[0]);
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[horizontal]);
-		shaderBloomFinal.setInt("bloom", bloom);
-		shaderBloomFinal.setFloat("exposure", exposure);
+		glBindTexture(GL_TEXTURE_2D, renderPass.pass[1]);
+		// renderPass.shader->setInt("bloom", bloom);
+		// renderPass.shader->setFloat("exposure", exposure);
 		drawQuad();
 
 			// std::cout << "bloom: " << (bloom ? "on" : "off") << "| exposure: " << exposure << std::endl;
@@ -336,10 +215,4 @@ int main() {
 	// ------------------------------------------------------------------
 	glfwTerminate();
 	return 0;
-}
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
 }

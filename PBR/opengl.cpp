@@ -3,6 +3,10 @@
 
 #include "opengl.hpp"
 
+// Include class
+#include "Shader.hpp"
+
+
 GLFWwindow* createWindow(const char* name, int screenWidth, int screenHeight) {
 
 	// Create OpenGL Window
@@ -62,6 +66,68 @@ void resetViewport(GLFWwindow* window) {
 	int scrWidth, scrHeight;
 	glfwGetFramebufferSize(window, &scrWidth, &scrHeight);
 	glViewport(0, 0, scrWidth, scrHeight);
+}
+
+// RenderPass class
+RenderPass::RenderPass(GLFWwindow* window, int number) {
+
+	int scrWidth, scrHeight;
+	glfwGetFramebufferSize(window, &scrWidth, &scrHeight);
+
+	// configure (floating point) framebuffers
+	glGenFramebuffers(1, &this->fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
+
+	// create 2 floating point color buffers
+	unsigned int colorBuffers[number];
+	glGenTextures(number, colorBuffers);
+	for (unsigned int i = 0; i < number; i++) {
+		glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, scrWidth, scrHeight, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		// attach texture to framebuffer
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+		this->pass.push_back(colorBuffers[i]);
+	}
+
+	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
+	unsigned int attachments[number];
+	for (unsigned int i = 0; i < number; i++) {
+		attachments[i] = GL_COLOR_ATTACHMENT0 + i;
+	}
+	glDrawBuffers(number, attachments);
+
+	// create and attach depth buffer (renderbuffer)
+	unsigned int depthRBO;
+	glGenRenderbuffers(1, &depthRBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, scrWidth, scrHeight);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRBO);
+
+	// check if framebuffer is complete
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	std::cout << "Framebuffer not complete!" << std::endl;
+
+	glBindFramebuffer(GL_FRAMEBUFFER,0);
+
+	// Set Shader
+	this->shader = new Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/RenderPassFinal.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/RenderPassFinal.fs.glsl");
+	this->shader->use();
+	for (unsigned i = 0; i < number; i++) {
+		this->shader->setInt(("pass" + std::to_string(i)).c_str(), i);
+	}
+}
+RenderPass::~RenderPass() {
+	delete this->shader;
+}
+
+
+void RenderPass::use() {
+	glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 

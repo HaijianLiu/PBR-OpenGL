@@ -1,6 +1,8 @@
 #ifndef opengl_hpp
 #define opengl_hpp
 
+#include <vector>
+
 // Include GLEW (include before gl.h and glfw.h)
 #include <GL/glew.h>
 // Include GLFW
@@ -41,6 +43,20 @@ GLFWwindow* window = createWindow("WindowName",screenWidth,screenHeight);
 ------------------------------------------------------------------------------*/
 
 void resetViewport(GLFWwindow* window);
+
+class Shader;
+
+class RenderPass {
+public:
+	unsigned int fbo;
+	std::vector<unsigned int> pass;
+	Shader* shader;
+
+	RenderPass(GLFWwindow* window, int number);
+	~RenderPass();
+	void use();
+
+};
 
 /*----------------------------------------------------------------------------*/
 // void updateModel(GLuint vertexBuffer, GLuint uvBuffer, GLuint normalBuffer, unsigned long count);

@@ -114,7 +114,7 @@ RenderPass::RenderPass(GLFWwindow* window, int number) {
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
 
 	// Set Shader
-	this->shader = new Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/RenderPassFinal.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/RenderPassFinal.fs.glsl");
+	this->shader = new Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/RenderPassCombine.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/RenderPassCombine.fs.glsl");
 	this->shader->use();
 	for (unsigned i = 0; i < number; i++) {
 		this->shader->setInt(("pass" + std::to_string(i)).c_str(), i);

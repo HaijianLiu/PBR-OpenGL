@@ -54,8 +54,10 @@ public:
 
 	RenderPass(GLFWwindow* window, int number);
 	~RenderPass();
-	void use();
 
+	void use();
+	void finish();
+	void render();
 };
 
 /*----------------------------------------------------------------------------*/

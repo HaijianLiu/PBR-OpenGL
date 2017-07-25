@@ -150,17 +150,12 @@ int main() {
 				backgroundShader.setInt("environmentMap", 0);
 			drawSkybox();
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+		renderPass.finish();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		renderPass.shader->use();
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, renderPass.pass[0]);
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, renderPass.pass[1]);
-		drawQuad();
+		renderPass.render();
+
 
 
 		camera.updateInput(window,deltaTime);

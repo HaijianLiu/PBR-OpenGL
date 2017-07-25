@@ -117,7 +117,7 @@ RenderPass::RenderPass(GLFWwindow* window, int number) {
 	this->shader = new Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/RenderPassCombine.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/RenderPassCombine.fs.glsl");
 	this->shader->use();
 	for (unsigned i = 0; i < number; i++) {
-		this->shader->setInt(("pass" + std::to_string(i)).c_str(), i);
+		this->shader->setInt(("pass[" + std::to_string(i) + "]").c_str(), i);
 	}
 }
 RenderPass::~RenderPass() {
@@ -129,6 +129,40 @@ void RenderPass::use() {
 	glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
+void RenderPass::finish() {
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+void RenderPass::render() {
+	this->shader->use();
+	for (unsigned int i = 0; i < this->pass.size(); i++) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, this->pass[i]);
+	}
+
+	unsigned int quadVAO, quadVBO;
+	float quadVertices[] = {
+		// positions        // texture Coords
+		-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+		1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+		1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+	};
+	// setup plane VAO
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
+}
+
 
 
 // // Draw model

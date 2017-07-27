@@ -1,5 +1,6 @@
 // Include standard libraries
 #include <iostream>
+#include <random>
 // #include <vector>
 
 // Include header files
@@ -32,7 +33,7 @@ int main() {
 	Camera camera = Camera();
 
 	// build and compile shaders
-	Shader pbrShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.pbr.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.2.pbr.fs.glsl");
+	Shader pbrShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.2.pbr.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.2.pbr.fs.glsl");
 	Shader equirectangularToCubemapShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.cubemap.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.equirectangular_to_cubemap.fs.glsl");
 	Shader irradianceShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.cubemap.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.irradiance_convolution.fs.glsl");
 	Shader prefilterShader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.cubemap.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/2.2.1.prefilter.fs.glsl");
@@ -54,26 +55,6 @@ int main() {
 	unsigned int prefilterMap = genPrefilterMap(window,envCubemap,prefilterShader,"environmentMap",128);
 	unsigned int brdfLUTTexture = genBRDFLUTTexture(window,brdfShader,512);
 
-	// initialize static shader uniforms before rendering
-	glm::mat4 projection = camera.getMatrixProjection();
-	pbrShader.use();
-	pbrShader.setInt("irradianceMap", 0);
-	pbrShader.setInt("prefilterMap", 1);
-	pbrShader.setInt("brdfLUT", 2);
-	pbrShader.setInt("albedoMap", 3);
-	pbrShader.setInt("normalMap", 4);
-	pbrShader.setInt("metallicMap", 5);
-	pbrShader.setInt("roughnessMap", 6);
-	pbrShader.setInt("aoMap", 7);
-	pbrShader.setMat4("projection", projection);
-	backgroundShader.use();
-	backgroundShader.setInt("environmentMap", 0);
-	backgroundShader.setMat4("projection", projection);
-
-	// init RenderPass object
-	RenderPass renderPass = RenderPass(window,2);
-
-
 	// lights
 	glm::vec3 lightPositions[] = {
 		glm::vec3(-10.0f,  10.0f, 20.0f),
@@ -87,6 +68,49 @@ int main() {
 		glm::vec3(100.0f, 100.0f, 100.0f),
 		glm::vec3(100.0f, 100.0f, 100.0f)
 	};
+
+	// initialize static shader uniforms before rendering
+	pbrShader.use();
+		pbrShader.setInt("irradianceMap", 0);
+		pbrShader.setInt("prefilterMap", 1);
+		pbrShader.setInt("brdfLUT", 2);
+		pbrShader.setInt("albedoMap", 3);
+		pbrShader.setInt("normalMap", 4);
+		pbrShader.setInt("metallicMap", 5);
+		pbrShader.setInt("roughnessMap", 6);
+		pbrShader.setInt("aoMap", 7);
+		glm::mat4 projection = camera.getMatrixProjection();
+		pbrShader.setMat4("projection", projection);
+		glm::mat4 model = glm::mat4();
+		model = glm::scale(model, glm::vec3(0.8f));
+		model = glm::translate(model, glm::vec3(0.0, 0.0, 0.0));
+		pbrShader.setMat4("model", model);
+		for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i) {
+			pbrShader.setVec3(("lightPositions[" + std::to_string(i) + "]").c_str(), lightPositions[i]);
+			pbrShader.setVec3(("lightColors[" + std::to_string(i) + "]").c_str(), lightColors[i]);
+		}
+
+	backgroundShader.use();
+		backgroundShader.setInt("environmentMap", 0);
+		backgroundShader.setMat4("projection", projection);
+
+
+	// init RenderPass object
+	RenderPass renderPass = RenderPass(window,4);
+
+	renderPass.shader->use();
+		// Send kernel + rotation
+		std::vector<glm::vec3> ssaoKernel = genSSAOKernel(4);
+		unsigned int noiseTexture = genNoiseTexture(4);
+		for (unsigned int i = 0; i < ssaoKernel.size(); ++i)
+			renderPass.shader->setVec3(("samples[" + std::to_string(i) + "]").c_str(), ssaoKernel[i]);
+		renderPass.shader->setMat4("projection", projection);
+		glActiveTexture(GL_TEXTURE10);
+		glBindTexture(GL_TEXTURE_2D, noiseTexture);
+		renderPass.shader->setInt("texNoise", 10);
+
+
+
 
 
 	// render loop
@@ -112,10 +136,6 @@ int main() {
 				glm::mat4 view = camera.getMatrixView();
 				pbrShader.setMat4("view", view);
 				pbrShader.setVec3("camPos", camera.getPosition());
-				glm::mat4 model = glm::mat4();
-				model = glm::scale(model, glm::vec3(0.8f));
-				model = glm::translate(model, glm::vec3(0.0, 0.0, 0.0));
-		    pbrShader.setMat4("model", model);
 				// bind pre-computed IBL data
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
@@ -133,10 +153,6 @@ int main() {
 				glBindTexture(GL_TEXTURE_2D, roughnessMap);
 				glActiveTexture(GL_TEXTURE7);
 				glBindTexture(GL_TEXTURE_2D, aoMap);
-				for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i) {
-					pbrShader.setVec3(("lightPositions[" + std::to_string(i) + "]").c_str(), lightPositions[i]);
-					pbrShader.setVec3(("lightColors[" + std::to_string(i) + "]").c_str(), lightColors[i]);
-				}
 			pbrModel.draw();
 
 			// draw skybox as last

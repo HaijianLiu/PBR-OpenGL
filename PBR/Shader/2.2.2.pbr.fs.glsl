@@ -1,11 +1,17 @@
 #version 330 core
 layout (location = 0) out vec4 FragColor;
-layout (location = 1) out vec4 BrightColor;
+layout (location = 1) out vec4 positionView;
+layout (location = 2) out vec3 normalView;
+layout (location = 3) out vec4 albedoSpec;
+
 // out vec4 FragColor;
 in vec2 TexCoords;
 in vec3 WorldPos;
 in vec3 Normal;
-// in mat3 tbn;
+
+in vec3 ViewPos;
+in vec3 ViewNormal;
+
 
 // material parameters
 uniform sampler2D albedoMap;
@@ -184,13 +190,20 @@ void main()
 		// color = V * vec3(1);
 
 
-    FragColor = vec4(color , 1.0);
 
-		// check whether result is higher than some threshold, if so, output as bloom threshold color
-		float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
-		if(brightness > 1.0) {
-			BrightColor = vec4(color, 1.0);
-		} else {
-			BrightColor = vec4(0.0,0.0,0.0, 1.0);
-		}
+    FragColor = vec4(color , 1.0);
+		// store the fragment position vector in the first gbuffer texture
+    positionView = vec4(ViewPos,1.0);
+    // also store the per-fragment normals into the gbuffer
+    normalView = normalize(ViewNormal);
+    // and the diffuse per-fragment color
+    albedoSpec = vec4(0.95,0.95,0.95,1.0);
+
+		// // check whether result is higher than some threshold, if so, output as bloom threshold color
+		// float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
+		// if(brightness > 1.0) {
+		// 	BrightColor = vec4(color, 1.0);
+		// } else {
+		// 	BrightColor = vec4(0.0,0.0,0.0, 1.0);
+		// }
 }

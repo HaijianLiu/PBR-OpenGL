@@ -1,8 +1,6 @@
 #ifndef opengl_hpp
 #define opengl_hpp
 
-#include <vector>
-
 // Include GLEW (include before gl.h and glfw.h)
 #include <GL/glew.h>
 // Include GLFW
@@ -59,6 +57,9 @@ public:
 	void finish();
 	void render();
 };
+
+std::vector<glm::vec3> genSSAOKernel(unsigned int kernelSize);
+unsigned int genNoiseTexture(unsigned int textureSize);
 
 /*----------------------------------------------------------------------------*/
 // void updateModel(GLuint vertexBuffer, GLuint uvBuffer, GLuint normalBuffer, unsigned long count);

@@ -20,20 +20,22 @@ vec3 kernelBlur(sampler2D tex);
 
 void main()
 {
-    vec3 hdrColor = texture(pass[0], TexCoords).rgb;
+    vec3 color = texture(pass[0], TexCoords).rgb;
 		// vec3 blur = kernelBlur(pass[0]);
 
 		float occlusion = ambientOcclusion();
 
-		vec3 color = hdrColor * occlusion;
+		color = color * occlusion;
 		// color = max(color,vec3(0));
+
+		color *= 4;
 		// // HDR tonemapping
 		color = color / (color + vec3(1.0));
 		// gamma correct
 		color = pow(color, vec3(1.0/2.2));
 
-		// FragColor = vec4(blur, 1.0);
-    FragColor = vec4(vec3(occlusion), 1.0);
+		FragColor = vec4(color, 1.0);
+    // FragColor = vec4(vec3(occlusion), 1.0);
 }
 
 

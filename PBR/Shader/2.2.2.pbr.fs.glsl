@@ -4,6 +4,7 @@ layout (location = 1) out vec4 positionView;
 layout (location = 2) out vec3 normalView;
 layout (location = 3) out vec4 albedoSpec;
 
+
 // out vec4 FragColor;
 in vec2 TexCoords;
 in vec3 WorldPos;
@@ -107,8 +108,8 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 void main()
 {
 	// material properties
-    // vec3 albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2));
-		vec3 albedo = texture(albedoMap, TexCoords).rgb;
+    vec3 albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2));
+		// vec3 albedo = texture(albedoMap, TexCoords).rgb;
     float metallic = texture(metallicMap, TexCoords).r;
     float roughness = texture(roughnessMap, TexCoords).r;
 		// roughness = pow(roughness, 1.0/2.2);
@@ -184,9 +185,9 @@ void main()
     vec3 ambient = (kD * diffuse + (metallic + kS) * specular) * ao;
 
     vec3 color = ambient + Lo;
-		color -= 0.2*(1 - ao);
-		color = max(color,0);
-		color *= 2;
+		// color -= 0.2*(1 - ao);
+		// color = max(color,0);
+		// color *= 2;
 		// color = V * vec3(1);
 
 

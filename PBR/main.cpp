@@ -48,6 +48,14 @@ int main() {
 	unsigned int roughnessMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/WPN_AKM/WPNT_AKM_Roughness.tga");
 	unsigned int aoMap = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/WPN_AKM/WPNT_AKM_Ambient_occlusion.tga");
 
+	Model pbrModel2 = Model("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/ChamferZone/WPN_MK2Grenade.obj",&pbrShader);
+	unsigned int albedoMap2 = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/ChamferZone/WPNT_MK2Grenade_Base_Color.tga");
+	unsigned int normalMap2 = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/ChamferZone/WPNT_MK2Grenade_Normal_DirectX.tga");
+	unsigned int metallicMap2 = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/ChamferZone/WPNT_MK2Grenade_Metallic.tga");
+	unsigned int roughnessMap2 = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/ChamferZone/WPNT_MK2Grenade_Roughness.tga");
+	unsigned int aoMap2 = loadTexture("/Users/haijian/Documents/OpenGL/PBR/PBR/Model/ChamferZone/WPNT_MK2Grenade_Ambient_occlusion.tga");
+
+
 	// pbr: load the HDR environment map
 	unsigned int hdrTexture = loadHDR("/Users/haijian/Documents/OpenGL/PBR/PBR/Texture/NarrowPath_8k.jpg");
 	unsigned int envCubemap = genCubemap(window,hdrTexture,equirectangularToCubemapShader,"equirectangularMap",2048,true);
@@ -136,6 +144,9 @@ int main() {
 				glm::mat4 view = camera.getMatrixView();
 				pbrShader.setMat4("view", view);
 				pbrShader.setVec3("camPos", camera.getPosition());
+				model = glm::scale(glm::vec3(0.8f));
+				model = glm::translate(glm::vec3(0.0, 0.0, 0.0));
+				pbrShader.setMat4("model", model);
 				// bind pre-computed IBL data
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
@@ -154,6 +165,20 @@ int main() {
 				glActiveTexture(GL_TEXTURE7);
 				glBindTexture(GL_TEXTURE_2D, aoMap);
 			pbrModel.draw();
+				model = glm::scale(glm::vec3(0.1f));
+				model = glm::translate(glm::vec3(-10.0, -10.0, 0.0));
+				pbrShader.setMat4("model", model);
+				glActiveTexture(GL_TEXTURE3);
+				glBindTexture(GL_TEXTURE_2D, albedoMap2);
+				glActiveTexture(GL_TEXTURE4);
+				glBindTexture(GL_TEXTURE_2D, normalMap2);
+				glActiveTexture(GL_TEXTURE5);
+				glBindTexture(GL_TEXTURE_2D, metallicMap2);
+				glActiveTexture(GL_TEXTURE6);
+				glBindTexture(GL_TEXTURE_2D, roughnessMap2);
+				glActiveTexture(GL_TEXTURE7);
+				glBindTexture(GL_TEXTURE_2D, aoMap2);
+			pbrModel2.draw();
 
 			// draw skybox as last
 			backgroundShader.use();
@@ -167,12 +192,8 @@ int main() {
 			drawSkybox();
 
 		renderPass.finish();
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		renderPass.render();
-
-
+		
 
 		camera.updateInput(window,deltaTime);
 

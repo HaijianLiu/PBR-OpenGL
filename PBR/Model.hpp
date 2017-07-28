@@ -46,6 +46,7 @@ private:
 
 unsigned int loadTexture(const char* path);
 unsigned int loadTexture(const char* path, const std::string& directory);
+unsigned int combineTexture(GLFWwindow* window, unsigned int textureR, unsigned int textureG, unsigned int textureB, unsigned int size);
 unsigned int loadHDR(const char* path);
 unsigned int genCubemap(GLFWwindow* window, unsigned int hdrTexture, Shader shader, const char* uniform, int width, bool ifMipmap);
 unsigned int genIrradianceMap(GLFWwindow* window, unsigned int cubemap, Shader shader, const char* uniform, int width);

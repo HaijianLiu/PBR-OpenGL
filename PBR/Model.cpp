@@ -313,6 +313,55 @@ unsigned int loadTexture(const char* path, const std::string& directory) {
 	return textureID;
 }
 
+unsigned int combineTexture(GLFWwindow* window, unsigned int textureR, unsigned int textureG, unsigned int textureB, unsigned int size) {
+
+	Shader shader = Shader("/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/CombineTexture.vs.glsl", "/Users/haijian/Documents/OpenGL/PBR/PBR/Shader/CombineTexture.fs.glsl");
+
+	glViewport(0, 0, size, size);
+
+	unsigned int texture;
+		// Setup framebuffer
+		unsigned int fbo;
+		glGenFramebuffers(1, &fbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+			glGenTextures(1, &texture);
+			// pre-allocate enough memory for the LUT texture.
+			glBindTexture(GL_TEXTURE_2D, texture);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size, size, 0, GL_RGBA, GL_FLOAT, NULL);
+			// be sure to set wrapping mode to GL_CLAMP_TO_EDGE
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+
+			shader.use();
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, textureR);
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, textureG);
+				glActiveTexture(GL_TEXTURE3);
+				glBindTexture(GL_TEXTURE_2D, textureB);
+				shader.setInt("textureR", 1);
+				shader.setInt("textureG", 2);
+				shader.setInt("textureB", 3);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			drawQuad();
+
+		// Retset status
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		int scrWidth, scrHeight;
+		glfwGetFramebufferSize(window, &scrWidth, &scrHeight);
+	glViewport(0, 0, scrWidth, scrHeight);
+
+	glDeleteTextures(1, &textureR);
+	glDeleteTextures(1, &textureG);
+	glDeleteTextures(1, &textureB);
+
+	return texture;
+}
+
 unsigned int loadHDR(const char* path) {
 	stbi_set_flip_vertically_on_load(true);
 	unsigned int textureID;
